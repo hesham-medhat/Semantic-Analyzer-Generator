@@ -4,8 +4,9 @@
 
 #include "State.h"
 
-class DFAState : public State{
-
+class DFAState : public State {
+public:
+    DFAState(Token& acceptedToken);
 private:
     std::unordered_map<char, State&> transitions;
 };
