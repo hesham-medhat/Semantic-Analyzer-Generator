@@ -4,18 +4,20 @@
 
 #include <unordered_map>
 #include <unordered_set>
+#include <memory>
 
 #include "../Token.h"
 
 class State {
+public:
     State();
     State(Token& acceptedToken);
 
     void setAcceptedToken(Token& acceptedToken);
     Token getAcceptedToken();
-    std::unordered_set<State&> getNextState(char inputChar);
+    std::unordered_set<std::shared_ptr<State>> getNextState(char inputChar);
 
-    virtual void addTransition(char inputChar, State& nextState) = 0;
+    virtual void addTransition(char inputChar, std::shared_ptr<State> nextState) = 0;
 
 protected:
     const Token acceptedToken;
