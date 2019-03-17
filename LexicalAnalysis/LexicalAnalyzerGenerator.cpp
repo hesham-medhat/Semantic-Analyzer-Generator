@@ -1,8 +1,8 @@
 #include "LexicalAnalyzerGenerator.h"
 
-LexicalAnalyzerGenerator::LexicalAnalyzerGenerator(std::string *inputFilePath)
-: inputFilePath(inputFilePath) { }
+LexicalAnalyzerGenerator::LexicalAnalyzerGenerator(std::istream& inputStream)
+: inputStream(inputStream) { }
 
-LexicalAnalyzer* LexicalAnalyzerGenerator::buildLexicalAnalyzer() {
+LexicalAnalyzer& LexicalAnalyzerGenerator::buildLexicalAnalyzer() {
     throw "Not Implemented";
 }

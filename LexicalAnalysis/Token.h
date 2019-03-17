@@ -2,8 +2,14 @@
 #define OUR_JAVA_COMPILER_TOKEN_H
 
 
-class Token {
+#include <string>
 
+class Token {
+public:
+    Token(std::string& type);
+private:
+    std::string type;
+    std::string lexeme;
 };
 
 

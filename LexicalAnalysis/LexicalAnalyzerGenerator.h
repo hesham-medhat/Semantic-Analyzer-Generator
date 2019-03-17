@@ -8,14 +8,18 @@
 
 class LexicalAnalyzerGenerator {
 public:
-    // Constructor that takes the path of input file containing rules
-    LexicalAnalyzerGenerator(std::string* inputFilePath);
+    // Constructor that takes the path of input containing rules
+    LexicalAnalyzerGenerator(std::istream& inputStream);
 
     // Generates LexicalAnalyzer according to the given rules
-    LexicalAnalyzer* buildLexicalAnalyzer();
+    LexicalAnalyzer& buildLexicalAnalyzer();
 
 private:
-    const std::string* inputFilePath;
+    const std::istream& inputStream;
+
+    Automaton buildNFA();
+    Automaton convertNFAToDFA(Automaton nfa);
+    Automaton reduceDFA(Automaton dfa);
 };
 
 
