@@ -7,7 +7,10 @@
 
 class NFAState : public State {
 public:
+    NFAState();
     NFAState(Token& acceptedToken);
+
+    void addTransition(char inputChar, State& nextState);
 private:
     std::map<char, std::unordered_set<State&>> transitions;
 };
