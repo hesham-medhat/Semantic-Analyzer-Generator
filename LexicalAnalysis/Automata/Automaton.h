@@ -7,7 +7,8 @@
 #include "State.h"
 
 class Automaton {
-    Automaton(std::istream savedRepresentation);
+public:
+    Automaton(std::istream savedRepresentationStream);
     Automaton(char character);
     // Constructor for character class
     Automaton(char first, char last);
@@ -18,10 +19,13 @@ class Automaton {
     void kleeneClosureOp(Token&);
     void positiveClosureOp(Token&);
 
-    void saveIntoFile();
+    void saveIntoFile(std::ostream stream);
 
     std::shared_ptr<State> startState;
     std::shared_ptr<State> finalState;
+private:
+    // Gets all the states in the automaton in DFS manner
+    std::unordered_map<std::shared_ptr<State>, int> getAllStates();
 };
 
 

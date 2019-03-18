@@ -1,6 +1,7 @@
 #include "Automaton.h"
 #include "NFAState.h"
 
+
 Automaton::Automaton(char character) {
     startState = std::make_shared<NFAState>();
     finalState = std::make_shared<NFAState>();
@@ -65,4 +66,33 @@ void Automaton::positiveClosureOp(Token& acceptedToken) {
 
     startState = newStart;
     finalState = newFinal;
+}
+
+
+void Automaton::saveIntoFile(std::ostream stream) {
+    if (stream.bad()) throw std::runtime_error("Automaton::saveIntoFile passed bad stream");
+
+    if (dynamic_cast<NFAState*>(startState.get()) == nullptr) {
+        stream << "DFA" << std::endl;
+    } else {
+        stream << "NFA" << std::endl;
+    }
+
+    std::unordered_map<std::shared_ptr<State>, int> states = getAllStates();
+    stream << states.size() << std::endl;
+
+    for (auto i = states.begin(); i != states.end(); i++) {
+        stream << i->first->getAcceptedToken().getType() << std::endl;
+    }
+
+    for (auto i = states.begin(); i != states.end(); i++) {
+        for (auto transInput : i->first->viewTransitions()) {
+            for (auto destination : transInput.second)
+                stream << states[i->first] << states[destination] << transInput.first << std::endl;
+        }
+    }
+}
+
+std::unordered_map<std::shared_ptr<State>, int> Automaton::getAllStates() {
+    throw "Not Implemented";
 }

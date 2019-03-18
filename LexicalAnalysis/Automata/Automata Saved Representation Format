@@ -1,0 +1,8 @@
+1 line:
+<"DFA"/"NFA">
+1 line:
+<Number of states S>
+S lines:
+    each line i: <State i acceptedToken's type>
+last T lines where T is the number of transitions:
+    each line t: < S D C; S is source state's number, D is destination state's number, C is transition character>
