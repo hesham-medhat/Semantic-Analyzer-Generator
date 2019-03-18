@@ -8,9 +8,11 @@
 
 class Automaton {
 public:
-    Automaton(std::istream savedRepresentationStream);
+    // Loads
+    Automaton(std::istream& savedRepresentationStream);
+    // Constructor for automaton of a transition
     Automaton(char character);
-    // Constructor for character class
+    // Constructor for automaton of a character class
     Automaton(char first, char last);
 
     // Automata operations passed other automata and acceptance token for final state
@@ -19,13 +21,21 @@ public:
     void kleeneClosureOp(Token&);
     void positiveClosureOp(Token&);
 
+    // Saves automaton according to specification in Automata Saved Representation Foramt.txt
     void saveIntoFile(std::ostream stream);
 
     std::shared_ptr<State> startState;
     std::shared_ptr<State> finalState;
 private:
+    // Loads automaton according to specification in Automata Saved Representation Foramt.txt
+    void loadFromFile(std::istream& stream);
+
     // Gets all the states in the automaton in DFS manner
     std::unordered_map<std::shared_ptr<State>, int> getAllStates();
+
+    // Recursive DFS function that explores states and adds them to collection
+    void explore(std::unordered_map<std::shared_ptr<State>, int>& collection, int* counter);
+
 };
 
 

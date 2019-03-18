@@ -1,6 +1,12 @@
+#include <sstream>
 #include "Automaton.h"
 #include "NFAState.h"
+#include "StateBuilder.h"
 
+Automaton::Automaton(std::istream& savedRepresentationStream) {
+    if (savedRepresentationStream.bad()) throw std::runtime_error("Automaton constructor passed bad stream");
+    loadFromFile(savedRepresentationStream);
+}
 
 Automaton::Automaton(char character) {
     startState = std::make_shared<NFAState>();
@@ -13,7 +19,7 @@ Automaton::Automaton(char first, char last) {
     startState = std::make_shared<NFAState>();
     finalState = std::make_shared<NFAState>();
 
-    if (last < first) throw new std::invalid_argument("AUTOMATON: Bad character class input");
+    if (last < first) throw new std::invalid_argument("Automaton: Bad character class input");
 
     char i = first;
 
@@ -91,6 +97,33 @@ void Automaton::saveIntoFile(std::ostream stream) {
                 stream << states[i->first] << states[destination] << transInput.first << std::endl;
         }
     }
+}
+
+void Automaton::loadFromFile(std::istream& stream) {
+    std::string stateType;
+    size_t totalStates;
+    stream >> stateType;
+    stream >> totalStates;
+
+    std::shared_ptr<State>* states = (std::shared_ptr<State>*) malloc(sizeof(std::shared_ptr<State>) * totalStates);
+
+    std::string buffer;
+    for(int i = 0; i < totalStates; i++) {
+        stream >> buffer;
+        states[i] = StateBuilder::buildState(stateType, buffer);
+    }
+
+    int source, destination;
+    char transitionCharacter;
+    while(!stream.eof()) {
+        stream >> buffer;
+        std::stringstream lineParser(buffer);
+        lineParser >> source >> destination >> transitionCharacter;
+
+        states[source]->addTransition(transitionCharacter, states[destination]);
+    }
+    startState = states[0];
+    finalState = states[1];
 }
 
 std::unordered_map<std::shared_ptr<State>, int> Automaton::getAllStates() {
