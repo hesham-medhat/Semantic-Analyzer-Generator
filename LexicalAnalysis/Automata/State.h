@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <memory>
+#include <vector>
 
 #include "../Token.h"
 
@@ -18,7 +19,7 @@ public:
     std::unordered_set<std::shared_ptr<State>> getNextState(char inputChar);
 
     virtual void addTransition(char inputChar, std::shared_ptr<State> nextState) = 0;
-
+    virtual std::vector<std::pair<char, std::unordered_set<std::shared_ptr<State>>>> viewTransitions() = 0;
 protected:
     const Token acceptedToken;
 };

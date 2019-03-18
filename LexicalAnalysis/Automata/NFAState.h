@@ -2,8 +2,6 @@
 #define OUR_JAVA_COMPILER_NFASTATE_H
 
 
-#include <unordered_map>
-#include <memory>
 #include "State.h"
 
 class NFAState : public State {
@@ -12,6 +10,7 @@ public:
     NFAState(Token& acceptedToken);
 
     void addTransition(char inputChar, std::shared_ptr<State> nextState);
+    std::vector<std::pair<char, std::unordered_set<std::shared_ptr<State>>>> viewTransitions();
 private:
     std::unordered_map<char, std::unordered_set<std::shared_ptr<State>>> transitions;
 };
