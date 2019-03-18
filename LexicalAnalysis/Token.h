@@ -10,6 +10,7 @@ public:
 
     std::string getType();
     std::string getLexeme();
+    std::string setLexeme(std::string&);
 private:
     std::string type;
     std::string lexeme;
