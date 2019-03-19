@@ -12,7 +12,7 @@
 class State {
 public:
     State();
-    State(Token& acceptedToken);
+    explicit State(Token& acceptedToken);
 
     Token getAcceptedToken();
 

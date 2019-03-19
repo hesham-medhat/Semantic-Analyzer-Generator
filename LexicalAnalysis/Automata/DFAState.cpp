@@ -1,6 +1,6 @@
 #include "DFAState.h"
 
-DFAState::DFAState() { }
+DFAState::DFAState() = default;
 
 DFAState::DFAState(Token& acceptedToken) : State(acceptedToken) { }
 

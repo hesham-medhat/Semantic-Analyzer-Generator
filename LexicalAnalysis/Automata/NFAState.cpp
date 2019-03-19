@@ -1,6 +1,6 @@
 #include "NFAState.h"
 
-NFAState::NFAState() { }
+NFAState::NFAState() = default;
 
 NFAState::NFAState(Token& acceptedToken) : State(acceptedToken) { }
 
@@ -19,7 +19,7 @@ std::vector<std::pair<char, std::unordered_set<std::shared_ptr<State>>>> NFAStat
     for (auto transition : transitions) {
         std::pair<char, std::unordered_set<std::shared_ptr<State>>> pair;
         pair.first = transition.first;
-        for (auto destination : transition.second) pair.second.insert(destination);
+        for (auto& destination : transition.second) pair.second.insert(destination);
         view.push_back(pair);
     }
     return view;
@@ -28,7 +28,7 @@ std::vector<std::pair<char, std::unordered_set<std::shared_ptr<State>>>> NFAStat
 
 void NFAState::explore(std::unordered_map<std::shared_ptr<State>, int> &collection, int* counter) {
     for (auto transition : transitions) {
-        for (auto destination : transition.second) {
+        for (auto& destination : transition.second) {
             if (collection.find(destination) == collection.end()) {
                 collection[destination] = (*counter)++;
                 destination->explore(collection, counter);
