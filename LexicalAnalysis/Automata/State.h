@@ -14,14 +14,16 @@ public:
     State();
     State(Token& acceptedToken);
 
-    void setAcceptedToken(Token& acceptedToken);
     Token getAcceptedToken();
-    std::unordered_set<std::shared_ptr<State>> getNextState(char inputChar);
 
+    virtual std::unordered_set<std::shared_ptr<State>> getNextState(char inputChar) = 0;
     virtual void addTransition(char inputChar, std::shared_ptr<State> nextState) = 0;
     virtual std::vector<std::pair<char, std::unordered_set<std::shared_ptr<State>>>> viewTransitions() = 0;
+
+    // Traversal recursive DFS that explores states and adds them to collection incrementing counter
+    virtual void explore(std::unordered_map<std::shared_ptr<State>, int>& collection, int* counter) = 0;
 protected:
-    const Token acceptedToken;
+    Token acceptedToken;
 };
 
 

@@ -8,7 +8,7 @@
 
 class Automaton {
 public:
-    // Loads
+    // Loads automaton from saved representation through given stream
     Automaton(std::istream& savedRepresentationStream);
     // Constructor for automaton of a transition
     Automaton(char character);
@@ -32,10 +32,6 @@ private:
 
     // Gets all the states in the automaton in DFS manner
     std::unordered_map<std::shared_ptr<State>, int> getAllStates();
-
-    // Recursive DFS function that explores states and adds them to collection
-    void explore(std::unordered_map<std::shared_ptr<State>, int>& collection, int* counter);
-
 };
 
 
