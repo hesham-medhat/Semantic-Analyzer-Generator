@@ -9,7 +9,7 @@
 #include "LexicalAnalysis/Automata/StateBuilder.h"
 using namespace std;
 
-unordered_set<shared_ptr<State>> getEpsronClosure(shared_ptr<State> state){
+unordered_set<shared_ptr<State>> getLambdaClosure(shared_ptr<State> state){
 
     //push all states of T onto stack;
     unordered_set<shared_ptr<State>>  states;
@@ -43,7 +43,7 @@ Automaton convertNFAToDFA(Automaton NFA){
     shared_ptr<State> DFAStart = StateBuilder::buildState("DFA","");
     Automaton DFA;
     DFA.startState = DFAStart;
-    unordered_set<shared_ptr<State>> NFAStartEquivalents = getEpsronClosure(NFA.startState);
+    unordered_set<shared_ptr<State>> NFAStartEquivalents = getLambdaClosure(NFA.startState);
 
     pair<shared_ptr<State>, unordered_set<shared_ptr<State>>> pair1(DFAStart,NFAStartEquivalents);
     DFAPairSet.push_back(pair1);
@@ -70,7 +70,7 @@ Automaton convertNFAToDFA(Automaton NFA){
                 unordered_set<shared_ptr<State>> nextSet = NFAState->getNextState(i);
                 for(const auto& nextState : nextSet){
                     newSet.insert(nextState);
-                    unordered_set<shared_ptr<State>> newSetEquivalents = getEpsronClosure(nextState);
+                    unordered_set<shared_ptr<State>> newSetEquivalents = getLambdaClosure(nextState);
                     for(const auto& nextStateEq : newSetEquivalents){
                         newSet.insert(nextStateEq);
                     }
@@ -188,7 +188,7 @@ int main() {
     s3->addTransition(0,s4);
     s2->addTransition(0,s5);
     s5->addTransition(0,s3);
-    unordered_set<shared_ptr<State>> x = getEpsronClosure(s1);
+    unordered_set<shared_ptr<State>> x = getLambdaClosure(s1);
     if(x.find(s1) != x.end()){
         cout<<"1 is true"<<endl;
     }
