@@ -14,6 +14,7 @@ public:
     Automaton(char character);
     // Constructor for automaton of a character class
     Automaton(char first, char last);
+    Automaton();
 
     // Automata operations passed other automata and acceptance token for final state
     void unionOp(Automaton, Token&);

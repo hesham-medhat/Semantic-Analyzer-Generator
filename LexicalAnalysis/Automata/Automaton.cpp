@@ -27,7 +27,7 @@ Automaton::Automaton(char first, char last) {
         startState->addTransition(i, finalState);
     } while (++i < last);
 }
-
+Automaton::Automaton() {}
 
 void Automaton::unionOp(Automaton other, Token& acceptedToken) {
     std::shared_ptr<NFAState> newStart = std::make_shared<NFAState>();
@@ -39,6 +39,7 @@ void Automaton::unionOp(Automaton other, Token& acceptedToken) {
     finalState->addTransition(0, newFinal);
     other.finalState->addTransition(0, newFinal);
 
+    startState = newStart;
     finalState = newFinal;
 }
 

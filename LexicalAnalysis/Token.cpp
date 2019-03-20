@@ -1,6 +1,6 @@
 #include "Token.h"
 
-Token::Token(std::string& type)
+Token::Token(std::string type)
 : type(type) { }
 
 
