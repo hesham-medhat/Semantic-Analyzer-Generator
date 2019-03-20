@@ -23,7 +23,7 @@ public:
     void positiveClosureOp(Token&);
 
     // Saves automaton according to specification in Automata Saved Representation Foramt.txt
-    void saveIntoFile(std::ostream stream);
+    void saveIntoFile(std::ostream& stream);
 
     std::shared_ptr<State> startState;
     std::shared_ptr<State> finalState;
