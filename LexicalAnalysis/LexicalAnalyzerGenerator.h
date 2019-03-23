@@ -2,8 +2,6 @@
 #define OUR_JAVA_COMPILER_LEXICALANALYZERGENERATOR_H
 
 
-#include <string>
-
 #include "LexicalAnalyzer.h"
 
 class LexicalAnalyzerGenerator {
@@ -20,6 +18,26 @@ private:
     Automaton buildNFA();
     Automaton convertNFAToDFA(Automaton nfa);
     Automaton reduceDFA(Automaton dfa);
+
+    int getFormat(std::string token);
+
+    void updateKeywords(std::string token);
+
+    void updatePunctuations(std::string token);
+
+    Automaton* createExpAutomaton(std::string tokenName, std::string token);
+
+    void performOp(std::string tokenName);
+
+    bool isOperation(char op);
+
+    int precedence(char op);
+
+    Automaton* createDefAutomaton(std::string name, std::string token);
+
+    bool isLetter(char c);
+
+    Automaton* getAutomatonForWord(std::string name, std::string token);
 };
 
 
