@@ -10,7 +10,7 @@ public:
     LexicalAnalyzerGenerator(std::istream& inputStream);
 
     // Generates LexicalAnalyzer according to the given rules
-    LexicalAnalyzer& buildLexicalAnalyzer();
+    LexicalAnalyzer buildLexicalAnalyzer();
 
 private:
     const std::istream& inputStream;
@@ -25,7 +25,7 @@ private:
 
     void updatePunctuations(std::string token);
 
-    Automaton* createExpAutomaton(std::string tokenName, std::string token);
+    std::shared_ptr<Automaton> createExpAutomaton(std::string tokenName, std::string token);
 
     void performOp(std::string tokenName);
 
@@ -33,11 +33,11 @@ private:
 
     int precedence(char op);
 
-    Automaton* createDefAutomaton(std::string name, std::string token);
+    std::shared_ptr<Automaton> createDefAutomaton(std::string name, std::string token);
 
     bool isLetter(char c);
 
-    Automaton* getAutomatonForWord(std::string name, std::string token);
+    std::shared_ptr<Automaton> getAutomatonForWord(std::string name, std::string token);
 };
 
 

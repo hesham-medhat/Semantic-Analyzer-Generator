@@ -6,7 +6,7 @@
 
 class Token {
 public:
-    Token(std::string& type);
+    Token(const std::string& type);
 
     std::string getType();
     std::string getLexeme();

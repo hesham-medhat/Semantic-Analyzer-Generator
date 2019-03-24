@@ -18,9 +18,12 @@ int main() {
     std::cin >> programFilePath; // Read input file path
 
     // Build lexical analyzer
+    std::cout << "Starting Lexical Analyzer Generator..." << std::endl;
     LexicalAnalyzerGenerator lexicalAnalyzerGenerator(inputRulesStream);
+    std::cout << "Generating Lexical Analyzer..." << std::endl;
     LexicalAnalyzer lexicalAnalyzer = lexicalAnalyzerGenerator.buildLexicalAnalyzer();
 
+    std::cout << "Analyzing Program..." << std::endl;
     lexicalAnalyzer.analyzeCompleteProgram(programFilePath);
 
     return 0;

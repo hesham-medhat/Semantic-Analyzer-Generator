@@ -1,7 +1,7 @@
 #include "State.h"
 
 State::State()
-: acceptedToken(*(new std::string)) { }
+: acceptedToken("") { }
 
 State::State(Token &acceptedToken)
 : acceptedToken(acceptedToken) { }
