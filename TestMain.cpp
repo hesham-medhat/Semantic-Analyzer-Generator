@@ -243,7 +243,7 @@ Automaton convertNFAToDFA(Automaton NFA){
 
 int main() {
 
-
+/*
     Token t1("if");
     Token nullT("");
     Token t2("iff");
@@ -276,6 +276,7 @@ int main() {
     a1.unionOp(a3,nullT);
     a1.unionOp(a6,nullT);
     Automaton result = convertNFAToDFA(a1);
+*/
 
 /*
     shared_ptr<State> s1 = StateBuilder::buildState("NFA","");
@@ -296,6 +297,40 @@ int main() {
     Automaton result2 = convertNFAToDFA(aa);
 
 */
+
+    shared_ptr<State> s1 = StateBuilder::buildState("NFA","");
+    shared_ptr<State> s2 = StateBuilder::buildState("NFA","");
+    shared_ptr<State> s3 = StateBuilder::buildState("NFA","");
+    shared_ptr<State> s4 = StateBuilder::buildState("NFA","");
+    shared_ptr<State> s5 = StateBuilder::buildState("NFA","");
+    shared_ptr<State> s6 = StateBuilder::buildState("NFA","");
+    shared_ptr<State> s7 = StateBuilder::buildState("NFA","a");
+
+
+    s1->addTransition(0,s2);
+    s1->addTransition(0,s3);
+    s1->addTransition(0,s4);
+
+    s2->addTransition('0',s5);
+    s2->addTransition('1',s5);
+    s2->addTransition(0,s3);
+
+    s3->addTransition('0',s5);
+    s3->addTransition(0,s4);
+
+    s4->addTransition('0',s4);
+    s4->addTransition(0,s2);
+
+    s5->addTransition('0',s4);
+    s5->addTransition('1',s6);
+    s5->addTransition(0,s7);
+
+    s6->addTransition('1',s4);
+    s6->addTransition(0,s7);
+
+    Automaton aa;
+    aa.startState = s1;
+    Automaton result2 = convertNFAToDFA(aa);
 
 
 /*
