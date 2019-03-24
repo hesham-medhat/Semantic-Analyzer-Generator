@@ -40,7 +40,7 @@ LexicalAnalyzerGenerator::LexicalAnalyzerGenerator(std::istream &inputStream)
             case 3:     //definition
             {
                 unsigned int pos = token.find(':');
-                std::string LHS = token.substr(0, pos - 1);
+                std::string LHS = token.substr(0, pos);
                 std::string RHS = token.substr(pos + 1);
                 std::string s = "definition";
                 Token t = Token(s);
@@ -274,7 +274,7 @@ int LexicalAnalyzerGenerator::getFormat(std::string token) {
     char temp = token[0];
     if (temp == '{') return 0;
     if (temp == '[') return 1;
-    int i = -1;
+    int i = 0;
     while (++i) {
         if (token[i] == '=') return 2;
         if (token[i] == ':') return 3;
@@ -338,10 +338,10 @@ std::shared_ptr<Automaton> LexicalAnalyzerGenerator::createExpAutomaton(std::str
             prevIsOperand = true;
 
         } else if (token[i] == '(') {
-            operators.push(token[i]);
             if (prevIsOperand)
                 operators.push('.');
             prevIsOperand = false;
+            operators.push(token[i]);
 
         } else if (token[i] == ')') {
             while (!operators.empty() && operators.top() != '(') {
@@ -410,9 +410,12 @@ bool LexicalAnalyzerGenerator::isOperation(char op) {
 
 int LexicalAnalyzerGenerator::precedence(char op) {
     if (op == '.')
-        return 1;
-    if (op == '+' || op == '*')
         return 2;
+    if (op == '+' || op == '*')
+        return 3;
+    if(op=='|')
+        return 1;
+
     return 0;
 }
 
@@ -449,10 +452,10 @@ std::shared_ptr<Automaton> LexicalAnalyzerGenerator::createDefAutomaton(std::str
                 prevIsOperand = true;
 
             } else if (token[i] == '(') {
-                operators.push(token[i]);
                 if (prevIsOperand)
                     operators.push('.');
                 prevIsOperand = false;
+                operators.push(token[i]);
             } else if (token[i] == ')') {
                 while (!operators.empty() && operators.top() != '(') {
                     performOp(name);
