@@ -37,6 +37,7 @@ void LexicalAnalyzer::analyzeCompleteProgram(std::string& programFilePath) {
       output << lastMatchedToken << std::endl;
       anchor = lastMatchedPos;
       input.seekg(anchor);
+      currentToken.clear();
       lastMatchedToken = "";
       lastMatchedPos = -1;
       currentState = languageAutomaton.startState;

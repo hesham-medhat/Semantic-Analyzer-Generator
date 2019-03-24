@@ -265,7 +265,7 @@ Automaton LexicalAnalyzerGenerator::convertNFAToDFA(Automaton NFA){
             }
         }
     }
-    minimizeDFA(AllDFAStates);
+    //minimizeDFA(AllDFAStates);
     return DFA;
 }
 
