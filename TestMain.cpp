@@ -75,48 +75,63 @@ Automaton minimizeDFA(unordered_set<shared_ptr<State>> AllDFAStates) {
         for (auto &group: groupSet) {
             unordered_set<shared_ptr<State>> checked;
             for (auto &state: group) {
-                unordered_set<shared_ptr<State>> newGroup;
-                newGroup.insert(state);
-                checked.insert(state);
-                for (auto &otherState: group) {
-                    if (checked.find(otherState) == checked.end()) {
-                        bool isMatch = true;
-                        /*vector<char> vector1;
-                        vector1.push_back('i');
-                        vector1.push_back('f');
-                        vector1.push_back('e');
-                        vector1.push_back('l');
-                        vector1.push_back('s');
-                        for(const auto& i: vector1 ){
-                        */
-                        for (int i = 1; i < 256; i++) {
-                            unordered_set<shared_ptr<State>> transition1 = state->getNextState(i);
-                            unordered_set<shared_ptr<State>> transition2 = otherState->getNextState(i);
-                            if (transition1.size() != transition2.size()) {
-                                isMatch = false;
-                                break;
-                            }
-                            if (transition1.size() != 0) {
-                                for (auto &nextSate: transition1) {
+                if (checked.find(state) == checked.end()) {
+                    unordered_set<shared_ptr<State>> newGroup;
+                    newGroup.insert(state);
+                    checked.insert(state);
+                    for (auto &otherState: group) {
+                        if (checked.find(otherState) == checked.end()) {
+                            bool isMatch = true;
+                            //vector<char> vector1;
+                            //vector1.push_back('0');
+                            //vector1.push_back('1');
+                            /*vector1.push_back('i');
+                            vector1.push_back('f');
+                            vector1.push_back('e');
+                            vector1.push_back('l');
+                            vector1.push_back('s');
+                            */
+                            //for(const auto& i: vector1 ){
+                            for (int i = 1; i < 256; i++) {
+                                unordered_set<shared_ptr<State>> transition1 = state->getNextState(i);
+                                unordered_set<shared_ptr<State>> transition2 = otherState->getNextState(i);
+                                if (transition1.size() != transition2.size()) {
+                                    isMatch = false;
+                                    break;
+                                }
+                                for (auto &nextState: transition1) {
+                                    unordered_set<shared_ptr<State>>nextStateGroup;
+                                    for(auto &oldGroup: groupSet){
+                                        if(oldGroup.find(nextState) != oldGroup.end()){
+                                            nextStateGroup = oldGroup;
+                                        }
+                                    }
                                     for (auto &otherNextState: transition2) {
-                                        if (nextSate != otherNextState) {
+                                        unordered_set<shared_ptr<State>>otherNextStateGroup;
+                                        for(auto &oldGroup: groupSet){
+                                            if(oldGroup.find(otherNextState) != oldGroup.end()){
+                                                otherNextStateGroup = oldGroup;
+                                            }
+                                        }
+                                        if (nextStateGroup != otherNextStateGroup) {
                                             isMatch = false;
                                         }
                                     }
                                 }
+
+                                if(!isMatch){
+                                    break;
+                                }
                             }
-                            if(!isMatch){
-                                break;
+                            if (isMatch) {
+                                newGroup.insert(otherState);
+                                // group.erase(otherState);
+                                checked.insert(otherState);
                             }
-                        }
-                        if (isMatch) {
-                            newGroup.insert(otherState);
-                            // group.erase(otherState);
-                            checked.insert(state);
                         }
                     }
+                    newGroupSet.push_back(newGroup);
                 }
-                newGroupSet.push_back(newGroup);
             }
         }
         cout<<newGroupSet.size()<<endl;
@@ -166,10 +181,10 @@ Automaton convertNFAToDFA(Automaton NFA){
 
         //int i =105;
         //vector<char> vector1;
-        //vector1.push_back('i');
-        //vector1.push_back('f');
+        //vector1.push_back('0');
+        //vector1.push_back('1');
         for(int i = 1; i < 256; i++){
-            //for(const auto& i: vector1 ){
+        //for(const auto& i: vector1 ){
             unordered_set<shared_ptr<State>> newSet;
             for(const auto& NFAState : currentSet){
                 unordered_set<shared_ptr<State>> nextSet = NFAState->getNextState(i);
@@ -181,9 +196,11 @@ Automaton convertNFAToDFA(Automaton NFA){
                     }
                 }
             }
-            bool allFonded = false;
+            bool notFounded = true;
             for(const auto&  DFAPair: DFAPairSet){
+                bool allFounded = false;
                 if(newSet.size() == DFAPair.second.size()){
+                    allFounded = true;
                     for(const auto&  newState: newSet){
                         bool founded = false;
                         for(const auto&  currentState: DFAPair.second){
@@ -192,15 +209,16 @@ Automaton convertNFAToDFA(Automaton NFA){
                                 break;
                             }
                         }
-                        allFonded &= founded;
+                        allFounded &= founded;
                     }
                 }
-                if(allFonded ){
+                if(allFounded ){
+                    notFounded = false;
                     CurrentDFAPair.first->addTransition(i,DFAPair.first);
                     break;
                 }
             }
-            if(!allFonded && newSet.size() != 0){
+            if(notFounded && newSet.size() != 0){
                 //still need to find most priority token
                 shared_ptr<State> newDFAState = StateBuilder::buildState("DFA","");
                 for(const auto&  newState: newSet){
@@ -224,6 +242,7 @@ Automaton convertNFAToDFA(Automaton NFA){
 
 
 int main() {
+
 
     Token t1("if");
     Token nullT("");
@@ -256,11 +275,28 @@ int main() {
 
     a1.unionOp(a3,nullT);
     a1.unionOp(a6,nullT);
-
     Automaton result = convertNFAToDFA(a1);
-    //ofstream outfile;
-    //outfile.open("file.txt", ios::out );
-    //result.saveIntoFile(outfile);
+
+/*
+    shared_ptr<State> s1 = StateBuilder::buildState("NFA","");
+    shared_ptr<State> s2 = StateBuilder::buildState("NFA","a");
+    shared_ptr<State> s3 = StateBuilder::buildState("NFA","");
+    shared_ptr<State> s4 = StateBuilder::buildState("NFA","a");
+    s1->addTransition('0',s2);
+    s1->addTransition('0',s4);
+    s2->addTransition('1',s1);
+    s2->addTransition('1',s4);
+    s3->addTransition('1',s3);
+    s3->addTransition('0',s2);
+    s4->addTransition('0',s3);
+    s4->addTransition('1',s3);
+
+    Automaton aa;
+    aa.startState = s1;
+    Automaton result2 = convertNFAToDFA(aa);
+
+*/
+
 
 /*
     unordered_map<char, unordered_set<shared_ptr<State>>> unordered_map1;
@@ -327,6 +363,7 @@ int main() {
 
 
 
+    /*
     set<string> set1;
     set1.insert("a");
     set1.insert("c");
@@ -342,6 +379,8 @@ int main() {
     }
 
     //cout<< set1.size();
+    */
+
     return 0;
 
 

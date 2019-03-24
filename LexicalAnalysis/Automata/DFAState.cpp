@@ -7,7 +7,9 @@ DFAState::DFAState(Token& acceptedToken) : State(acceptedToken) { }
 
 std::unordered_set<std::shared_ptr<State>> DFAState::getNextState(char inputChar) {
     std::unordered_set<std::shared_ptr<State>> resultSet;
-    resultSet.insert(transitions[inputChar]);
+    if(transitions[inputChar] != NULL) {
+        resultSet.insert(transitions[inputChar]);
+    }
     return resultSet;
 }
 
