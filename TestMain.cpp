@@ -67,26 +67,29 @@ Automaton minimizeDFA(unordered_set<shared_ptr<State>> AllDFAStates) {
     }
 
 
-
+    cout<<groupSet.size()<<endl;
     bool noSplit = false;
 
     while (!noSplit) {
         vector<unordered_set<shared_ptr<State>>> newGroupSet;
         for (auto &group: groupSet) {
-            unordered_set<shared_ptr<State>> newGroup;
+            unordered_set<shared_ptr<State>> checked;
             for (auto &state: group) {
+                unordered_set<shared_ptr<State>> newGroup;
                 newGroup.insert(state);
+                checked.insert(state);
                 for (auto &otherState: group) {
-                    if (state != otherState) {
+                    if (checked.find(otherState) == checked.end()) {
                         bool isMatch = true;
-                        vector<char> vector1;
+                        /*vector<char> vector1;
                         vector1.push_back('i');
                         vector1.push_back('f');
                         vector1.push_back('e');
                         vector1.push_back('l');
                         vector1.push_back('s');
                         for(const auto& i: vector1 ){
-                        //for (int i = 1; i < 256 && isMatch; i++) {
+                        */
+                        for (int i = 1; i < 256; i++) {
                             unordered_set<shared_ptr<State>> transition1 = state->getNextState(i);
                             unordered_set<shared_ptr<State>> transition2 = otherState->getNextState(i);
                             if (transition1.size() != transition2.size()) {
@@ -108,22 +111,22 @@ Automaton minimizeDFA(unordered_set<shared_ptr<State>> AllDFAStates) {
                         }
                         if (isMatch) {
                             newGroup.insert(otherState);
-                            group.erase(otherState);
+                            // group.erase(otherState);
+                            checked.insert(state);
                         }
                     }
                 }
                 newGroupSet.push_back(newGroup);
             }
-            cout<<newGroupSet.size()<<endl;
-            //newGroupSet.push_back(newGroup);
         }
+        cout<<newGroupSet.size()<<endl;
         if(newGroupSet.size() == groupSet.size()){
             noSplit = true;
         } else {
             groupSet = newGroupSet;
         }
     }
-    cout<<groupSet.size()<<endl;
+    //cout<<groupSet.size()<<endl;
     Automaton a;
     return a;
 }
@@ -155,7 +158,7 @@ Automaton convertNFAToDFA(Automaton NFA){
     DFAStack.push(pair1);
     int counter = 1;
     while (!DFAStack.empty()){
-        cout<< counter++<<endl;
+        //cout<< counter++<<endl;
 
         pair<shared_ptr<State>, unordered_set<shared_ptr<State>>> CurrentDFAPair =DFAStack.top();
         unordered_set<shared_ptr<State>> currentSet = CurrentDFAPair.second;
@@ -330,7 +333,7 @@ int main() {
     set1.insert("b");
     int counter = 0;
     for(auto&  newState: set1){
-        cout<<counter++<<endl;
+        //cout<<counter++<<endl;
         for(auto&  newState2: set1){
             if(newState2 == "c"){
                 set1.erase(newState2);
@@ -338,7 +341,7 @@ int main() {
         }
     }
 
-    cout<< set1.size();
+    //cout<< set1.size();
     return 0;
 
 
