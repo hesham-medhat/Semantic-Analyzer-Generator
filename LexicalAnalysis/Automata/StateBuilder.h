@@ -6,7 +6,7 @@
 
 class StateBuilder {
 public:
-    static std::shared_ptr<State> buildState(std::string& stateType, std::string tokenType);
+    static std::shared_ptr<State> buildState(std::string stateType, std::string tokenType);
 private:
     // Prevent instantiating as it is unnecessary
     StateBuilder();

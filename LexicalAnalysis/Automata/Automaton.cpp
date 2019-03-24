@@ -27,7 +27,7 @@ Automaton::Automaton(char first, char last) {
         startState->addTransition(i, finalState);
     } while (++i < last);
 }
-
+Automaton::Automaton() {}
 
 void Automaton::unionOp(Automaton other, Token& acceptedToken) {
     std::shared_ptr<NFAState> newStart = std::make_shared<NFAState>();
@@ -39,6 +39,7 @@ void Automaton::unionOp(Automaton other, Token& acceptedToken) {
     finalState->addTransition(0, newFinal);
     other.finalState->addTransition(0, newFinal);
 
+    startState = newStart;
     finalState = newFinal;
 }
 
@@ -48,7 +49,8 @@ void Automaton::concatenateOp(Automaton other, Token& acceptedToken) {
     finalState->addTransition(0, other.startState);
     other.finalState->addTransition(0, newFinal);
 
-    other.finalState = newFinal;
+    //other.finalState = newFinal;
+    finalState = newFinal;
 }
 
 void Automaton::kleeneClosureOp(Token& acceptedToken) {
@@ -75,7 +77,7 @@ void Automaton::positiveClosureOp(Token& acceptedToken) {
 }
 
 
-void Automaton::saveIntoFile(std::ostream stream) {
+void Automaton::saveIntoFile(std::ostream& stream) {
     if (stream.bad()) throw std::runtime_error("Automaton::saveIntoFile passed bad stream");
 
     if (dynamic_cast<NFAState*>(startState.get()) == nullptr) {

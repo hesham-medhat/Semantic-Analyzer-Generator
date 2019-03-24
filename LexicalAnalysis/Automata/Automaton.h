@@ -14,6 +14,7 @@ public:
     Automaton(char character);
     // Constructor for automaton of a character class
     Automaton(char first, char last);
+    Automaton();
 
     // Automata operations passed other automata and acceptance token for final state
     void unionOp(Automaton, Token&);
@@ -22,7 +23,7 @@ public:
     void positiveClosureOp(Token&);
 
     // Saves automaton according to specification in Automata Saved Representation Foramt.txt
-    void saveIntoFile(std::ostream stream);
+    void saveIntoFile(std::ostream& stream);
 
     std::shared_ptr<State> startState;
     std::shared_ptr<State> finalState;

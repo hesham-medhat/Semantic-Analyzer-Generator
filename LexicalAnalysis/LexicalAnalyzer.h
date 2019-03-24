@@ -9,7 +9,7 @@
 
 class LexicalAnalyzer {
 public:
-    LexicalAnalyzer(Automaton& languageAutomaton);
+    LexicalAnalyzer(const Automaton& languageAutomaton);
     LexicalAnalyzer(std::istream& inputDFAStream);
 
     // Analyzes given program as a whole generating output at once

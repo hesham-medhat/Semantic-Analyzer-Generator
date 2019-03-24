@@ -2,7 +2,7 @@
 #include <fstream>
 #include "LexicalAnalyzer.h"
 
-LexicalAnalyzer::LexicalAnalyzer(Automaton& languageAutomaton)
+LexicalAnalyzer::LexicalAnalyzer(const Automaton& languageAutomaton)
 : languageAutomaton(languageAutomaton) { }
 
 LexicalAnalyzer::LexicalAnalyzer(std::istream& inputDFAStream)
