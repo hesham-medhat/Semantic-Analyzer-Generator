@@ -9,6 +9,7 @@
 #include "LexicalAnalysis/Automata/StateBuilder.h"
 using namespace std;
 
+/*
 unordered_set<shared_ptr<State>> getLambdaClosure(shared_ptr<State> state){
 
     //push all states of T onto stack;
@@ -219,9 +220,11 @@ Automaton convertNFAToDFA(Automaton NFA){
 }
 
 
+*/
 
 int main() {
 
+/*
     Token t1("if");
     Token nullT("");
     Token t2("iff");
@@ -253,11 +256,63 @@ int main() {
 
     a1.unionOp(a3,nullT);
     a1.unionOp(a6,nullT);
-
     Automaton result = convertNFAToDFA(a1);
-    //ofstream outfile;
-    //outfile.open("file.txt", ios::out );
-    //result.saveIntoFile(outfile);
+*/
+
+/*
+    shared_ptr<State> s1 = StateBuilder::buildState("NFA","");
+    shared_ptr<State> s2 = StateBuilder::buildState("NFA","a");
+    shared_ptr<State> s3 = StateBuilder::buildState("NFA","");
+    shared_ptr<State> s4 = StateBuilder::buildState("NFA","a");
+    s1->addTransition('0',s2);
+    s1->addTransition('0',s4);
+    s2->addTransition('1',s1);
+    s2->addTransition('1',s4);
+    s3->addTransition('1',s3);
+    s3->addTransition('0',s2);
+    s4->addTransition('0',s3);
+    s4->addTransition('1',s3);
+
+    Automaton aa;
+    aa.startState = s1;
+    Automaton result2 = convertNFAToDFA(aa);
+
+*/
+
+    shared_ptr<State> s1 = StateBuilder::buildState("NFA","");
+    shared_ptr<State> s2 = StateBuilder::buildState("NFA","");
+    shared_ptr<State> s3 = StateBuilder::buildState("NFA","");
+    shared_ptr<State> s4 = StateBuilder::buildState("NFA","");
+    shared_ptr<State> s5 = StateBuilder::buildState("NFA","");
+    shared_ptr<State> s6 = StateBuilder::buildState("NFA","");
+    shared_ptr<State> s7 = StateBuilder::buildState("NFA","a");
+
+
+    s1->addTransition(0,s2);
+    s1->addTransition(0,s3);
+    s1->addTransition(0,s4);
+
+    s2->addTransition('0',s5);
+    s2->addTransition('1',s5);
+    s2->addTransition(0,s3);
+
+    s3->addTransition('0',s5);
+    s3->addTransition(0,s4);
+
+    s4->addTransition('0',s4);
+    s4->addTransition(0,s2);
+
+    s5->addTransition('0',s4);
+    s5->addTransition('1',s6);
+    s5->addTransition(0,s7);
+
+    s6->addTransition('1',s4);
+    s6->addTransition(0,s7);
+
+    Automaton aa;
+    aa.startState = s1;
+    //Automaton result2 = convertNFAToDFA(aa);
+
 
 /*
     unordered_map<char, unordered_set<shared_ptr<State>>> unordered_map1;
@@ -324,13 +379,14 @@ int main() {
 
 
 
+    /*
     set<string> set1;
     set1.insert("a");
     set1.insert("c");
     set1.insert("b");
     int counter = 0;
     for(auto&  newState: set1){
-        cout<<counter++<<endl;
+        //cout<<counter++<<endl;
         for(auto&  newState2: set1){
             if(newState2 == "c"){
                 set1.erase(newState2);
@@ -338,12 +394,12 @@ int main() {
         }
     }
 
-    cout<< set1.size();
+    //cout<< set1.size();
+    */
+
     return 0;
 
 
 
 }
 
-
-//khalid priority

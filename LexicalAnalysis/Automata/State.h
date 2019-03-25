@@ -6,6 +6,7 @@
 #include <unordered_set>
 #include <memory>
 #include <vector>
+#include <climits>
 
 #include "../Token.h"
 

@@ -3,20 +3,27 @@
 
 
 #include "LexicalAnalyzer.h"
+#include <stack>
+#include <queue>
+#include <string.h>
+#include <climits>
+using namespace std;
 
 class LexicalAnalyzerGenerator {
 public:
     // Constructor that takes the path of input containing rules
-    LexicalAnalyzerGenerator(std::istream& inputStream);
+    LexicalAnalyzerGenerator(std::istream &inputStream);
 
     // Generates LexicalAnalyzer according to the given rules
     LexicalAnalyzer buildLexicalAnalyzer();
 
 private:
-    const std::istream& inputStream;
+    const std::istream &inputStream;
 
     Automaton buildNFA();
-    Automaton convertNFAToDFA(Automaton nfa);
+
+    Automaton convertNFAToDFA(Automaton NFA);
+
     Automaton reduceDFA(Automaton dfa);
 
     int getFormat(std::string token);
@@ -27,7 +34,7 @@ private:
 
     std::shared_ptr<Automaton> createExpAutomaton(std::string tokenName, std::string token);
 
-    void performOp(Token& t);
+    void performOp(Token &t);
 
     bool isOperation(char op);
 
@@ -37,8 +44,11 @@ private:
 
     bool isLetter(char c);
 
-    std::shared_ptr<Automaton> getAutomatonForWord(std::string name, std::string token,int priority);
-};
+    std::shared_ptr<Automaton> getAutomatonForWord(std::string name, std::string token, int priority);
 
+    unordered_set<shared_ptr<State>> getLambdaClosure(shared_ptr<State> state);
+
+    Automaton minimizeDFA(unordered_set<shared_ptr<State>> AllDFAStates, shared_ptr<State> startState);
+};
 
 #endif
