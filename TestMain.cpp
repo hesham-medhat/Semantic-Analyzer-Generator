@@ -36,7 +36,7 @@ unordered_set<shared_ptr<State>> getLambdaClosure(shared_ptr<State> state){
     return result;
 }
 
-Automaton minimizeDFA(unordered_set<shared_ptr<State>> AllDFAStates) {
+Automaton minimizeDFA(unordered_set<shared_ptr<State>> AllDFAStates,shared_ptr<State> startState) {
     vector<unordered_set<shared_ptr<State>>> groupSet;
 
     for (auto &originalState: AllDFAStates) {
@@ -67,7 +67,7 @@ Automaton minimizeDFA(unordered_set<shared_ptr<State>> AllDFAStates) {
     }
 
 
-    cout<<groupSet.size()<<endl;
+    //cout<<groupSet.size()<<endl;
     bool noSplit = false;
 
     while (!noSplit) {
@@ -134,7 +134,7 @@ Automaton minimizeDFA(unordered_set<shared_ptr<State>> AllDFAStates) {
                 }
             }
         }
-        cout<<newGroupSet.size()<<endl;
+        //cout<<newGroupSet.size()<<endl;
         if(newGroupSet.size() == groupSet.size()){
             noSplit = true;
         } else {
@@ -142,7 +142,53 @@ Automaton minimizeDFA(unordered_set<shared_ptr<State>> AllDFAStates) {
         }
     }
     //cout<<groupSet.size()<<endl;
+
+
+    vector<pair<unordered_set<shared_ptr<State>>,shared_ptr<State>>> newDFAAndGroupsPairSet;
+    shared_ptr<State> newStartState;
+    for (auto &group: groupSet) {
+        shared_ptr<State> DFAState;
+        for (auto &groupState: group) {
+            DFAState = StateBuilder::buildState("DFA",groupState->getAcceptedToken().getType());
+            break;
+        }
+        for (auto &groupState: group) {
+            if(groupState == startState){
+                newStartState = DFAState;
+            }
+        }
+        pair<unordered_set<shared_ptr<State>>,shared_ptr<State>> pair1(group,DFAState);
+        newDFAAndGroupsPairSet.push_back(pair1);
+    }
+
+    for (auto &pair: newDFAAndGroupsPairSet) {
+        for (auto &groupState: pair.first) {
+            for (int i = 1; i < 256; i++) {
+                unordered_set<shared_ptr<State>> transition = groupState->getNextState(i);
+                for (auto &nextState: transition) {
+                    bool founded = false;
+                    for (auto &otherPair: newDFAAndGroupsPairSet) {
+                        for (auto &groupState: otherPair.first) {
+                            if(nextState == groupState){
+                                pair.second->addTransition(i,otherPair.second);
+                                founded =true;
+                                break;
+                            }
+                        }
+                        if(founded){
+                            break;
+                        }
+                    }
+                }
+            }
+            break;
+        }
+    }
+
+
+
     Automaton a;
+    a.startState = newStartState;
     return a;
 }
 
@@ -161,8 +207,8 @@ Automaton convertNFAToDFA(Automaton NFA){
             break;
         }
     }
-    Automaton DFA;
-    DFA.startState = DFAStart;
+    //Automaton DFA;
+    //DFA.startState = DFAStart;
     AllDFAStates.insert(DFAStart);
 
     pair<shared_ptr<State>, unordered_set<shared_ptr<State>>> pair1(DFAStart,NFAStartEquivalents);
@@ -235,7 +281,8 @@ Automaton convertNFAToDFA(Automaton NFA){
             }
         }
     }
-    minimizeDFA(AllDFAStates);
+    Automaton DFA;
+    DFA = minimizeDFA(AllDFAStates,DFAStart);
     return DFA;
 }
 
@@ -243,7 +290,7 @@ Automaton convertNFAToDFA(Automaton NFA){
 
 int main() {
 
-/*
+
     Token t1("if");
     Token nullT("");
     Token t2("iff");
@@ -276,7 +323,7 @@ int main() {
     a1.unionOp(a3,nullT);
     a1.unionOp(a6,nullT);
     Automaton result = convertNFAToDFA(a1);
-*/
+
 
 /*
     shared_ptr<State> s1 = StateBuilder::buildState("NFA","");
