@@ -1,5 +1,6 @@
 #include <sstream>
 #include "Automaton.h"
+#include "DFAState.h"
 #include "NFAState.h"
 #include "StateBuilder.h"
 
@@ -96,6 +97,7 @@ void Automaton::saveIntoFile(std::ostream& stream) {
     }
 
     for (int i = 0; i < states.size(); i++) {
+      if(statesArray[i])
         stream << statesArray[i]->getAcceptedToken().getType() << std::endl;
     }
 
@@ -114,7 +116,13 @@ void Automaton::loadFromFile(std::istream& stream) {
     stream >> stateType;
     stream >> totalStates;
 
-    std::shared_ptr<State>* states = (std::shared_ptr<State>*) malloc(sizeof(std::shared_ptr<State>) * totalStates);
+    std::vector<std::shared_ptr<State>> states(totalStates);
+    if (stateType == "DFA")
+      for (auto& it : states)
+        it = std::make_shared<DFAState>();
+    else
+      for (auto& it : states)
+        it = std::make_shared<NFAState>();
 
     std::string buffer;
     for(int i = 0; i < totalStates; i++) {
@@ -125,7 +133,7 @@ void Automaton::loadFromFile(std::istream& stream) {
     int source, destination;
     char transitionCharacter;
     while(!stream.eof()) {
-        stream >> buffer;
+        getline(stream, buffer);
         std::stringstream lineParser(buffer);
         lineParser >> source >> destination >> transitionCharacter;
 
