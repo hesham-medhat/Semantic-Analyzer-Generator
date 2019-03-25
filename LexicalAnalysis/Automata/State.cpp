@@ -1,7 +1,7 @@
 #include "State.h"
 
 State::State()
-: acceptedToken("") { }
+: acceptedToken("", INT_MAX) { }
 
 State::State(Token &acceptedToken)
 : acceptedToken(acceptedToken) { }

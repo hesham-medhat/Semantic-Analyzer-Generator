@@ -15,6 +15,7 @@ LexicalAnalyzerGenerator::LexicalAnalyzerGenerator(std::istream &inputStream)
         : inputStream(inputStream) {
     std::string token;
     std::getline(inputStream, token);
+    int priority = 0;
     while (!token.empty()) {
         int format = getFormat(token);
         switch (format) {
@@ -33,7 +34,7 @@ LexicalAnalyzerGenerator::LexicalAnalyzerGenerator(std::istream &inputStream)
                 unsigned int pos = token.find('=');
                 std::string LHS = token.substr(0, (pos - 1));
                 std::string RHS = token.substr(pos + 1);
-                std::shared_ptr<Automaton>a = createExpAutomaton(LHS, RHS);
+                std::shared_ptr<Automaton> a = createExpAutomaton(LHS, RHS);
                 automatons.insert(std::make_pair(LHS, a));
                 break;
             }
@@ -42,9 +43,8 @@ LexicalAnalyzerGenerator::LexicalAnalyzerGenerator(std::istream &inputStream)
                 unsigned int pos = token.find(':');
                 std::string LHS = token.substr(0, pos);
                 std::string RHS = token.substr(pos + 1);
-                std::string s = "definition";
-                Token t = Token(s);
-                automaton.unionOp(*createDefAutomaton(LHS, RHS), t);
+                Token t = Token("", INT_MAX);
+                automaton.unionOp(*createDefAutomaton(LHS, RHS, ++priority), t);
 
 
                 break;
@@ -63,25 +63,25 @@ LexicalAnalyzerGenerator::LexicalAnalyzerGenerator(std::istream &inputStream)
 
 using namespace std;
 
-unordered_set<shared_ptr<State>> getLambdaClosure(shared_ptr<State> state){
+unordered_set<shared_ptr<State>> getLambdaClosure(shared_ptr<State> state) {
 
     //push all states of T onto stack;
-    unordered_set<shared_ptr<State>>  states;
+    unordered_set<shared_ptr<State>> states;
     states = state->getNextState(0);
     stack<shared_ptr<State>> s;
-    unordered_set<shared_ptr<State>>  result;
+    unordered_set<shared_ptr<State>> result;
     result.insert(state);
-    for (const auto& elem: states) {
+    for (const auto &elem: states) {
         s.push(elem);
         result.insert(elem);
     }
     while (s.size() != 0) {
         shared_ptr<State> temp = s.top();
         s.pop();
-        unordered_set<shared_ptr<State>>  near;
+        unordered_set<shared_ptr<State>> near;
         near = temp->getNextState(0);
-        for (const auto& elem: near) {
-            if(result.find(elem) == result.end()){
+        for (const auto &elem: near) {
+            if (result.find(elem) == result.end()) {
                 s.push(elem);
                 result.insert(elem);
             }
@@ -104,11 +104,11 @@ Automaton minimizeDFA(unordered_set<shared_ptr<State>> AllDFAStates) {
                         break;
                     }
                 }
-                if(!noMatch){
+                if (!noMatch) {
                     break;
                 }
             }
-            if(noMatch) {
+            if (noMatch) {
                 unordered_set<shared_ptr<State>> newGroup;
                 newGroup.insert(originalState);
                 groupSet.push_back(newGroup);
@@ -119,7 +119,6 @@ Automaton minimizeDFA(unordered_set<shared_ptr<State>> AllDFAStates) {
             groupSet.push_back(newGroup);
         }
     }
-
 
 
     bool noSplit = false;
@@ -139,8 +138,8 @@ Automaton minimizeDFA(unordered_set<shared_ptr<State>> AllDFAStates) {
                         vector1.push_back('e');
                         vector1.push_back('l');
                         vector1.push_back('s');
-                        for(const auto& i: vector1 ){
-                        //for (int i = 1; i < 256 && isMatch; i++) {
+                        for (const auto &i: vector1) {
+                            //for (int i = 1; i < 256 && isMatch; i++) {
                             unordered_set<shared_ptr<State>> transition1 = state->getNextState(i);
                             unordered_set<shared_ptr<State>> transition2 = otherState->getNextState(i);
                             if (transition1.size() != transition2.size()) {
@@ -156,7 +155,7 @@ Automaton minimizeDFA(unordered_set<shared_ptr<State>> AllDFAStates) {
                                     }
                                 }
                             }
-                            if(!isMatch){
+                            if (!isMatch) {
                                 break;
                             }
                         }
@@ -170,7 +169,7 @@ Automaton minimizeDFA(unordered_set<shared_ptr<State>> AllDFAStates) {
             }
             //newGroupSet.push_back(newGroup);
         }
-        if(newGroupSet.size() == groupSet.size()){
+        if (newGroupSet.size() == groupSet.size()) {
             noSplit = true;
         } else {
             groupSet = newGroupSet;
@@ -180,17 +179,17 @@ Automaton minimizeDFA(unordered_set<shared_ptr<State>> AllDFAStates) {
     return a;
 }
 
-Automaton LexicalAnalyzerGenerator::convertNFAToDFA(Automaton NFA){
+Automaton LexicalAnalyzerGenerator::convertNFAToDFA(Automaton NFA) {
     //unordered_set<pair<shared_ptr<State>, unordered_set<shared_ptr<State>>>> DFAPairSet;
     vector<pair<shared_ptr<State>, unordered_set<shared_ptr<State>>>> DFAPairSet;
     unordered_set<shared_ptr<State>> AllDFAStates;
 
 
     unordered_set<shared_ptr<State>> NFAStartEquivalents = getLambdaClosure(NFA.startState);
-    shared_ptr<State> DFAStart = StateBuilder::buildState("DFA","");
-    for(const auto&  newState: NFAStartEquivalents){
+    shared_ptr<State> DFAStart = StateBuilder::buildState("DFA", "");
+    for (const auto &newState: NFAStartEquivalents) {
         //still need to find most priority token
-        if(newState->getAcceptedToken().getType() != ""){
+        if (newState->getAcceptedToken().getType() != "") {
             DFAStart = StateBuilder::buildState("DFA", newState->getAcceptedToken().getType());
             break;
         }
@@ -199,16 +198,16 @@ Automaton LexicalAnalyzerGenerator::convertNFAToDFA(Automaton NFA){
     DFA.startState = DFAStart;
     AllDFAStates.insert(DFAStart);
 
-    pair<shared_ptr<State>, unordered_set<shared_ptr<State>>> pair1(DFAStart,NFAStartEquivalents);
+    pair<shared_ptr<State>, unordered_set<shared_ptr<State>>> pair1(DFAStart, NFAStartEquivalents);
     DFAPairSet.push_back(pair1);
     //DFAPairSet.insert(pair1);
 
     stack<pair<shared_ptr<State>, unordered_set<shared_ptr<State>>>> DFAStack;
     DFAStack.push(pair1);
     int counter = 1;
-    while (!DFAStack.empty()){
+    while (!DFAStack.empty()) {
 
-        pair<shared_ptr<State>, unordered_set<shared_ptr<State>>> CurrentDFAPair =DFAStack.top();
+        pair<shared_ptr<State>, unordered_set<shared_ptr<State>>> CurrentDFAPair = DFAStack.top();
         unordered_set<shared_ptr<State>> currentSet = CurrentDFAPair.second;
         DFAStack.pop();
 
@@ -216,26 +215,26 @@ Automaton LexicalAnalyzerGenerator::convertNFAToDFA(Automaton NFA){
         //vector<char> vector1;
         //vector1.push_back('i');
         //vector1.push_back('f');
-        for(int i = 1; i < 256; i++){
+        for (int i = 1; i < 256; i++) {
             //for(const auto& i: vector1 ){
             unordered_set<shared_ptr<State>> newSet;
-            for(const auto& NFAState : currentSet){
+            for (const auto &NFAState : currentSet) {
                 unordered_set<shared_ptr<State>> nextSet = NFAState->getNextState(i);
-                for(const auto& nextState : nextSet){
+                for (const auto &nextState : nextSet) {
                     newSet.insert(nextState);
                     unordered_set<shared_ptr<State>> newSetEquivalents = getLambdaClosure(nextState);
-                    for(const auto& nextStateEq : newSetEquivalents){
+                    for (const auto &nextStateEq : newSetEquivalents) {
                         newSet.insert(nextStateEq);
                     }
                 }
             }
             bool allFonded = false;
-            for(const auto&  DFAPair: DFAPairSet){
-                if(newSet.size() == DFAPair.second.size()){
-                    for(const auto&  newState: newSet){
+            for (const auto &DFAPair: DFAPairSet) {
+                if (newSet.size() == DFAPair.second.size()) {
+                    for (const auto &newState: newSet) {
                         bool founded = false;
-                        for(const auto&  currentState: DFAPair.second){
-                            if(newState == currentState){
+                        for (const auto &currentState: DFAPair.second) {
+                            if (newState == currentState) {
                                 founded = true;
                                 break;
                             }
@@ -243,25 +242,25 @@ Automaton LexicalAnalyzerGenerator::convertNFAToDFA(Automaton NFA){
                         allFonded &= founded;
                     }
                 }
-                if(allFonded ){
-                    CurrentDFAPair.first->addTransition(i,DFAPair.first);
+                if (allFonded) {
+                    CurrentDFAPair.first->addTransition(i, DFAPair.first);
                     break;
                 }
             }
-            if(!allFonded && newSet.size() != 0){
+            if (!allFonded && newSet.size() != 0) {
                 //still need to find most priority token
-                shared_ptr<State> newDFAState = StateBuilder::buildState("DFA","");
-                for(const auto&  newState: newSet){
-                    if(newState->getAcceptedToken().getType() != ""){
+                shared_ptr<State> newDFAState = StateBuilder::buildState("DFA", "");
+                for (const auto &newState: newSet) {
+                    if (newState->getAcceptedToken().getType() != "") {
                         newDFAState = StateBuilder::buildState("DFA", newState->getAcceptedToken().getType());
                         break;
                     }
                 }
                 AllDFAStates.insert(newDFAState);
-                pair<shared_ptr<State>, unordered_set<shared_ptr<State>>> newPair(newDFAState,newSet);
+                pair<shared_ptr<State>, unordered_set<shared_ptr<State>>> newPair(newDFAState, newSet);
                 DFAPairSet.push_back(newPair);
                 DFAStack.push(newPair);
-                CurrentDFAPair.first->addTransition(i,newPair.first);
+                CurrentDFAPair.first->addTransition(i, newPair.first);
             }
         }
     }
@@ -284,22 +283,15 @@ int LexicalAnalyzerGenerator::getFormat(std::string token) {
 
 void LexicalAnalyzerGenerator::updateKeywords(std::string token) {
     char *temp = new char[token.length() + 1];
-    std::string s = "keyword";
-    Token t = Token(s);
+    Token t = Token("", INT_MAX);
     strncpy(temp, token.c_str(), token.length() + 1);
+    std::string s = "keyword";
     char *word;
     word = strtok(temp, " \t");
     while (word != NULL) {
         keywords.insert(word);
 
-        std::shared_ptr<Automaton>start = getAutomatonForWord("keyword", word);
-        /*int j = 0;
-
-        while (word[++j] != '\0') {
-            Automaton next = *std::make_shared<Automaton>(word[j]);
-
-            start.concatenateOp(next, t);
-        }*/
+        std::shared_ptr<Automaton> start = getAutomatonForWord(word, word, 0);
         if (automatons.find(s) != automatons.end()) {
             std::shared_ptr<Automaton> z = automatons.at(s);
             z->unionOp(*start, t);
@@ -309,7 +301,7 @@ void LexicalAnalyzerGenerator::updateKeywords(std::string token) {
         }
         word = strtok(NULL, " \t");
     }
-  delete[] temp;
+    delete[] temp;
 }
 
 void LexicalAnalyzerGenerator::updatePunctuations(std::string token) {
@@ -326,6 +318,7 @@ std::shared_ptr<Automaton> LexicalAnalyzerGenerator::createExpAutomaton(std::str
     bool prevIsOperand = false;
     operands = std::stack<std::shared_ptr<Automaton>>();
     operators = std::stack<char>();
+    Token t = Token("", INT_MAX);
     for (size_t i = 0; i < token.size(); i++) {
         if (token[i] == ' ') continue;
         if (token[i] == '\\') {
@@ -345,13 +338,13 @@ std::shared_ptr<Automaton> LexicalAnalyzerGenerator::createExpAutomaton(std::str
 
         } else if (token[i] == ')') {
             while (!operators.empty() && operators.top() != '(') {
-                performOp(tokenName);
+                performOp(t);
             }
             prevIsOperand = true;
 
         } else if (isOperation(token[i])) {
             while (!operators.empty() && precedence(operators.top()) >= precedence(token[i])) {
-                performOp(tokenName);
+                performOp(t);
             }
             operators.push(token[i]);
             prevIsOperand = false;
@@ -374,15 +367,14 @@ std::shared_ptr<Automaton> LexicalAnalyzerGenerator::createExpAutomaton(std::str
         }
     }
     while (!operators.empty()) {
-        performOp(tokenName);
+        performOp(t);
     }
     return operands.top();
 }
 
-void LexicalAnalyzerGenerator::performOp(std::string tokenName) {
+void LexicalAnalyzerGenerator::performOp(Token &t) {
     std::shared_ptr<Automaton> a1 = operands.top();
     operands.pop();
-    Token t = Token(tokenName);
     if (operators.top() == '*') {
         a1->kleeneClosureOp(t);
         operands.push(a1);
@@ -390,7 +382,7 @@ void LexicalAnalyzerGenerator::performOp(std::string tokenName) {
         a1->positiveClosureOp(t);
         operands.push(a1);
     } else {
-       std::shared_ptr<Automaton> a2 = operands.top();
+        std::shared_ptr<Automaton> a2 = operands.top();
         operands.pop();
         if (operators.top() == '.') {
             a2->concatenateOp(*a1, t);
@@ -413,18 +405,19 @@ int LexicalAnalyzerGenerator::precedence(char op) {
         return 2;
     if (op == '+' || op == '*')
         return 3;
-    if(op=='|')
+    if (op == '|')
         return 1;
 
     return 0;
 }
 
-std::shared_ptr<Automaton> LexicalAnalyzerGenerator::createDefAutomaton(std::string name, std::string token) {
+std::shared_ptr<Automaton>
+LexicalAnalyzerGenerator::createDefAutomaton(std::string name, std::string token, int priority) {
     operands = std::stack<std::shared_ptr<Automaton>>();
     operators = std::stack<char>();
-
+    Token t = Token("", INT_MAX);
+    Token finalToken = Token(name, priority);
     std::string c;
-    Token t = Token(name);
     bool prevIsOperand = false;
 
     for (size_t i = 0; i < token.size(); i++) {
@@ -436,7 +429,8 @@ std::shared_ptr<Automaton> LexicalAnalyzerGenerator::createDefAutomaton(std::str
                     prevIsOperand = true;
                     operands.push(automatons.at(c));
                 } else {
-                    operands.push(getAutomatonForWord(name, c));
+
+                    operands.push(getAutomatonForWord("", c,INT_MAX));
                 }
             }
             c.clear();
@@ -458,12 +452,16 @@ std::shared_ptr<Automaton> LexicalAnalyzerGenerator::createDefAutomaton(std::str
                 operators.push(token[i]);
             } else if (token[i] == ')') {
                 while (!operators.empty() && operators.top() != '(') {
-                    performOp(name);
+                    if (operators.size() == 2 && i + 1 == token.size())
+                        performOp(finalToken);
+                    else
+                        performOp(t);
                 }
+                operators.pop();
                 prevIsOperand = true;
             } else if (isOperation(token[i])) {
                 while (!operators.empty() && precedence(operators.top()) >= precedence(token[i])) {
-                    performOp(name);
+                    performOp(t);
                 }
                 operators.push(token[i]);
                 prevIsOperand = false;
@@ -495,11 +493,14 @@ std::shared_ptr<Automaton> LexicalAnalyzerGenerator::createDefAutomaton(std::str
                 operators.push('.');
             operands.push(automatons.at(c));
         } else {
-            operands.push(getAutomatonForWord(name, c));
+            operands.push(getAutomatonForWord(name, c,INT_MAX));
         }
     }
     while (!operators.empty()) {
-        performOp(name);
+        if(operators.size()==1)
+        performOp(finalToken);
+        else
+            performOp(t);
     }
     return operands.top();
 }
@@ -508,15 +509,21 @@ bool LexicalAnalyzerGenerator::isLetter(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 
-std::shared_ptr<Automaton> LexicalAnalyzerGenerator::getAutomatonForWord(std::string name, std::string token) {
+std::shared_ptr<Automaton>
+LexicalAnalyzerGenerator::getAutomatonForWord(std::string name, std::string token, int priority) {
     std::shared_ptr<Automaton> a = std::make_shared<Automaton>('\0');
-    Token t = Token(name);
-    for (char c:token) {
-        a->concatenateOp(Automaton(c), t);
+    Token t = Token("", INT_MAX);
+    int n = token.size();
+    for (int i = 0; i < n - 1; i++) {
+        a->concatenateOp(Automaton(token[i]), t);
+
+
     }
+    Token finalToken = Token(name, priority);
+    a->concatenateOp(Automaton(token[n - 1]), finalToken);
     return a;
 }
 
 LexicalAnalyzer LexicalAnalyzerGenerator::buildLexicalAnalyzer() {
-  return LexicalAnalyzer(convertNFAToDFA(automaton));
+    return LexicalAnalyzer(convertNFAToDFA(automaton));
 }

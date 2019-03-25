@@ -1,11 +1,13 @@
 #include "Token.h"
 
-Token::Token(const std::string& type)
-: type(type) { }
+Token::Token(const std::string &type, const int priority)
+        : type(type), priority(priority) {}
 
 
 std::string Token::getType() { return type; }
 
 std::string Token::getLexeme() { return lexeme; }
 
-std::string Token::setLexeme(std::string &value) { lexeme = value; }
+int Token::getPriority() { return priority; };
+
+void Token::setLexeme(std::string &value) { lexeme = value; }

@@ -6,14 +6,17 @@
 
 class Token {
 public:
-    Token(const std::string& type);
+    Token(const std::string& type,const int priority);
 
     std::string getType();
+    int getPriority();
     std::string getLexeme();
-    std::string setLexeme(std::string&);
+    void setLexeme(std::string&);
 private:
     std::string type;
     std::string lexeme;
+    int priority;
+
 };
 
 

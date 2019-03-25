@@ -27,17 +27,17 @@ private:
 
     std::shared_ptr<Automaton> createExpAutomaton(std::string tokenName, std::string token);
 
-    void performOp(std::string tokenName);
+    void performOp(Token& t);
 
     bool isOperation(char op);
 
     int precedence(char op);
 
-    std::shared_ptr<Automaton> createDefAutomaton(std::string name, std::string token);
+    std::shared_ptr<Automaton> createDefAutomaton(std::string name, std::string token, int priority);
 
     bool isLetter(char c);
 
-    std::shared_ptr<Automaton> getAutomatonForWord(std::string name, std::string token);
+    std::shared_ptr<Automaton> getAutomatonForWord(std::string name, std::string token,int priority);
 };
 
 
