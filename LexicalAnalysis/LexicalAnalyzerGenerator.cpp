@@ -1,3 +1,4 @@
+#include <iostream>
 #include "LexicalAnalyzerGenerator.h"
 #include "Automata/StateBuilder.h"
 
@@ -332,7 +333,8 @@ Automaton LexicalAnalyzerGenerator::convertNFAToDFA(Automaton NFA){
         }
     }
     Automaton DFA;
-    DFA = minimizeDFA(AllDFAStates,DFAStart);
+    DFA.startState = DFAStart;
+    //DFA = minimizeDFA(AllDFAStates,DFAStart);
     return DFA;
 }
 
@@ -593,5 +595,6 @@ LexicalAnalyzerGenerator::getAutomatonForWord(std::string name, std::string toke
 }
 
 LexicalAnalyzer LexicalAnalyzerGenerator::buildLexicalAnalyzer() {
+    automaton.saveIntoFile(std::cout);
     return LexicalAnalyzer(convertNFAToDFA(automaton));
 }

@@ -9,6 +9,7 @@ LexicalAnalyzer::LexicalAnalyzer(std::istream& inputDFAStream)
 : languageAutomaton(inputDFAStream) { }
 
 void LexicalAnalyzer::analyzeCompleteProgram(std::string& programFilePath) {
+  languageAutomaton.saveIntoFile(std::cout);
   std::ifstream input(programFilePath); if (!input) return;
   std::ofstream output(programFilePath + ".tokens"); if (!output) return;
 
@@ -30,6 +31,7 @@ void LexicalAnalyzer::analyzeCompleteProgram(std::string& programFilePath) {
     if (currentState) {
       std::string token = currentState->getAcceptedToken().getType();
       if (!token.empty()) {
+        std::cout << "Matched '" << currentToken << "' for '" << token << "'" << std::endl;
         lastMatchedToken = token;
         lastMatchedPos = input.tellg();
       }

@@ -90,13 +90,15 @@ void Automaton::saveIntoFile(std::ostream& stream) {
     stream << states.size() << std::endl;
 
     for (auto i = states.begin(); i != states.end(); i++) {
-        stream << i->first->getAcceptedToken().getType() << std::endl;
+        if (i->first)
+          stream << states[i->first] << ": " << i->first->getAcceptedToken().getType() << std::endl;
     }
 
     for (auto i = states.begin(); i != states.end(); i++) {
+      if (i->first)
         for (auto transInput : i->first->viewTransitions()) {
             for (auto destination : transInput.second)
-                stream << states[i->first] << states[destination] << transInput.first << std::endl;
+                stream << states[i->first] << "  " << states[destination] << "  " << transInput.first << std::endl;
         }
     }
 }
@@ -135,7 +137,8 @@ std::unordered_map<std::shared_ptr<State>, int> Automaton::getAllStates() {
     collection[finalState] = counter++;
 
     startState->explore(collection, &counter);
-    finalState->explore(collection, &counter);
+    if (finalState)
+      finalState->explore(collection, &counter);
 
     return collection;
 }
