@@ -89,9 +89,14 @@ void Automaton::saveIntoFile(std::ostream& stream) {
     std::unordered_map<std::shared_ptr<State>, int> states = getAllStates();
     stream << states.size() << std::endl;
 
+    std::shared_ptr<State> statesArray[states.size()];
+    // Populate the states array in order
     for (auto i = states.begin(); i != states.end(); i++) {
-        if (i->first)
-          stream << states[i->first] << ": " << i->first->getAcceptedToken().getType() << std::endl;
+        statesArray[i->second] = i->first;
+    }
+
+    for (int i = 0; i < states.size(); i++) {
+        stream << statesArray[i]->getAcceptedToken().getType() << std::endl;
     }
 
     for (auto i = states.begin(); i != states.end(); i++) {
@@ -137,8 +142,6 @@ std::unordered_map<std::shared_ptr<State>, int> Automaton::getAllStates() {
     collection[finalState] = counter++;
 
     startState->explore(collection, &counter);
-    if (finalState)
-      finalState->explore(collection, &counter);
 
     return collection;
 }
