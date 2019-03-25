@@ -139,7 +139,6 @@ std::unordered_map<std::shared_ptr<State>, int> Automaton::getAllStates() {
     std::unordered_map<std::shared_ptr<State>, int> collection;
     int counter = 0;
     collection[startState] = counter++;
-    collection[finalState] = counter++;
 
     startState->explore(collection, &counter);
 
