@@ -98,12 +98,11 @@ void Automaton::saveIntoFile(std::ostream& stream) {
     }
 
     for (int i = 0; i < states.size(); i++) {
-      if(statesArray[i])
-        stream << statesArray[i]->getAcceptedToken().getType() << std::endl;
+        Token acceptedToken = statesArray[i]->getAcceptedToken();
+        stream << acceptedToken.getPriority() << "  " << acceptedToken.getType() << std::endl;
     }
 
     for (auto i = states.begin(); i != states.end(); i++) {
-      if (i->first)
         for (auto transInput : i->first->viewTransitions()) {
             for (auto &destination : transInput.second)
                 stream << states[i->first] << "  " << states[destination] << "  " << transInput.first << std::endl;
@@ -119,16 +118,18 @@ void Automaton::loadFromFile(std::istream& stream) {
 
     std::vector<std::shared_ptr<State>> states(totalStates);
     if (stateType == "DFA")
-      for (auto& it : states)
-        it = std::make_shared<DFAState>();
+        for (auto& it : states)
+            it = std::make_shared<DFAState>();
     else
-      for (auto& it : states)
-        it = std::make_shared<NFAState>();
+        for (auto& it : states)
+            it = std::make_shared<NFAState>();
 
     std::string buffer;
+    int priorityBuffer;
     for(int i = 0; i < totalStates; i++) {
+        stream >> priorityBuffer;
         stream >> buffer;
-        states[i] = StateBuilder::buildState(stateType, buffer);
+        states[i] = StateBuilder::buildState(stateType, buffer, priorityBuffer);
     }
 
     int source, destination;
