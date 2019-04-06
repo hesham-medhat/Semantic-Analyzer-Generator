@@ -26,7 +26,7 @@ Automaton::Automaton(char first, char last) {
 
     do {
         startState->addTransition(i, finalState);
-    } while (++i < last);
+    } while (++i <= last);
 }
 Automaton::Automaton() {}
 
