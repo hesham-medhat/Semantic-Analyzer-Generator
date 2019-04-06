@@ -62,6 +62,7 @@ void Automaton::kleeneClosureOp(Token& acceptedToken) {
     newStart->addTransition(0, newFinal);
     newStart->addTransition(0, startState);
     newFinal->addTransition(0, newStart);
+    finalState->addTransition(0,newFinal);
 
     startState = newStart;
     finalState = newFinal;
