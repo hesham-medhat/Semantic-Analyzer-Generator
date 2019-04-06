@@ -20,7 +20,7 @@ Automaton::Automaton(char first, char last) {
     startState = std::make_shared<NFAState>();
     finalState = std::make_shared<NFAState>();
 
-    if (last < first) throw new std::invalid_argument("Automaton: Bad character class input");
+    if (last < first) throw std::invalid_argument("Automaton: Bad character class input");
 
     char i = first;
 
@@ -28,7 +28,8 @@ Automaton::Automaton(char first, char last) {
         startState->addTransition(i, finalState);
     } while (++i <= last);
 }
-Automaton::Automaton() {}
+
+Automaton::Automaton() = default;
 
 void Automaton::unionOp(Automaton other, Token& acceptedToken) {
     std::shared_ptr<NFAState> newStart = std::make_shared<NFAState>();
@@ -92,8 +93,8 @@ void Automaton::saveIntoFile(std::ostream& stream) {
 
     std::shared_ptr<State> statesArray[states.size()];
     // Populate the states array in order
-    for (auto i = states.begin(); i != states.end(); i++) {
-        statesArray[i->second] = i->first;
+    for (auto i : states) {
+        statesArray[i.second] = i.first;
     }
 
     for (int i = 0; i < states.size(); i++) {
@@ -104,7 +105,7 @@ void Automaton::saveIntoFile(std::ostream& stream) {
     for (auto i = states.begin(); i != states.end(); i++) {
       if (i->first)
         for (auto transInput : i->first->viewTransitions()) {
-            for (auto destination : transInput.second)
+            for (auto &destination : transInput.second)
                 stream << states[i->first] << "  " << states[destination] << "  " << transInput.first << std::endl;
         }
     }

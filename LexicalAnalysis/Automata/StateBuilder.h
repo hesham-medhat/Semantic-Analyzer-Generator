@@ -4,11 +4,12 @@
 
 #include "State.h"
 
+// Utility builder class for states
 class StateBuilder {
 public:
     static std::shared_ptr<State> buildState(std::string stateType, std::string tokenType);
 private:
-    // Prevent instantiating as it is unnecessary
+    // Prevent instantiating as it is unnecessary. Intentionally not implemented
     StateBuilder();
 };
 

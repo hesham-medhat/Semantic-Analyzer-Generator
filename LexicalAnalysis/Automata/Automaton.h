@@ -9,9 +9,9 @@
 class Automaton {
 public:
     // Loads automaton from saved representation through given stream
-    Automaton(std::istream& savedRepresentationStream);
+    explicit Automaton(std::istream& savedRepresentationStream);
     // Constructor for automaton of a transition
-    Automaton(char character);
+    explicit Automaton(char character);
     // Constructor for automaton of a character class
     Automaton(char first, char last);
     Automaton();
