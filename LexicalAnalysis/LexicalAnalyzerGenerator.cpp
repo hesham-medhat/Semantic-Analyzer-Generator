@@ -205,7 +205,7 @@ LexicalAnalyzerGenerator::minimizeDFA(unordered_set<shared_ptr<State>> AllDFASta
     for (auto &group: groupSet) {
         shared_ptr<State> DFAState;
         for (auto &groupState: group) {
-            DFAState = StateBuilder::buildState("DFA", groupState->getAcceptedToken().getType());
+            DFAState = StateBuilder::buildState("DFA", groupState->getAcceptedToken().getType(), 0);
             break;
         }
         for (auto &groupState: group) {
@@ -252,12 +252,12 @@ Automaton LexicalAnalyzerGenerator::convertNFAToDFA(Automaton NFA) {
 
 
     unordered_set<shared_ptr<State>> NFAStartEquivalents = getLambdaClosure(NFA.startState);
-    shared_ptr<State> DFAStart = StateBuilder::buildState("DFA", "");
+    shared_ptr<State> DFAStart = StateBuilder::buildState("DFA", "", 0);
     int priority = INT_MAX;
     for (const auto &newState: NFAStartEquivalents) {
         //still need to find most priority token
         if (newState->getAcceptedToken().getType() != "" && newState->getAcceptedToken().getPriority() < priority) {
-            DFAStart = StateBuilder::buildState("DFA", newState->getAcceptedToken().getType());
+            DFAStart = StateBuilder::buildState("DFA", newState->getAcceptedToken().getType(), 0);
             priority = newState->getAcceptedToken().getPriority();
         }
     }
@@ -320,11 +320,11 @@ Automaton LexicalAnalyzerGenerator::convertNFAToDFA(Automaton NFA) {
             }
             if (notFounded && newSet.size() != 0) {
                 int priority = INT_MAX;
-                shared_ptr<State> newDFAState = StateBuilder::buildState("DFA", "");
+                shared_ptr<State> newDFAState = StateBuilder::buildState("DFA", "", 0);
                 for (const auto &newState: newSet) {
                     if (newState->getAcceptedToken().getType() != "" &&
                         newState->getAcceptedToken().getPriority() < priority) {
-                        newDFAState = StateBuilder::buildState("DFA", newState->getAcceptedToken().getType());
+                        newDFAState = StateBuilder::buildState("DFA", newState->getAcceptedToken().getType(), 0);
                         priority = newState->getAcceptedToken().getPriority();
                     }
                 }

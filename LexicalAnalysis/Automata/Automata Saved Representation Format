@@ -3,7 +3,7 @@
 1 line:
 <Number of states S>
 S lines:
-    each line i: <State i acceptedToken's type>
+    each line i: <State i acceptedToken's:priority  type>
         where first state is startState and second state is finalState
 last T lines where T is the number of transitions:
-    each line t: <S D C; S is source state's number, D is destination state's number, C is transition character>
+    each line t: <S  D  C; S is source state's number, D is destination state's number, C is transition character>
