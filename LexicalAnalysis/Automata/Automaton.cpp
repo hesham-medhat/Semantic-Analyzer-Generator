@@ -1,5 +1,6 @@
 #include <sstream>
 #include "Automaton.h"
+#include "DFAState.h"
 #include "NFAState.h"
 #include "StateBuilder.h"
 
@@ -19,15 +20,16 @@ Automaton::Automaton(char first, char last) {
     startState = std::make_shared<NFAState>();
     finalState = std::make_shared<NFAState>();
 
-    if (last < first) throw new std::invalid_argument("Automaton: Bad character class input");
+    if (last < first) throw std::invalid_argument("Automaton: Bad character class input");
 
     char i = first;
 
     do {
         startState->addTransition(i, finalState);
-    } while (++i < last);
+    } while (++i <= last);
 }
-Automaton::Automaton() {}
+
+Automaton::Automaton() = default;
 
 void Automaton::unionOp(Automaton other, Token& acceptedToken) {
     std::shared_ptr<NFAState> newStart = std::make_shared<NFAState>();
@@ -60,6 +62,7 @@ void Automaton::kleeneClosureOp(Token& acceptedToken) {
     newStart->addTransition(0, newFinal);
     newStart->addTransition(0, startState);
     newFinal->addTransition(0, newStart);
+    finalState->addTransition(0,newFinal);
 
     startState = newStart;
     finalState = newFinal;
@@ -91,18 +94,18 @@ void Automaton::saveIntoFile(std::ostream& stream) {
 
     std::shared_ptr<State> statesArray[states.size()];
     // Populate the states array in order
-    for (auto i = states.begin(); i != states.end(); i++) {
-        statesArray[i->second] = i->first;
+    for (auto i : states) {
+        statesArray[i.second] = i.first;
     }
 
     for (int i = 0; i < states.size(); i++) {
-        stream << statesArray[i]->getAcceptedToken().getType() << std::endl;
+        Token acceptedToken = statesArray[i]->getAcceptedToken();
+        stream << acceptedToken.getPriority() << "  " << acceptedToken.getType() << std::endl;
     }
 
     for (auto i = states.begin(); i != states.end(); i++) {
-      if (i->first)
         for (auto transInput : i->first->viewTransitions()) {
-            for (auto destination : transInput.second)
+            for (auto &destination : transInput.second)
                 stream << states[i->first] << "  " << states[destination] << "  " << transInput.first << std::endl;
         }
     }
@@ -114,18 +117,26 @@ void Automaton::loadFromFile(std::istream& stream) {
     stream >> stateType;
     stream >> totalStates;
 
-    std::shared_ptr<State>* states = (std::shared_ptr<State>*) malloc(sizeof(std::shared_ptr<State>) * totalStates);
+    std::vector<std::shared_ptr<State>> states(totalStates);
+    if (stateType == "DFA")
+        for (auto& it : states)
+            it = std::make_shared<DFAState>();
+    else
+        for (auto& it : states)
+            it = std::make_shared<NFAState>();
 
     std::string buffer;
+    int priorityBuffer;
     for(int i = 0; i < totalStates; i++) {
+        stream >> priorityBuffer;
         stream >> buffer;
-        states[i] = StateBuilder::buildState(stateType, buffer);
+        states[i] = StateBuilder::buildState(stateType, buffer, priorityBuffer);
     }
 
     int source, destination;
     char transitionCharacter;
     while(!stream.eof()) {
-        stream >> buffer;
+        getline(stream, buffer);
         std::stringstream lineParser(buffer);
         lineParser >> source >> destination >> transitionCharacter;
 
@@ -139,7 +150,6 @@ std::unordered_map<std::shared_ptr<State>, int> Automaton::getAllStates() {
     std::unordered_map<std::shared_ptr<State>, int> collection;
     int counter = 0;
     collection[startState] = counter++;
-    collection[finalState] = counter++;
 
     startState->explore(collection, &counter);
 

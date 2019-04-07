@@ -6,7 +6,7 @@
 
 class Token {
 public:
-    Token(const std::string& type,const int priority);
+    Token(const std::string& type, int priority);
 
     std::string getType();
     int getPriority();
