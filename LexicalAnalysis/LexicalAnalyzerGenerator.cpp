@@ -11,6 +11,18 @@ std::unordered_set<char> punctuation;
 Automaton automaton = Automaton('\0');
 bool automatonIsEmpty = true;
 
+Automaton LexicalAnalyzerGenerator::whitespaceAcceptor = [] {
+  // "ws" surrounded by spaces intentionally (to avoid token type conflicts)
+  Token wsToken(" ws ", 0);
+  Token rejected("", INT_MAX);
+  Automaton wsAutomaton(' ');
+  wsAutomaton.unionOp(Automaton('\t'), rejected);
+  wsAutomaton.unionOp(Automaton('\n'), rejected);
+  wsAutomaton.unionOp(Automaton('\r'), rejected);
+  wsAutomaton.positiveClosureOp(wsToken);
+  return wsAutomaton;
+}();
+
 LexicalAnalyzerGenerator::LexicalAnalyzerGenerator(std::istream &inputStream)
         : inputStream(inputStream) {
     std::string token;
@@ -612,6 +624,8 @@ LexicalAnalyzerGenerator::getAutomatonForWord(std::string name, std::string toke
 }
 
 LexicalAnalyzer LexicalAnalyzerGenerator::buildLexicalAnalyzer() {
-    automaton.saveIntoFile(std::cout);
+    //automaton.saveIntoFile(std::cout);
+    Token rejected("", INT_MAX);
+    automaton.unionOp(LexicalAnalyzerGenerator::whitespaceAcceptor, rejected);
     return LexicalAnalyzer(convertNFAToDFA(automaton));
 }

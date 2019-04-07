@@ -13,7 +13,7 @@ public:
     LexicalAnalyzer(std::istream& inputDFAStream);
 
     // Analyzes given program as a whole generating output at once
-    void analyzeCompleteProgram(std::string& programFilePath);
+    void analyzeCompleteProgram(const std::string& programFilePath);
     // Initialize parse sequence
     void initProgramParse(std::string& programFilePath);
     // Gets next token for the parser. Returns nullptr if uninitialized and empty token when done

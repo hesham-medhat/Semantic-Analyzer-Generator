@@ -18,6 +18,7 @@ public:
     LexicalAnalyzer buildLexicalAnalyzer();
 
 private:
+    static Automaton whitespaceAcceptor;
     const std::istream &inputStream;
 
     Automaton buildNFA();

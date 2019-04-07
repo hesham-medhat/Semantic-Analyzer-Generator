@@ -8,15 +8,14 @@ LexicalAnalyzer::LexicalAnalyzer(const Automaton& languageAutomaton)
 LexicalAnalyzer::LexicalAnalyzer(std::istream& inputDFAStream)
 : languageAutomaton(inputDFAStream) { }
 
-void LexicalAnalyzer::analyzeCompleteProgram(std::string& programFilePath) {
-  languageAutomaton.saveIntoFile(std::cout);
+void LexicalAnalyzer::analyzeCompleteProgram(
+    const std::string& programFilePath) {
   std::ifstream input(programFilePath); if (!input) return;
   std::ofstream output(programFilePath + ".tokens"); if (!output) return;
 
   char currentChar;
   std::shared_ptr<State> currentState = languageAutomaton.startState;
-  std::shared_ptr<State> prevState;
-  std::string lastMatchedToken;
+  Token lastMatchedToken("", 0);
   std::string currentToken;
   std::ifstream::pos_type anchor = 0;
   std::ifstream::pos_type lastMatchedPos = -1;
@@ -25,22 +24,26 @@ void LexicalAnalyzer::analyzeCompleteProgram(std::string& programFilePath) {
     currentToken += currentChar;
     std::unordered_set<std::shared_ptr<State>> nextStateSet
       = currentState->getNextState(currentChar);
-    prevState = currentState;
     currentState = nextStateSet.empty() ? nullptr : *nextStateSet.begin();
 
     if (currentState) {
-      std::string token = currentState->getAcceptedToken().getType();
-      if (!token.empty()) {
-        std::cout << "Matched '" << currentToken << "' for '" << token << "'" << std::endl;
+      Token token = currentState->getAcceptedToken();
+      if (!token.getType().empty()) {
+        token.setLexeme(currentToken);
         lastMatchedToken = token;
         lastMatchedPos = input.tellg();
       }
-    } else if (!lastMatchedToken.empty()) {
-      output << lastMatchedToken << std::endl;
+    } else if (!lastMatchedToken.getType().empty()) {
+      if (lastMatchedToken.getType() != " ws ") {
+        std::cerr << "Matched '" << lastMatchedToken.getLexeme()
+                  << "' for '" << lastMatchedToken.getType() << "'"
+                  << std::endl;
+        output << lastMatchedToken.getType() << std::endl;
+      }
       anchor = lastMatchedPos;
       input.seekg(anchor);
       currentToken.clear();
-      lastMatchedToken = "";
+      lastMatchedToken = Token("", 0);
       lastMatchedPos = -1;
       currentState = languageAutomaton.startState;
     } else {
@@ -51,5 +54,12 @@ void LexicalAnalyzer::analyzeCompleteProgram(std::string& programFilePath) {
       currentToken.clear();
       currentState = languageAutomaton.startState;
     }
+  }
+  if (!lastMatchedToken.getType().empty()
+      && lastMatchedToken.getType() != " ws ") {
+    std::cerr << "Matched '" << lastMatchedToken.getLexeme()
+              << "' for '" << lastMatchedToken.getType() << "'"
+              << std::endl;
+    output << lastMatchedToken.getType() << std::endl;
   }
 }
