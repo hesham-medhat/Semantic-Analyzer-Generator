@@ -73,6 +73,7 @@ void Automaton::positiveClosureOp(Token& acceptedToken) {
     std::shared_ptr<NFAState> newFinal = std::make_shared<NFAState>(acceptedToken);
 
     newStart->addTransition(0, startState);
+    finalState->addTransition(0, newFinal);
     newFinal->addTransition(0, newStart);
 
     startState = newStart;
