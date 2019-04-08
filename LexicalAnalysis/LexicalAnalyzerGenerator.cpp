@@ -429,7 +429,10 @@ std::shared_ptr<Automaton> LexicalAnalyzerGenerator::createExpAutomaton(std::str
                 performOp(t, operands, operators);
             }
             operators.push(token[i]);
-            prevIsOperand = false;
+            if(token[i]=='*'||token[i]=='+')
+                prevIsOperand = true;
+            else
+                prevIsOperand=false;
 
         } else if (token[i] == '-') {
             operands.pop();
@@ -498,6 +501,8 @@ std::shared_ptr<Automaton>
 LexicalAnalyzerGenerator::createDefAutomaton(std::string name, std::string token, int priority) {
     stack<std::shared_ptr<Automaton>> operands = std::stack<std::shared_ptr<Automaton>>();
     stack<char> operators = std::stack<char>();
+    if(name=="num")
+        int trap=0;
     Token t = Token("", INT_MAX);
     Token finalToken = Token(name, priority);
     std::string c;
@@ -519,8 +524,8 @@ LexicalAnalyzerGenerator::createDefAutomaton(std::string name, std::string token
                     std::string tmp = Expautomatons.at(c);
                     operands.push(createExpAutomaton(c, tmp));
                 } else {
-
                     operands.push(getAutomatonForWord("", c, INT_MAX));
+                    prevIsOperand=true;
                 }
             }
             c.clear();
@@ -542,9 +547,6 @@ LexicalAnalyzerGenerator::createDefAutomaton(std::string name, std::string token
                 operators.push(token[i]);
             } else if (token[i] == ')') {
                 while (!operators.empty() && operators.top() != '(') {
-                    if (operators.size() == 2 && i + 1 == token.size())
-                        performOp(finalToken, operands, operators);
-                    else
                         performOp(t, operands, operators);
                 }
                 operators.pop();
@@ -554,7 +556,10 @@ LexicalAnalyzerGenerator::createDefAutomaton(std::string name, std::string token
                     performOp(t, operands, operators);
                 }
                 operators.push(token[i]);
-                prevIsOperand = false;
+                if(token[i]=='*'||token[i]=='+')
+                    prevIsOperand=true;
+                else
+                    prevIsOperand = false;
             } else if (token[i] == '-') {
                 operands.pop();
                 char start, end;
@@ -596,11 +601,12 @@ LexicalAnalyzerGenerator::createDefAutomaton(std::string name, std::string token
         }
     }
     while (!operators.empty()) {
-        if (operators.size() == 1)
-            performOp(finalToken, operands, operators);
-        else
             performOp(t, operands, operators);
     }
+    operands.push(std::make_shared<Automaton>('\0'));
+    operators.push('.');
+    performOp(finalToken, operands, operators);
+
     return operands.top();
 }
 
