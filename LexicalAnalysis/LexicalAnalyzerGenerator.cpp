@@ -12,8 +12,8 @@ Automaton punctuation = Automaton('\0');
 bool automatonIsEmpty = true;
 
 Automaton LexicalAnalyzerGenerator::whitespaceAcceptor = [] {
-    // "ws" surrounded by spaces intentionally (to avoid token type conflicts)
-    Token wsToken(" ws ", 0);
+    // "ws" surrounded by ='s intentionally (to avoid token type conflicts)
+    Token wsToken("=ws=", 0);
     Token rejected("", INT_MAX);
     Automaton wsAutomaton(' ');
     wsAutomaton.unionOp(Automaton('\t'), rejected);
@@ -356,7 +356,7 @@ Automaton LexicalAnalyzerGenerator::convertNFAToDFA(Automaton NFA) {
     }
     Automaton DFA;
     DFA.startState = DFAStart;
-    //DFA = minimizeDFA(AllDFAStates,DFAStart);
+    DFA = minimizeDFA(AllDFAStates,DFAStart);
     return DFA;
 }
 
@@ -618,7 +618,5 @@ LexicalAnalyzerGenerator::getAutomatonForWord(std::string name, std::string toke
 
 LexicalAnalyzer LexicalAnalyzerGenerator::buildLexicalAnalyzer() {
     //automaton.saveIntoFile(std::cout);
-    Token rejected("", INT_MAX);
-    automaton.unionOp(LexicalAnalyzerGenerator::whitespaceAcceptor, rejected);
     return LexicalAnalyzer(convertNFAToDFA(automaton));
 }
