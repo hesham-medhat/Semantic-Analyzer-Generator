@@ -10,7 +10,9 @@ LexicalAnalyzer::LexicalAnalyzer(std::istream& inputDFAStream)
 
 void LexicalAnalyzer::analyzeCompleteProgram(
     const std::string& programFilePath) {
-  std::ifstream input(programFilePath); if (!input) return;
+  std::ifstream input(programFilePath,
+                      std::ios_base::in | std::ios_base::binary);
+    if (!input) return;
   std::ofstream output(programFilePath + ".tokens"); if (!output) return;
 
   char currentChar;
