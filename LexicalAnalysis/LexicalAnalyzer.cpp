@@ -36,7 +36,7 @@ void LexicalAnalyzer::analyzeCompleteProgram(
         lastMatchedPos = input.tellg();
       }
     } else if (!lastMatchedToken.getType().empty()) {
-      if (lastMatchedToken.getType() != " ws ") {
+      if (lastMatchedToken.getType() != "=ws=") {
         std::cerr << "Matched '" << lastMatchedToken.getLexeme()
                   << "' for '" << lastMatchedToken.getType() << "'"
                   << std::endl;
@@ -58,7 +58,7 @@ void LexicalAnalyzer::analyzeCompleteProgram(
     }
   }
   if (!lastMatchedToken.getType().empty()
-      && lastMatchedToken.getType() != " ws ") {
+      && lastMatchedToken.getType() != "=ws=") {
     std::cerr << "Matched '" << lastMatchedToken.getLexeme()
               << "' for '" << lastMatchedToken.getType() << "'"
               << std::endl;

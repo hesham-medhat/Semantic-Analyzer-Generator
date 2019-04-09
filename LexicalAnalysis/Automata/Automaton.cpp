@@ -107,7 +107,7 @@ void Automaton::saveIntoFile(std::ostream& stream) {
     for (auto i = states.begin(); i != states.end(); i++) {
         for (auto transInput : i->first->viewTransitions()) {
             for (auto &destination : transInput.second)
-                stream << states[i->first] << "  " << states[destination] << "  " << transInput.first << std::endl;
+                stream << states[i->first] << "  " << states[destination] << "  " << (int)transInput.first << std::endl;
         }
     }
 }
@@ -136,7 +136,7 @@ void Automaton::loadFromFile(std::istream& stream) {
     }
 
     int source, destination;
-    char transitionCharacter;
+    int transitionCharacter;
     while(!stream.eof()) {
         getline(stream, buffer);
         std::stringstream lineParser(buffer);

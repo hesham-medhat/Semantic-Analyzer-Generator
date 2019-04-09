@@ -6,9 +6,9 @@
 #include "LexicalAnalysis/LexicalAnalyzer.h"
 
 int main(int argc, char* argv[]) {
-    string rules="C:\\Users\\Ahmed\\Desktop\\text.txt";
-    string code="C:\\Users\\Ahmed\\Desktop\\text2.txt";
-  std::ifstream rulesFile(rules);
+  if (argc < 3) return 1;
+
+  std::ifstream rulesFile(argv[1]);
   if (!rulesFile) {
     std::cout << "Could not open " << argv[1] << std::endl;
     return 1;
@@ -20,15 +20,16 @@ int main(int argc, char* argv[]) {
   LexicalAnalyzer lexicalAnalyzer
     = lexicalAnalyzerGenerator.buildLexicalAnalyzer();
 
-  std::ofstream outputStream("automaton.txt");
-  lexicalAnalyzer.saveLexicalAnalyzerAutomaton(outputStream);
-  outputStream.close();
+  std::cout << "Saving Automaton..." << std::endl;
+  if (std::ofstream tmpout = std::ofstream("tmp"))
+    lexicalAnalyzer.saveLexicalAnalyzerAutomaton(tmpout);
 
-  std::ifstream iStream("automaton.txt");
-  LexicalAnalyzer loadedLexicalAnalyzer(iStream);
+  std::cout << "Loading Automaton..." << std::endl;
+  if (std::ifstream tmpin = std::ifstream("tmp"))
+    lexicalAnalyzer = LexicalAnalyzer(tmpin);
 
   std::cout << "Analyzing Program..." << std::endl;
-  loadedLexicalAnalyzer.analyzeCompleteProgram(code);
+  lexicalAnalyzer.analyzeCompleteProgram(argv[2]);
 
   return 0;
 }
