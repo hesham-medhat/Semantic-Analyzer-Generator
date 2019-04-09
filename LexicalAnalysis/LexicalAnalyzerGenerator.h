@@ -33,8 +33,6 @@ private:
 
     void updatePunctuations(std::string token);
 
-    std::shared_ptr<Automaton> createExpAutomaton(std::string tokenName, std::string token);
-
     void performOp(Token &t, stack<shared_ptr<Automaton>> &operands,std::stack<char> &operators);
 
     bool isOperation(char op);
