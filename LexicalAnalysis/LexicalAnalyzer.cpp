@@ -65,3 +65,7 @@ void LexicalAnalyzer::analyzeCompleteProgram(
     output << lastMatchedToken.getType() << std::endl;
   }
 }
+
+void LexicalAnalyzer::saveLexicalAnalyzerAutomaton(std::ostream& outputStream) {
+    languageAutomaton.saveIntoFile(outputStream);
+};

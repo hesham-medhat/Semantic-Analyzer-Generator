@@ -130,7 +130,8 @@ void Automaton::loadFromFile(std::istream& stream) {
     int priorityBuffer;
     for(int i = 0; i < totalStates; i++) {
         stream >> priorityBuffer;
-        stream >> buffer;
+        getline(stream, buffer);
+        buffer.erase(0, buffer.find_first_not_of(' ')); // Left trim
         states[i] = StateBuilder::buildState(stateType, buffer, priorityBuffer);
     }
 

@@ -18,6 +18,8 @@ public:
     void initProgramParse(std::string& programFilePath);
     // Gets next token for the parser. Returns nullptr if uninitialized and empty token when done
     Token nextToken();
+
+    void saveLexicalAnalyzerAutomaton(std::ostream& outputStream);
 private:
     Automaton languageAutomaton;
 };

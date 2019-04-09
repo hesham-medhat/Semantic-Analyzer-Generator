@@ -77,6 +77,7 @@ LexicalAnalyzerGenerator::LexicalAnalyzerGenerator(std::istream &inputStream)
     Automaton r=punctuation;
     t=Token("",INT_MAX);
     automaton.unionOp(punctuation,t);
+    automaton.unionOp(whitespaceAcceptor,t);
 
 }
 
