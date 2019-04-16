@@ -10,7 +10,7 @@ class GrammarSymbol {
 public:
     typedef std::deque<std::shared_ptr<GrammarSymbol>> Production;
 
-    GrammarSymbol(const std::string name);
+    GrammarSymbol(std::string name);
     enum Type {NonTerminalSymbol, TerminalSymbol};
 
     Type getType();

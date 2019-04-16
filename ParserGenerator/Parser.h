@@ -1,6 +1,7 @@
 #ifndef PARSER_GENERATOR_PARSER_H
 #define PARSER_GENERATOR_PARSER_H
 
+
 #include <deque>
 #include <memory>
 #include "GrammarSymbol.h"

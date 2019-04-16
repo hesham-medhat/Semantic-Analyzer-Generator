@@ -6,7 +6,7 @@
 
 class TerminalSymbol : public GrammarSymbol {
 public:
-    explicit TerminalSymbol(const std::string name);
+    explicit TerminalSymbol(std::string name);
 };
 
 

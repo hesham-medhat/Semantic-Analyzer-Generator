@@ -10,7 +10,7 @@
 
 class NonTerminalSymbol : public GrammarSymbol {
 public:
-    NonTerminalSymbol(const std::string name);
+    explicit NonTerminalSymbol(std::string name);
 
     // For building the data structures and getting first and follow
     void build();
