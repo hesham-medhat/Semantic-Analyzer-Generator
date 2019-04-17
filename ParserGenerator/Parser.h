@@ -12,7 +12,10 @@ class Parser {
 public:
     typedef std::deque<std::shared_ptr<GrammarSymbol>> Sentence;
 
-    Parser(LexicalAnalyzer&, std::shared_ptr<NonTerminalSymbol>);
+    Parser(LexicalAnalyzer&, std::shared_ptr<NonTerminalSymbol>
+            startingSymbol, std::deque<std::shared_ptr<TerminalSymbol>>&
+            terminals, std::deque<std::shared_ptr<NonTerminalSymbol>>&
+            nonTerminals);
     // Loads parser from saved representation
     Parser(LexicalAnalyzer&, std::istream&);
 
@@ -24,8 +27,10 @@ public:
     void parseFullProgram(std::istream&);
 private:
     // The lexical analyzer for the language that this parser parses
-    LexicalAnalyzer& lexicalAnalyzer;
+    LexicalAnalyzer lexicalAnalyzer;
     std::shared_ptr<NonTerminalSymbol> startingSymbol;
+    std::deque<std::shared_ptr<TerminalSymbol>> terminals;
+    std::deque<std::shared_ptr<NonTerminalSymbol>> nonTerminals;
 
     std::istream& programStream;
     std::shared_ptr<NonTerminalSymbol> currentSymbol = startingSymbol;

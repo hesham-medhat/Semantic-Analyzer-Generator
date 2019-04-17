@@ -12,9 +12,6 @@ class NonTerminalSymbol : public GrammarSymbol {
 public:
     explicit NonTerminalSymbol(std::string name);
 
-    // For building the data structures and getting first and follow
-    void build();
-
     std::unordered_set<std::shared_ptr<GrammarSymbol>> getFirst();
     std::unordered_set<std::shared_ptr<GrammarSymbol>> getFollow();
 
@@ -22,6 +19,7 @@ public:
 private:
     // Flag used during building process of the parser to indicate DSs are built
     bool built;
+    bool hasEpsilonTransition;
     std::deque<GrammarSymbol::Production> productions;
 };
 
