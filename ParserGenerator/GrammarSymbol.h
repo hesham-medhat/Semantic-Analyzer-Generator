@@ -11,7 +11,7 @@ public:
     typedef std::deque<std::shared_ptr<GrammarSymbol>> Production;
 
     GrammarSymbol(std::string name);
-    enum Type {NonTerminalSymbol, TerminalSymbol};
+    enum Type {NonTerminal, Terminal};
 
     Type getType();
     std::string& getName();
