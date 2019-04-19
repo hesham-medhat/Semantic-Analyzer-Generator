@@ -7,6 +7,8 @@
 class TerminalSymbol : public GrammarSymbol {
 public:
     explicit TerminalSymbol(std::string name);
+
+    Type getType() override;
 };
 
 
