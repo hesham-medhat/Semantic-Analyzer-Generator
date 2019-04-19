@@ -2,7 +2,6 @@
 #define PARSER_GENERATOR_PARSERGENERATOR_H
 
 
-#include <istream>
 #include "../LexicalAnalysis/LexicalAnalyzer.h"
 #include "Parser.h"
 

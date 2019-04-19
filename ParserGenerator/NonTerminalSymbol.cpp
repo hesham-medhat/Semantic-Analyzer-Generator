@@ -1,6 +1,7 @@
 #include "NonTerminalSymbol.h"
 
-NonTerminalSymbol::NonTerminalSymbol(std::string name) : GrammarSymbol(name) {}
+NonTerminalSymbol::NonTerminalSymbol(std::string name) : GrammarSymbol
+(std::move(name)) {}
 
 
 GrammarSymbol::Type NonTerminalSymbol::getType() {
@@ -13,7 +14,7 @@ void NonTerminalSymbol::addProduction(std::shared_ptr<TerminalSymbol> input,
     if (newProduction.size() == 1) {
         std::shared_ptr<GrammarSymbol> singleTerminal = *newProduction.begin();
         std::string name = singleTerminal->getName();
-        if (name == "") {// Epsilon transition
+        if (name.empty()) {// Epsilon transition
             hasEpsilonProduction = true;
         }
     }

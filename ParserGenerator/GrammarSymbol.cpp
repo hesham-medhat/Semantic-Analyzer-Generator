@@ -1,7 +1,7 @@
 #include "GrammarSymbol.h"
 
 GrammarSymbol::GrammarSymbol(std::string name)
-: name(std::move(name)) {};
+: name(std::move(name)) {}
 
 
 std::string GrammarSymbol::getName() {
