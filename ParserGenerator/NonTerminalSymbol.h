@@ -16,6 +16,8 @@ public:
     std::unordered_set<std::shared_ptr<TerminalSymbol>> getFirst();
     std::unordered_set<std::shared_ptr<TerminalSymbol>> getFollow();
 
+    Type getType() override;
+    
     // Assumes epsilon production to be of single Symbol whose name is an
     // empty string
     void addProduction(std::shared_ptr<TerminalSymbol>,

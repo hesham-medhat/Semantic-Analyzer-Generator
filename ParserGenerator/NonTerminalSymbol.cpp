@@ -1,5 +1,12 @@
 #include "NonTerminalSymbol.h"
 
+NonTerminalSymbol::NonTerminalSymbol(std::string name) : GrammarSymbol(name) {}
+
+
+GrammarSymbol::Type NonTerminalSymbol::getType() {
+    return GrammarSymbol::Type::NonTerminal;
+}
+
 void NonTerminalSymbol::addProduction(std::shared_ptr<TerminalSymbol> input,
                                       GrammarSymbol::Production newProduction) {
     /* Update hasEpsilonProduction if epsilon */
