@@ -17,10 +17,13 @@ public:
 
     Type getType() override;
     
-    // Assumes epsilon production to be of single Symbol whose name is an
-    // empty string
+    // Assumes epsilon production to be of single Symbol whose name is empty
     void addProduction(std::shared_ptr<TerminalSymbol>,
             GrammarSymbol::Production);
+
+    // Saves productions according to the Parsers Saved Representation Format
+    void saveProductions(std::ostream&, std::unordered_map<std::string,
+            std::shared_ptr<TerminalSymbol>>& terminals);
 
     bool hasEpsilonProduction;
 private:

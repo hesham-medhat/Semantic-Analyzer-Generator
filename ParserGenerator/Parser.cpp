@@ -102,3 +102,28 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
 
 
 }
+
+void Parser::save(std::ostream& out) {
+
+    /* Write non-terminals names */
+    out << nonTerminals.size() << std::endl;
+    for (const auto& nonTerminalMapEntry : nonTerminals) {
+        out << nonTerminalMapEntry.first << std::endl;
+    }
+
+    /* Write the name of starting symbol */
+    out << startingSymbol->getName() << std::endl;
+
+    /* Write terminals */
+    out << terminals.size() << std::endl;
+    for (const auto& terminalMapEntry : terminals) {
+        out << terminalMapEntry.first << std::endl;
+    }
+
+    /* Write non-terminals productions */
+    for (const auto& nonTerminalMapEntry : nonTerminals) {
+        std::shared_ptr<NonTerminalSymbol> nonTerminal =
+                nonTerminalMapEntry.second;
+        nonTerminal->saveProductions(out, terminals);
+    }
+}
