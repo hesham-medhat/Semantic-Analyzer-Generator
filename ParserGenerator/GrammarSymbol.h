@@ -13,8 +13,8 @@ public:
     GrammarSymbol(std::string name);
     enum Type {NonTerminal, Terminal};
 
-    Type getType();
-    std::string& getName();
+    virtual Type getType() = 0;
+    std::string getName();
 protected:
     const Type type;
 private:

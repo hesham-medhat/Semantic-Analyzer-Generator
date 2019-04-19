@@ -16,10 +16,12 @@ public:
     std::unordered_set<std::shared_ptr<TerminalSymbol>> getFirst();
     std::unordered_set<std::shared_ptr<TerminalSymbol>> getFollow();
 
+    // Assumes epsilon production to be of single Symbol whose name is an
+    // empty string
     void addProduction(std::shared_ptr<TerminalSymbol>,
             GrammarSymbol::Production);
 
-    bool hasEpsilonTransition;
+    bool hasEpsilonProduction;
 private:
     // Flag used during building process of the parser to indicate DSs are built
     bool built;
