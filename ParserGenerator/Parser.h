@@ -12,8 +12,9 @@ public:
     typedef std::deque<std::shared_ptr<GrammarSymbol>> Sentence;
 
     Parser(LexicalAnalyzer&, std::shared_ptr<NonTerminalSymbol>
-            startingSymbol, std::deque<std::shared_ptr<TerminalSymbol>>&
-            terminals, std::deque<std::shared_ptr<NonTerminalSymbol>>&
+            startingSymbol, std::unordered_map<std::string,
+            std::shared_ptr<TerminalSymbol>>& terminals,
+            std::unordered_map<std::string, std::shared_ptr<NonTerminalSymbol>>&
             nonTerminals);
     // Loads parser from saved representation
     Parser(LexicalAnalyzer&, std::istream&);
