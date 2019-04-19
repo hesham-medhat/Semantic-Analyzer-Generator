@@ -7,5 +7,5 @@ Parser::Parser(LexicalAnalyzer & lexicalAnalyzer,
                std::unordered_map<std::string,
                std::shared_ptr<NonTerminalSymbol>> &nonTerminals)
                : lexicalAnalyzer(lexicalAnalyzer), startingSymbol
-               (startingSymbol), terminals(terminals),
+               (std::move(startingSymbol)), terminals(terminals),
                nonTerminals(nonTerminals) {}
