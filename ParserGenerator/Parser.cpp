@@ -50,9 +50,11 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
         for (int terminalIndex = 0; getline(productionsSS, productionTok,
                 ' '); terminalIndex++) {
             if (productionTok == "$") {
-                nonterminalsArray[i]->addProduction(synchProduction);
+                nonterminalsArray[i]->addProduction
+                (terminalsArray[terminalIndex], synchProduction);
             } else if (productionTok == "$$") {
-                nonterminalsArray[i]->addProduction(epsilonProduction);
+                nonterminalsArray[i]->addProduction
+                (terminalsArray[terminalIndex], epsilonProduction);
             } else if (productionTok == "$$$") {
                 continue;
             } else {
@@ -65,8 +67,9 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
                     /* Find given symbol */
                     if (terminals.find(grammarSymbolTok) == terminals.end()) {
                         if (nonTerminals.find(grammarSymbolTok) ==
-                        nonTerminals.end() {
-                            throw runtime_error("A grammar symbol is neither "
+                        nonTerminals.end()) {
+                            throw std::runtime_error("A grammar symbol is "
+                                                   "neither "
                                                 "a given terminal nor "
                                                 "non-terminal");
                         } else {
@@ -78,12 +81,10 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
 
                     newProduction.push_back(symbol);
                 }
-                nonterminalsArray[i]->addProduction(terminals[terminalIndex],
-                        newProduction);
+                nonterminalsArray[i]->addProduction
+                (terminalsArray[terminalIndex], newProduction);
             }
         }
-
-
 
     }
 
