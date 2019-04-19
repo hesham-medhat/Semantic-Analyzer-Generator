@@ -32,7 +32,7 @@ private:
     std::unordered_map<std::string, std::shared_ptr<NonTerminalSymbol>>
     nonTerminals;
 
-    std::istream& programStream;
+    std::unique_ptr<std::istream> programStream;
     std::shared_ptr<NonTerminalSymbol> currentSymbol = startingSymbol;
 };
 
