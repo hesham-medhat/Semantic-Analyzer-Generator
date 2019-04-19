@@ -8,7 +8,8 @@
 
 class GrammarSymbol {
 public:
-    typedef std::deque<std::shared_ptr<GrammarSymbol>> Production;
+    typedef std::shared_ptr<GrammarSymbol> ptr;
+    typedef std::deque<GrammarSymbol::ptr> Production;
     enum Type {NonTerminal, Terminal};
 
     explicit GrammarSymbol(std::string name);

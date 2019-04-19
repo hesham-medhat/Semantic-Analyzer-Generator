@@ -5,29 +5,31 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <memory>
+#include <vector>
 #include "TerminalSymbol.h"
 #include "GrammarSymbol.h"
 
 class NonTerminalSymbol : public GrammarSymbol {
 public:
+    typedef std::shared_ptr<NonTerminalSymbol> ptr;
     explicit NonTerminalSymbol(std::string name);
 
-    std::unordered_set<std::shared_ptr<TerminalSymbol>> getFirst();
-    std::unordered_set<std::shared_ptr<TerminalSymbol>> getFollow();
+    std::unordered_set<TerminalSymbol::ptr> getFirst();
+    std::unordered_set<TerminalSymbol::ptr> getFollow();
 
     Type getType() override;
     
     // Assumes epsilon production to be of single Symbol whose name is an
     // empty string
-    void addProduction(std::shared_ptr<TerminalSymbol>,
-            GrammarSymbol::Production);
+    void addProduction(GrammarSymbol::Production);
 
     bool hasEpsilonProduction;
 private:
     // Flag used during building process of the parser to indicate DSs are built
     bool built;
-    std::unordered_map<std::shared_ptr<TerminalSymbol>,
-    GrammarSymbol::Production> productions;
+    std::vector<GrammarSymbol::Production> productions;
+    std::unordered_map<TerminalSymbol::ptr,
+            GrammarSymbol::Production> transitions;
 };
 
 
