@@ -9,14 +9,12 @@
 class GrammarSymbol {
 public:
     typedef std::deque<std::shared_ptr<GrammarSymbol>> Production;
-
-    GrammarSymbol(std::string name);
     enum Type {NonTerminal, Terminal};
+
+    explicit GrammarSymbol(std::string name);
 
     virtual Type getType() = 0;
     std::string getName();
-protected:
-    const Type type;
 private:
     const std::string name;
 };
