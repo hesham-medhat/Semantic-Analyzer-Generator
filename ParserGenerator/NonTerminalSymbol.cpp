@@ -97,7 +97,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow() {
                     for (secFollowIter = secFollow.begin(); secFollowIter != secFollow.end(); secFollowIter++) {
                         follow.insert(*secFollowIter);
                     }
-                } else {
+                } else if(nextTerminal->getName() != "" ){
                     follow.insert(nextTerminal);
                 }
             } else {
@@ -125,7 +125,6 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow() {
         epsProduction.push_back(epsTerminal);
         GrammarSymbol::Production synProduction;
         synProduction.push_back(synTerminal);
-        follow.insert(synTerminal);
         std::unordered_set<TerminalSymbol::ptr>::iterator followIter;
         for (followIter = follow.begin(); followIter != follow.end(); followIter++) {
             if(transitions.find(*followIter) == transitions.end()){
@@ -140,6 +139,12 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow() {
                 //throw error not LL1
             }
         }
+        if(hasEpsilonProduction){
+            transitions[synTerminal] = epsProduction;
+        } else {
+            transitions[synTerminal] = synProduction;
+        }
+
         std::cout<<this->getName()<<std::endl;
         std::unordered_set<TerminalSymbol::ptr>::iterator iterator;
         for (iterator = follow.begin(); iterator != follow.end(); iterator++) {
@@ -151,7 +156,15 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow() {
             }
             std::cout<<std::endl;
         }
+        GrammarSymbol::Production production = transitions[synTerminal];
+        GrammarSymbol::Production::iterator symIte;
+        std::cout <<(synTerminal)->getName()<<" -> ";
+        for(symIte = production.begin(); symIte != production.end(); symIte++){
+            std::cout<<(*symIte)->getName()<<" ";
+        }
+        std::cout<<std::endl;
         std::cout<<"+++++++++++++++++++++++++++"<<std::endl;
+
         followCalculated = true;
     }
     return follow;
