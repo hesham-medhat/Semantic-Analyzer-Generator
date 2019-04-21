@@ -194,3 +194,13 @@ void NonTerminalSymbol::addUsingProduction(NonTerminalSymbol::ptr nonTerm, Gramm
     NonTerminalSymbol::usingPair pair(nonTerm,symbol);
     usingProductions.push_back(pair);
 }
+
+
+
+GrammarSymbol::Production NonTerminalSymbol::getProduction(TerminalSymbol::ptr terminal) {
+    GrammarSymbol::Production production;
+    if(transitions[terminal] != transitions.end()){
+        production = transitions[terminal];
+    }
+    return production;
+}

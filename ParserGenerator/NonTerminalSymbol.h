@@ -26,12 +26,11 @@ public:
     void addProduction(GrammarSymbol::Production);
     void addTransition(TerminalSymbol::ptr,
             GrammarSymbol::Production);
+    GrammarSymbol::Production getProduction(TerminalSymbol::ptr);
     void addUsingProduction(NonTerminalSymbol::ptr, GrammarSymbol::ptr);
 
     bool hasEpsilonProduction;
 private:
-    // Flag used during building process of the parser to indicate DSs are built
-    bool built;
 
     bool firstCalculated;
     bool followCalculated;
