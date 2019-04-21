@@ -125,9 +125,19 @@ int main(int argc, char* argv[]) {
     production4.push_back(F);
     production4.push_back(T_);
 
-    production5.push_back(x);
-    production5.push_back(F);
+    //production5.push_back(x);
+    //production5.push_back(F);
     production5.push_back(T_);
+    production5.insert(production5.begin(),F);
+    production5.insert(production5.begin(),x);
+
+
+    production5.pop_front();
+    GrammarSymbol::Production::iterator iter = production5.begin();
+    cout<<(*(iter + production5.size() - 1))->getName();
+
+    cout<<(*(iter))->getName();
+    cout<<(*(iter+1))->getName();
 
     production6.push_back(epsilon2);
 
