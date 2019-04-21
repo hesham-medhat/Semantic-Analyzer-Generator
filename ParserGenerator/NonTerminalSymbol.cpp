@@ -145,7 +145,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow() {
             transitions[synTerminal] = synProduction;
         }
 
-        std::cout<<this->getName()<<std::endl;
+        /*std::cout<<this->getName()<<std::endl;
         std::unordered_set<TerminalSymbol::ptr>::iterator iterator;
         for (iterator = follow.begin(); iterator != follow.end(); iterator++) {
             GrammarSymbol::Production production = transitions[*iterator];
@@ -164,7 +164,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow() {
         }
         std::cout<<std::endl;
         std::cout<<"+++++++++++++++++++++++++++"<<std::endl;
-
+*/
         followCalculated = true;
     }
     return follow;

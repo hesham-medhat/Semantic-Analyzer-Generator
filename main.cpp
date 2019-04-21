@@ -173,15 +173,16 @@ int main(int argc, char* argv[]) {
     Fn->addUsingProduction(T_n, T_);
 
 
+/*
 
-    unordered_set<TerminalSymbol::ptr> follow;// = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFollow();
+    unordered_set<TerminalSymbol::ptr> follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFollow();
     unordered_set<TerminalSymbol::ptr>::iterator iter;
-    /*for (iter = follow.begin(); iter != follow.end(); iter++) {
+    for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
 
     cout<<"============================="<<endl;
-*/
+
     follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(E_))->getFollow();
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
@@ -206,6 +207,7 @@ int main(int argc, char* argv[]) {
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
+*/
 
    /* unordered_set<TerminalSymbol::ptr> first = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFirst();
     unordered_set<TerminalSymbol::ptr>::iterator iter;
