@@ -178,7 +178,7 @@ int main(int argc, char* argv[]) {
     T_n->addProduction(production6);
     Fn->addProduction(production7);
     F_n->addProduction(production8);
-    F_n->addProduction(production8);
+    F_n->addProduction(production9);
     Pn->addProduction(production10);
     Pn->addProduction(production11);
     Pn->addProduction(production12);
@@ -231,7 +231,7 @@ int main(int argc, char* argv[]) {
 
     cout<<"============================="<<endl;
 
-/*
+
 
     follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(T))->getFollow(emptySet);
     for (iter = follow.begin(); iter != follow.end(); iter++) {
@@ -251,47 +251,72 @@ int main(int argc, char* argv[]) {
         cout<<(*iter)->getName()<<endl;
     }
 
+    cout<<"============================="<<endl;
+
+    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(F_))->getFollow(emptySet);
+    for (iter = follow.begin(); iter != follow.end(); iter++) {
+        cout<<(*iter)->getName()<<endl;
+    }
+
+    cout<<"============================="<<endl;
+
+    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(P))->getFollow(emptySet);
+    for (iter = follow.begin(); iter != follow.end(); iter++) {
+        cout<<(*iter)->getName()<<endl;
+    }
+
+
+
+/*
+
+    unordered_set<TerminalSymbol::ptr> first = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFirst();
+    unordered_set<TerminalSymbol::ptr>::iterator iter;
+    for (iter = first.begin(); iter != first.end(); iter++) {
+        cout<<(*iter)->getName()<<endl;
+    }
+    cout<<"============================="<<endl;
+
+    first = (std::dynamic_pointer_cast<NonTerminalSymbol>(E_))->getFirst();
+    for (iter = first.begin(); iter != first.end(); iter++) {
+        cout<<(*iter)->getName()<<endl;
+    }
+
+    cout<<"============================="<<endl;
+
+    first = (std::dynamic_pointer_cast<NonTerminalSymbol>(T))->getFirst();
+    for (iter = first.begin(); iter != first.end(); iter++) {
+        cout<<(*iter)->getName()<<endl;
+    }
+    cout<<"============================="<<endl;
+
+    first = (std::dynamic_pointer_cast<NonTerminalSymbol>(T_))->getFirst();
+    for (iter = first.begin(); iter != first.end(); iter++) {
+        cout<<(*iter)->getName()<<endl;
+    }
+
+    cout<<"============================="<<endl;
+
+    first = (std::dynamic_pointer_cast<NonTerminalSymbol>(F))->getFirst();
+    for (iter = first.begin(); iter != first.end(); iter++) {
+        cout<<(*iter)->getName()<<endl;
+    }
+
+    cout<<"============================="<<endl;
+
+    first = (std::dynamic_pointer_cast<NonTerminalSymbol>(F_))->getFirst();
+    for (iter = first.begin(); iter != first.end(); iter++) {
+        cout<<(*iter)->getName()<<endl;
+    }
+    cout<<"============================="<<endl;
+
+    first = (std::dynamic_pointer_cast<NonTerminalSymbol>(P))->getFirst();
+    for (iter = first.begin(); iter != first.end(); iter++) {
+        cout<<(*iter)->getName()<<endl;
+    }
+
+
 
 */
-
-
-    /* unordered_set<TerminalSymbol::ptr> first = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFirst();
-     unordered_set<TerminalSymbol::ptr>::iterator iter;
-     for (iter = first.begin(); iter != first.end(); iter++) {
-         cout<<(*iter)->getName()<<endl;
-     }
-
-     cout<<"============================="<<endl;
-
-     first = (std::dynamic_pointer_cast<NonTerminalSymbol>(E_))->getFirst();
-     for (iter = first.begin(); iter != first.end(); iter++) {
-         cout<<(*iter)->getName()<<endl;
-     }
-
-     cout<<"============================="<<endl;
-
-     first = (std::dynamic_pointer_cast<NonTerminalSymbol>(T))->getFirst();
-     for (iter = first.begin(); iter != first.end(); iter++) {
-         cout<<(*iter)->getName()<<endl;
-     }
-     cout<<"============================="<<endl;
-
-     first = (std::dynamic_pointer_cast<NonTerminalSymbol>(T_))->getFirst();
-     for (iter = first.begin(); iter != first.end(); iter++) {
-         cout<<(*iter)->getName()<<endl;
-     }
-
-     cout<<"============================="<<endl;
-
-     first = (std::dynamic_pointer_cast<NonTerminalSymbol>(F))->getFirst();
-     for (iter = first.begin(); iter != first.end(); iter++) {
-         cout<<(*iter)->getName()<<endl;
-     }
- */
-
-
-
-
 
 
 
