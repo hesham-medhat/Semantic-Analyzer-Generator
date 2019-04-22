@@ -81,12 +81,228 @@ void addProduction(GrammarSymbol::Production production){
 
 int main(int argc, char* argv[]) {
 
+    /*
+    E -> TE’
+    E’ -> +E | 
+    T -> FT’
+    T’ -> T | 
+    F -> PF'
+    F' -> *F | 
+    P -> (E) | a | b |Em
+    */
+
+
+    GrammarSymbol::ptr E = std::make_shared<NonTerminalSymbol> ("E");
+    GrammarSymbol::ptr E_ = std::make_shared<NonTerminalSymbol> ("E`");
+    GrammarSymbol::ptr T = std::make_shared<NonTerminalSymbol> ("T");
+    GrammarSymbol::ptr T_ = std::make_shared<NonTerminalSymbol> ("T`");
+    GrammarSymbol::ptr F = std::make_shared<NonTerminalSymbol> ("F");
+    GrammarSymbol::ptr F_ = std::make_shared<NonTerminalSymbol> ("F`");
+    GrammarSymbol::ptr P = std::make_shared<NonTerminalSymbol> ("P");
+
+    GrammarSymbol::ptr plus = std::make_shared<TerminalSymbol> ("+");
+    GrammarSymbol::ptr openPractice = std::make_shared<TerminalSymbol> ("(");
+    GrammarSymbol::ptr closePractice = std::make_shared<TerminalSymbol> (")");
+    GrammarSymbol::ptr x = std::make_shared<TerminalSymbol> ("*");
+    GrammarSymbol::ptr a = std::make_shared<TerminalSymbol> ("a");
+    GrammarSymbol::ptr b = std::make_shared<TerminalSymbol> ("b");
+    GrammarSymbol::ptr Em = std::make_shared<TerminalSymbol> ("Em");
+    GrammarSymbol::ptr epsilon = std::make_shared<TerminalSymbol> ("");
+    GrammarSymbol::ptr epsilon2 = std::make_shared<TerminalSymbol> ("");
+
+
+    std::deque<std::shared_ptr<GrammarSymbol>> production1;
+    std::deque<std::shared_ptr<GrammarSymbol>> production2;
+    std::deque<std::shared_ptr<GrammarSymbol>> production3;
+    std::deque<std::shared_ptr<GrammarSymbol>> production4;
+    std::deque<std::shared_ptr<GrammarSymbol>> production5;
+    std::deque<std::shared_ptr<GrammarSymbol>> production6;
+    std::deque<std::shared_ptr<GrammarSymbol>> production7;
+    std::deque<std::shared_ptr<GrammarSymbol>> production8;
+    std::deque<std::shared_ptr<GrammarSymbol>> production9;
+    std::deque<std::shared_ptr<GrammarSymbol>> production10;
+    std::deque<std::shared_ptr<GrammarSymbol>> production11;
+    std::deque<std::shared_ptr<GrammarSymbol>> production12;
+    std::deque<std::shared_ptr<GrammarSymbol>> production13;
+
+    production1.push_back(T);
+    production1.push_back(E_);
+
+    production2.push_back(plus);
+    production2.push_back(E);
+
+    production3.push_back(epsilon);
+
+
+    production4.push_back(F);
+    production4.push_back(T_);
+
+    production5.push_back(T);
+
+
+    production6.push_back(epsilon2);
+
+    production7.push_back(P);
+    production7.push_back(F_);
+
+    production8.push_back(x);
+    production8.push_back(F);
+
+    production9.push_back(epsilon);
+
+
+    production10.push_back(openPractice);
+    production10.push_back(E);
+    production10.push_back(closePractice);
+
+    production11.push_back(a);
+
+    production12.push_back(b);
+
+    production13.push_back(Em);
+
+    NonTerminalSymbol::ptr En = std::dynamic_pointer_cast<NonTerminalSymbol>(E);
+    NonTerminalSymbol::ptr E_n = std::dynamic_pointer_cast<NonTerminalSymbol>(E_);
+    NonTerminalSymbol::ptr Tn = std::dynamic_pointer_cast<NonTerminalSymbol>(T);
+    NonTerminalSymbol::ptr T_n = std::dynamic_pointer_cast<NonTerminalSymbol>(T_);
+    NonTerminalSymbol::ptr Fn = std::dynamic_pointer_cast<NonTerminalSymbol>(F);
+    NonTerminalSymbol::ptr F_n = std::dynamic_pointer_cast<NonTerminalSymbol>(F_);
+    NonTerminalSymbol::ptr Pn = std::dynamic_pointer_cast<NonTerminalSymbol>(P);
+
+
+    En->addProduction(production1);
+    E_n->addProduction(production2);
+    E_n->addProduction(production3);
+    Tn->addProduction(production4);
+    T_n->addProduction(production5);
+    T_n->addProduction(production6);
+    Fn->addProduction(production7);
+    F_n->addProduction(production8);
+    F_n->addProduction(production8);
+    Pn->addProduction(production10);
+    Pn->addProduction(production11);
+    Pn->addProduction(production12);
+    Pn->addProduction(production13);
+
+    En->hasEpsilonProduction = false;
+    E_n->hasEpsilonProduction = true;
+    Tn->hasEpsilonProduction = false;
+    T_n->hasEpsilonProduction = true;
+    Fn->hasEpsilonProduction = false;
+    F_n->hasEpsilonProduction = true;
+    Pn->hasEpsilonProduction = false;
+
+
+
+    En->addUsingProduction(E_n, production2);
+    En->addUsingProduction(Pn, production10);
+
+    E_n->addUsingProduction(En, production1);
+
+    Tn->addUsingProduction(En, production1);
+    Tn->addUsingProduction(T_n, production5);
+
+    T_n->addUsingProduction(Tn, production4);
+
+    Fn->addUsingProduction(Tn, production4);
+    Fn->addUsingProduction(F_n, production8);
+
+    F_n->addUsingProduction(Fn, production7);
+
+    Pn->addUsingProduction(Fn, production7);
+
+
+
+
+    unordered_set<std::string> emptySet;
+    unordered_set<TerminalSymbol::ptr> follow;
+    unordered_set<TerminalSymbol::ptr>::iterator iter;
+    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFollow(emptySet);
+    for (iter = follow.begin(); iter != follow.end(); iter++) {
+        cout<<(*iter)->getName()<<endl;
+    }
+
+    cout<<"============================="<<endl;
+
+    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(E_))->getFollow(emptySet);
+    for (iter = follow.begin(); iter != follow.end(); iter++) {
+        cout<<(*iter)->getName()<<endl;
+    }
+
+    cout<<"============================="<<endl;
+
+/*
+
+    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(T))->getFollow(emptySet);
+    for (iter = follow.begin(); iter != follow.end(); iter++) {
+        cout<<(*iter)->getName()<<endl;
+    }
+    cout<<"============================="<<endl;
+
+    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(T_))->getFollow(emptySet);
+    for (iter = follow.begin(); iter != follow.end(); iter++) {
+        cout<<(*iter)->getName()<<endl;
+    }
+
+    cout<<"============================="<<endl;
+
+    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(F))->getFollow(emptySet);
+    for (iter = follow.begin(); iter != follow.end(); iter++) {
+        cout<<(*iter)->getName()<<endl;
+    }
+
+
+*/
+
+
+    /* unordered_set<TerminalSymbol::ptr> first = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFirst();
+     unordered_set<TerminalSymbol::ptr>::iterator iter;
+     for (iter = first.begin(); iter != first.end(); iter++) {
+         cout<<(*iter)->getName()<<endl;
+     }
+
+     cout<<"============================="<<endl;
+
+     first = (std::dynamic_pointer_cast<NonTerminalSymbol>(E_))->getFirst();
+     for (iter = first.begin(); iter != first.end(); iter++) {
+         cout<<(*iter)->getName()<<endl;
+     }
+
+     cout<<"============================="<<endl;
+
+     first = (std::dynamic_pointer_cast<NonTerminalSymbol>(T))->getFirst();
+     for (iter = first.begin(); iter != first.end(); iter++) {
+         cout<<(*iter)->getName()<<endl;
+     }
+     cout<<"============================="<<endl;
+
+     first = (std::dynamic_pointer_cast<NonTerminalSymbol>(T_))->getFirst();
+     for (iter = first.begin(); iter != first.end(); iter++) {
+         cout<<(*iter)->getName()<<endl;
+     }
+
+     cout<<"============================="<<endl;
+
+     first = (std::dynamic_pointer_cast<NonTerminalSymbol>(F))->getFirst();
+     for (iter = first.begin(); iter != first.end(); iter++) {
+         cout<<(*iter)->getName()<<endl;
+     }
+ */
+
+
+
+
+
+
+
+
     /*E -> TE’
     E’ -> +TE’ | 
     T -> FT’
     T’ -> *FT’ | 
     F -> (E) | id
     */
+/*
 
     GrammarSymbol::ptr E = std::make_shared<NonTerminalSymbol> ("E");
     GrammarSymbol::ptr E_ = std::make_shared<NonTerminalSymbol> ("E`");
@@ -137,8 +353,8 @@ int main(int argc, char* argv[]) {
     GrammarSymbol::Production::iterator iter2 = iter3;
     iter2++;
 
-    cout<<(*iter3)->getName()<<endl;
-    cout<<(*iter2)->getName()<<endl;
+    //cout<<(*iter3)->getName()<<endl;
+    //cout<<(*iter2)->getName()<<endl;
 
 
     //cout<<(*(iter + production5.size() - 1))->getName();
@@ -194,40 +410,43 @@ int main(int argc, char* argv[]) {
 
 
 
-/*
+    unordered_set<std::string> emptySet;
     unordered_set<TerminalSymbol::ptr> follow;
     unordered_set<TerminalSymbol::ptr>::iterator iter;
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFollow();
+    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFollow(emptySet);
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
 
     cout<<"============================="<<endl;
 
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(E_))->getFollow();
+    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(E_))->getFollow(emptySet);
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
 
     cout<<"============================="<<endl;
 
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(T))->getFollow();
+
+    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(T))->getFollow(emptySet);
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
     cout<<"============================="<<endl;
 
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(T_))->getFollow();
+    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(T_))->getFollow(emptySet);
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
 
     cout<<"============================="<<endl;
 
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(F))->getFollow();
+    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(F))->getFollow(emptySet);
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
+
+
 */
 
    /* unordered_set<TerminalSymbol::ptr> first = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFirst();
