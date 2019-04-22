@@ -137,10 +137,10 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow() {
                 } else {
                     transitions[*followIter] = synProduction;
                 }
-            } else {
-                follow.clear();
-                return follow;
-                //throw error not LL1
+            } else if(hasEpsilonProduction){
+                    follow.clear();
+                    return follow;
+                    //throw error not LL1
             }
         }
         if(hasEpsilonProduction){
@@ -148,7 +148,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow() {
         } else {
             transitions[synTerminal] = synProduction;
         }
-
+/*
         std::cout<<this->getName()<<std::endl;
         std::unordered_set<TerminalSymbol::ptr>::iterator iterator;
         for (iterator = follow.begin(); iterator != follow.end(); iterator++) {
@@ -168,7 +168,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow() {
         }
         std::cout<<std::endl;
         std::cout<<"+++++++++++++++++++++++++++"<<std::endl;
-        followCalculated = true;
+        followCalculated = true;*/
     }
     return follow;
 }
