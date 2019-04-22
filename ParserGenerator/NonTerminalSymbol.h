@@ -17,7 +17,7 @@ public:
     explicit NonTerminalSymbol(std::string name);
 
     std::unordered_set<TerminalSymbol::ptr> getFirst();
-    std::unordered_set<TerminalSymbol::ptr> getFollow();
+    std::unordered_set<TerminalSymbol::ptr> getFollow(std::unordered_set<std::string>);
 
     Type getType() override;
     

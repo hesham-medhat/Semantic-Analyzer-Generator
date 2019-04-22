@@ -77,8 +77,9 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst() {
     return first;
 }
 
-std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow() {
-    if(!followCalculated){
+std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unordered_set<std::string> caller) {
+    caller.insert(this->getName());
+    //if(!followCalculated){
         std::vector<NonTerminalSymbol::usingPair>::iterator pairIter;
         for (pairIter = usingProductions.begin();
         pairIter != usingProductions.end(); pairIter++) {
@@ -112,8 +113,13 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow() {
                             }
                         }
                     }
-                    if ((prodIter2) == production.end() && parent->getName().compare(this->getName()) != 0) {
-                        std::unordered_set<TerminalSymbol::ptr> secFollow = parent->getFollow();
+                    bool noRecursion = true;
+                    std::unordered_set<std::string>::iterator callerIter;
+                    for(callerIter = caller.begin(); callerIter != caller.end(); callerIter++){
+                        noRecursion = noRecursion && parent->getName().compare(*callerIter) != 0;
+                    }
+                    if ((prodIter2) == production.end() && noRecursion) {
+                        std::unordered_set<TerminalSymbol::ptr> secFollow = parent->getFollow(caller);
                         std::unordered_set<TerminalSymbol::ptr>::iterator secFollowIter;
                         for (secFollowIter = secFollow.begin(); secFollowIter != secFollow.end(); secFollowIter++) {
                             follow.insert(*secFollowIter);
@@ -148,7 +154,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow() {
         } else {
             transitions[synTerminal] = synProduction;
         }
-/*
+
         std::cout<<this->getName()<<std::endl;
         std::unordered_set<TerminalSymbol::ptr>::iterator iterator;
         for (iterator = follow.begin(); iterator != follow.end(); iterator++) {
@@ -168,8 +174,8 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow() {
         }
         std::cout<<std::endl;
         std::cout<<"+++++++++++++++++++++++++++"<<std::endl;
-        followCalculated = true;*/
-    }
+        followCalculated = true;
+    //}
     return follow;
 }
 
