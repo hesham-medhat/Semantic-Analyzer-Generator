@@ -128,3 +128,8 @@ Token LexicalAnalyzer::nextToken() {
 void LexicalAnalyzer::saveLexicalAnalyzerAutomaton(std::ostream& outputStream) {
     languageAutomaton.saveIntoFile(outputStream);
 };
+
+Token LexicalAnalyzer::nextToken() {
+    Token t("",0);
+    return t;
+}

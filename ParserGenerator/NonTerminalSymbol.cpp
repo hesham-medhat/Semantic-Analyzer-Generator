@@ -77,43 +77,47 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst() {
     return first;
 }
 
-/*
- * A -> aC
- * C -> bcA
- * problem
- */
 std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow() {
     if(!followCalculated){
-        std::vector<NonTerminalSymbol::usingPair>::iterator pairIte;
-        for (pairIte = usingProductions.begin();
-        pairIte != usingProductions.end(); pairIte++) {
-            NonTerminalSymbol::ptr parent = (*pairIte).first;
-            GrammarSymbol::ptr nextSymbol = (*pairIte).second;
-            if(nextSymbol->getType() == GrammarSymbol::Type::Terminal) {
-                TerminalSymbol::ptr nextTerminal = std::dynamic_pointer_cast<TerminalSymbol>(nextSymbol);
-                if(nextTerminal->getName() == "" && parent->getName().compare(this->getName()) != 0){
-                    std::unordered_set<TerminalSymbol::ptr> secFollow = parent->getFollow();
-                    std::unordered_set<TerminalSymbol::ptr>::iterator secFollowIter;
-                    for (secFollowIter = secFollow.begin(); secFollowIter != secFollow.end(); secFollowIter++) {
-                        follow.insert(*secFollowIter);
+        std::vector<NonTerminalSymbol::usingPair>::iterator pairIter;
+        for (pairIter = usingProductions.begin();
+        pairIter != usingProductions.end(); pairIter++) {
+            NonTerminalSymbol::ptr parent = (*pairIter).first;
+            GrammarSymbol::Production production = (*pairIter).second;
+            GrammarSymbol::Production::iterator prodIter;
+            for(prodIter = production.begin(); prodIter != production.end(); prodIter++) {
+                if((*prodIter)->getName().compare(this->getName()) == 0) {
+                    GrammarSymbol::Production::iterator prodIter2 = prodIter;
+                    prodIter2++;
+                    while (prodIter2 != production.end()) {
+                        GrammarSymbol::ptr nextSymbol = *prodIter2;
+                        if (nextSymbol->getType() == GrammarSymbol::Type::Terminal) {
+                            TerminalSymbol::ptr terminal = std::dynamic_pointer_cast<TerminalSymbol>(nextSymbol);
+                            follow.insert(terminal);
+                            break;
+                        } else {
+                            NonTerminalSymbol::ptr nonTerminal = std::dynamic_pointer_cast<NonTerminalSymbol>(
+                                    nextSymbol);
+                            std::unordered_set<TerminalSymbol::ptr> secFollow = nonTerminal->getFirst();
+                            std::unordered_set<TerminalSymbol::ptr>::iterator secFollowIter;
+                            for (secFollowIter = secFollow.begin(); secFollowIter != secFollow.end(); secFollowIter++) {
+                                if ((*secFollowIter)->getName().compare("") != 0) {
+                                    follow.insert(*secFollowIter);
+                                }
+                            }
+                            if (!nonTerminal->hasEpsilonProduction) {
+                                break;
+                            } else {
+                                prodIter2++;
+                            }
+                        }
                     }
-                } else if(nextTerminal->getName() != "" ){
-                    follow.insert(nextTerminal);
-                }
-            } else {
-                NonTerminalSymbol::ptr nextNonTerminal = std::dynamic_pointer_cast<NonTerminalSymbol>(nextSymbol);
-                std::unordered_set<TerminalSymbol::ptr> secFollow = nextNonTerminal->getFirst();
-                std::unordered_set<TerminalSymbol::ptr>::iterator secFollowIter;
-                for (secFollowIter = secFollow.begin(); secFollowIter != secFollow.end(); secFollowIter++) {
-                    if ((*secFollowIter)->getName().compare("") != 0) {
-                        follow.insert(*secFollowIter);
-                    }
-                }
-                if(nextNonTerminal->hasEpsilonProduction){
-                    std::unordered_set<TerminalSymbol::ptr> secFollow2 = nextNonTerminal->getFollow();
-                    std::unordered_set<TerminalSymbol::ptr>::iterator secFollowIter2;
-                    for (secFollowIter2 = secFollow2.begin(); secFollowIter2 != secFollow2.end(); secFollowIter2++) {
-                        follow.insert(*secFollowIter2);
+                    if ((prodIter2) == production.end() && parent->getName().compare(this->getName()) != 0) {
+                        std::unordered_set<TerminalSymbol::ptr> secFollow = parent->getFollow();
+                        std::unordered_set<TerminalSymbol::ptr>::iterator secFollowIter;
+                        for (secFollowIter = secFollow.begin(); secFollowIter != secFollow.end(); secFollowIter++) {
+                            follow.insert(*secFollowIter);
+                        }
                     }
                 }
             }
@@ -145,7 +149,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow() {
             transitions[synTerminal] = synProduction;
         }
 
-        /*std::cout<<this->getName()<<std::endl;
+        std::cout<<this->getName()<<std::endl;
         std::unordered_set<TerminalSymbol::ptr>::iterator iterator;
         for (iterator = follow.begin(); iterator != follow.end(); iterator++) {
             GrammarSymbol::Production production = transitions[*iterator];
@@ -164,7 +168,6 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow() {
         }
         std::cout<<std::endl;
         std::cout<<"+++++++++++++++++++++++++++"<<std::endl;
-*/
         followCalculated = true;
     }
     return follow;
@@ -190,8 +193,8 @@ void NonTerminalSymbol::addProduction(GrammarSymbol::Production production) {
     productions.push_back(production);
 }
 
-void NonTerminalSymbol::addUsingProduction(NonTerminalSymbol::ptr nonTerm, GrammarSymbol::ptr symbol) {
-    NonTerminalSymbol::usingPair pair(nonTerm,symbol);
+void NonTerminalSymbol::addUsingProduction(NonTerminalSymbol::ptr nonTerm, GrammarSymbol::Production production) {
+    NonTerminalSymbol::usingPair pair(nonTerm,production);
     usingProductions.push_back(pair);
 }
 
@@ -199,8 +202,122 @@ void NonTerminalSymbol::addUsingProduction(NonTerminalSymbol::ptr nonTerm, Gramm
 
 GrammarSymbol::Production NonTerminalSymbol::getProduction(TerminalSymbol::ptr terminal) {
     GrammarSymbol::Production production;
-    if(transitions[terminal] != transitions.end()){
+    if(transitions.find(terminal) != transitions.end()){
         production = transitions[terminal];
     }
     return production;
 }
+
+
+
+
+
+/*
+ * A -> aC
+ * C -> bcA
+ * problem
+ */
+/*
+std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow() {
+    if(!followCalculated){
+        std::vector<NonTerminalSymbol::usingPair>::iterator pairIter;
+        for (pairIter = usingProductions.begin();
+             pairIter != usingProductions.end(); pairIter++) {
+            NonTerminalSymbol::ptr parent = (*pairIter).first;
+            GrammarSymbol::Production production = (*pairIter).second;
+            GrammarSymbol::Production::iterator prodIter = production.begin();
+            while ((*prodIter)->getName().compare(this->getName()) != 0){
+                prodIter++;
+            }
+            if((prodIter+1) == production.end() && parent->getName().compare(this->getName()) != 0){
+                std::unordered_set<TerminalSymbol::ptr> secFollow = parent->getFollow();
+                std::unordered_set<TerminalSymbol::ptr>::iterator secFollowIter;
+                for (secFollowIter = secFollow.begin(); secFollowIter != secFollow.end(); secFollowIter++) {
+                    follow.insert(*secFollowIter);
+                }
+            }
+            for(prodIter++; prodIter != production.end(); prodIter++) {
+                GrammarSymbol::ptr nextSymbol = *prodIter;
+                if (nextSymbol->getType() == GrammarSymbol::Type::Terminal) {
+                    TerminalSymbol::ptr nextTerminal = std::dynamic_pointer_cast<TerminalSymbol>(nextSymbol);
+                    if (nextTerminal->getName() == "" && parent->getName().compare(this->getName()) != 0) {
+                        std::unordered_set<TerminalSymbol::ptr> secFollow = parent->getFollow();
+                        std::unordered_set<TerminalSymbol::ptr>::iterator secFollowIter;
+                        for (secFollowIter = secFollow.begin(); secFollowIter != secFollow.end(); secFollowIter++) {
+                            follow.insert(*secFollowIter);
+                        }
+                    } else if (nextTerminal->getName() != "") {
+                        follow.insert(nextTerminal);
+                    }
+                    break;
+                } else {
+                    NonTerminalSymbol::ptr nextNonTerminal = std::dynamic_pointer_cast<NonTerminalSymbol>(nextSymbol);
+                    std::unordered_set<TerminalSymbol::ptr> secFollow = nextNonTerminal->getFirst();
+                    std::unordered_set<TerminalSymbol::ptr>::iterator secFollowIter;
+                    for (secFollowIter = secFollow.begin(); secFollowIter != secFollow.end(); secFollowIter++) {
+                        if ((*secFollowIter)->getName().compare("") != 0) {
+                            follow.insert(*secFollowIter);
+                        }
+                    }
+                    if (nextNonTerminal->hasEpsilonProduction) {
+                        std::unordered_set<TerminalSymbol::ptr> secFollow2 = nextNonTerminal->getFollow();
+                        std::unordered_set<TerminalSymbol::ptr>::iterator secFollowIter2;
+                        for (secFollowIter2 = secFollow2.begin();
+                             secFollowIter2 != secFollow2.end(); secFollowIter2++) {
+                            follow.insert(*secFollowIter2);
+                        }
+                    }
+                }
+            }
+        }
+
+        TerminalSymbol::ptr epsTerminal = std::make_shared<TerminalSymbol>("");
+        TerminalSymbol::ptr synTerminal = std::make_shared<TerminalSymbol>("$");
+        GrammarSymbol::Production epsProduction;
+        epsProduction.push_back(epsTerminal);
+        GrammarSymbol::Production synProduction;
+        synProduction.push_back(synTerminal);
+        std::unordered_set<TerminalSymbol::ptr>::iterator followIter;
+        for (followIter = follow.begin(); followIter != follow.end(); followIter++) {
+            if(transitions.find(*followIter) == transitions.end()){
+                if(hasEpsilonProduction){
+                    transitions[*followIter] = epsProduction;
+                } else {
+                    transitions[*followIter] = synProduction;
+                }
+            } else {
+                follow.clear();
+                return follow;
+                //throw error not LL1
+            }
+        }
+        if(hasEpsilonProduction){
+            transitions[synTerminal] = epsProduction;
+        } else {
+            transitions[synTerminal] = synProduction;
+        }
+
+        std::cout<<this->getName()<<std::endl;
+        std::unordered_set<TerminalSymbol::ptr>::iterator iterator;
+        for (iterator = follow.begin(); iterator != follow.end(); iterator++) {
+            GrammarSymbol::Production production = transitions[*iterator];
+            GrammarSymbol::Production::iterator symIte;
+            std::cout <<(*iterator)->getName()<<" -> ";
+            for(symIte = production.begin(); symIte != production.end(); symIte++){
+                std::cout<<(*symIte)->getName()<<" ";
+            }
+            std::cout<<std::endl;
+        }
+        GrammarSymbol::Production production = transitions[synTerminal];
+        GrammarSymbol::Production::iterator symIte;
+        std::cout <<(synTerminal)->getName()<<" -> ";
+        for(symIte = production.begin(); symIte != production.end(); symIte++){
+            std::cout<<(*symIte)->getName()<<" ";
+        }
+        std::cout<<std::endl;
+        std::cout<<"+++++++++++++++++++++++++++"<<std::endl;
+        followCalculated = true;
+    }
+    return follow;
+}
+*/

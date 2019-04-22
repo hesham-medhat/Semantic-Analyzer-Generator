@@ -13,7 +13,7 @@
 class NonTerminalSymbol : public GrammarSymbol {
 public:
     typedef std::shared_ptr<NonTerminalSymbol> ptr;
-    typedef std::pair<NonTerminalSymbol::ptr,GrammarSymbol::ptr> usingPair;
+    typedef std::pair<NonTerminalSymbol::ptr,GrammarSymbol::Production> usingPair;
     explicit NonTerminalSymbol(std::string name);
 
     std::unordered_set<TerminalSymbol::ptr> getFirst();
@@ -27,7 +27,7 @@ public:
     void addTransition(TerminalSymbol::ptr,
             GrammarSymbol::Production);
     GrammarSymbol::Production getProduction(TerminalSymbol::ptr);
-    void addUsingProduction(NonTerminalSymbol::ptr, GrammarSymbol::ptr);
+    void addUsingProduction(NonTerminalSymbol::ptr, GrammarSymbol::Production);
 
     bool hasEpsilonProduction;
 private:
