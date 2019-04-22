@@ -15,13 +15,15 @@ public:
     // Analyzes given program as a whole generating output at once
     void analyzeCompleteProgram(const std::string& programFilePath);
     // Initialize parse sequence
-    void initProgramParse(std::string& programFilePath);
+    void initProgramParse(const std::string& programFilePath);
     // Gets next token for the parser. Returns nullptr if uninitialized and empty token when done
     Token nextToken();
 
     void saveLexicalAnalyzerAutomaton(std::ostream& outputStream);
 private:
     Automaton languageAutomaton;
+    std::unique_ptr<std::istream> programIstream;
+    std::shared_ptr<State> LACurrentState;
 };
 
 

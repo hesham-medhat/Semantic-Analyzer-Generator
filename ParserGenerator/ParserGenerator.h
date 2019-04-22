@@ -6,7 +6,7 @@
 #include "Parser.h"
 
 /* Utility class that is used to generate the parser given input
- * steram of grammar rules and their lexical analyzer */
+ * stream of grammar rules and their lexical analyzer */
 class ParserGenerator {
 public:
     static Parser generateParser(std::istream&, LexicalAnalyzer&);
