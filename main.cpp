@@ -132,12 +132,19 @@ int main(int argc, char* argv[]) {
     production5.insert(production5.begin(),x);
 
 
-    production5.pop_front();
-    GrammarSymbol::Production::iterator iter = production5.begin();
-    cout<<(*(iter + production5.size() - 1))->getName();
+    //production5.pop_front();
+    GrammarSymbol::Production::iterator iter3 = production5.begin();
+    GrammarSymbol::Production::iterator iter2 = iter3;
+    iter2++;
 
-    cout<<(*(iter))->getName();
-    cout<<(*(iter+1))->getName();
+    cout<<(*iter3)->getName()<<endl;
+    cout<<(*iter2)->getName()<<endl;
+
+
+    //cout<<(*(iter + production5.size() - 1))->getName();
+
+    //cout<<(*(iter))->getName();
+    //cout<<(*(iter+1))->getName();
 
     production6.push_back(epsilon2);
 
@@ -168,25 +175,29 @@ int main(int argc, char* argv[]) {
     T_n->hasEpsilonProduction = true;
     Fn->hasEpsilonProduction = false;
 
-    En->addUsingProduction(Fn, closePractice);
 
-    E_n->addUsingProduction(En, epsilon);
-    E_n->addUsingProduction(E_n, epsilon);
 
-    Tn->addUsingProduction(En, E_);
-    Tn->addUsingProduction(E_n, E_);
+    En->addUsingProduction(Fn, production7);
 
-    T_n->addUsingProduction(Tn, epsilon);
-    T_n->addUsingProduction(T_n, epsilon);
+    E_n->addUsingProduction(En, production1);
+    E_n->addUsingProduction(E_n, production2);
 
-    Fn->addUsingProduction(Tn, T_);
-    Fn->addUsingProduction(T_n, T_);
+    Tn->addUsingProduction(En, production2);
+    Tn->addUsingProduction(E_n, production1);
+
+    T_n->addUsingProduction(Tn, production4);
+    T_n->addUsingProduction(T_n, production5);
+
+    Fn->addUsingProduction(Tn, production4);
+    Fn->addUsingProduction(T_n, production5);
+
+
 
 
 /*
-
-    unordered_set<TerminalSymbol::ptr> follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFollow();
+    unordered_set<TerminalSymbol::ptr> follow;
     unordered_set<TerminalSymbol::ptr>::iterator iter;
+    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFollow();
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }

@@ -11,6 +11,10 @@ Parser::Parser(LexicalAnalyzer & lexicalAnalyzer,
                nonTerminals(nonTerminals) {}
 
 
+
+
+//I should make currentToken global and make another function to loop in this and
+// make the loop in the new function and the loop here will be in the last else condition below
 Parser::Sentence Parser::getNextDerivation() {
     Token currentToken = lexicalAnalyzer.nextToken();
     Parser::Sentence sentence;
