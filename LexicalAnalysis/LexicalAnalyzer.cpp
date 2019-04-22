@@ -2,6 +2,10 @@
 #include <fstream>
 #include "LexicalAnalyzer.h"
 
+LexicalAnalyzer::LexicalAnalyzer(const LexicalAnalyzer& original) :
+  languageAutomaton(original.languageAutomaton),
+  LACurrentState(original.LACurrentState) { }
+
 LexicalAnalyzer::LexicalAnalyzer(const Automaton& languageAutomaton)
 : languageAutomaton(languageAutomaton) { }
 
@@ -78,13 +82,12 @@ void LexicalAnalyzer::initProgramParse(const std::string& programFilePath) {
 }
 
 Token LexicalAnalyzer::nextToken() {
-  if (!LACurrentState) { return Token("", INT_MAX); }
+  if (!*programIstream) { return Token("", INT_MAX); }
 
-  Token lastMatchedToken("", 0);
+  Token lastMatchedToken("", INT_MAX);
   char currentChar;
   std::string currentToken;
-  std::ifstream::pos_type anchor = 0;
-  std::ifstream::pos_type lastMatchedPos = -1;
+  std::ifstream::pos_type anchor = programIstream->tellg();
 
   while (programIstream->get(currentChar)) {
     currentToken += currentChar;
@@ -97,18 +100,16 @@ Token LexicalAnalyzer::nextToken() {
       if (!token.getType().empty()) {
         token.setLexeme(currentToken);
         lastMatchedToken = token;
-        lastMatchedPos = programIstream->tellg();
+        anchor = programIstream->tellg();
       }
     } else if (!lastMatchedToken.getType().empty()) {
-      anchor = lastMatchedPos;
       programIstream->seekg(anchor);
-      currentToken.clear();
-      lastMatchedToken = Token("", 0);
-      lastMatchedPos = -1;
       LACurrentState = languageAutomaton.startState;
       if (lastMatchedToken.getType() != "=ws=") {
         return lastMatchedToken;
       }
+      currentToken.clear();
+      lastMatchedToken = Token("", 0);
     } else {
       std::cerr << "[ERROR] Unrecognized token: " << currentToken << std::endl;
       // Discard one prefix character and restart scanning
@@ -118,8 +119,7 @@ Token LexicalAnalyzer::nextToken() {
       LACurrentState = languageAutomaton.startState;
     }
   }
-  if (!lastMatchedToken.getType().empty()
-      && lastMatchedToken.getType() != "=ws=") {
+  if (lastMatchedToken.getType() != "=ws=") {
     return lastMatchedToken;
   }
   return Token("", INT_MAX);

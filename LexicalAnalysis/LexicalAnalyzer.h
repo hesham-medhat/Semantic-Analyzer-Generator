@@ -9,6 +9,7 @@
 
 class LexicalAnalyzer {
 public:
+    LexicalAnalyzer(const LexicalAnalyzer&);
     LexicalAnalyzer(const Automaton& languageAutomaton);
     LexicalAnalyzer(std::istream& inputDFAStream);
 
