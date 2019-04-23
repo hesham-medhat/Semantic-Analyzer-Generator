@@ -248,6 +248,7 @@ void NonTerminalSymbol::saveProductions(std::ostream &out,
         } else {// Error production. Terminal symbol not mapped
             out << static_cast<std::string>("$$$");
         }
+        out << " ";
     }
     out << std::endl;
 }
