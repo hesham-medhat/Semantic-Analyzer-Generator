@@ -1,0 +1,17 @@
+1 line:
+<Number of non-terminals N>
+N lines:
+    for each line h: <Non-terminal h name>
+1 line:
+<name of the starting symbol>
+1 line:
+<Number of terminals T>
+T lines:
+    for each line i: <Terminal i name>
+N lines:
+    for each line n: <RHS of productions of non-terminal n to corresponding
+    ordered terminals single-space-separated where grammar symbols within a
+    production are $-separated>
+        -Synch. production is marked with a single $
+        -Epsilon production is marked with $$
+        -Error production is marked with $$$

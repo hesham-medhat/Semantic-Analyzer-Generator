@@ -1,3 +1,4 @@
+#include <ostream>
 #include "NonTerminalSymbol.h"
 
 NonTerminalSymbol::NonTerminalSymbol(std::string name) : GrammarSymbol
@@ -333,3 +334,28 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow() {
     return follow;
 }
 */
+
+void NonTerminalSymbol::saveProductions(std::ostream &out,
+        std::unordered_map<std::string, std::shared_ptr<TerminalSymbol>>&
+        terminals) {
+    for (const auto& terminalEntry : terminals) {
+        const std::shared_ptr<TerminalSymbol> terminal = terminalEntry.second;
+        if (transitions.find(terminal) != transitions.end()) {
+            Production& production = transitions[terminal];
+            if (production.size() == 1 &&
+            (*production.begin())->getName().empty()) {// Epsilon production
+                out << static_cast<std::string>("$$");
+            } else {
+                bool firstSymbol = true;
+                for (const auto& grammarSymbol : production) {
+                    if (!firstSymbol) out.put('$');
+                    out << grammarSymbol->getName();
+                    firstSymbol = false;
+                }
+            }
+        } else {// Error production. Terminal symbol not mapped
+            out << static_cast<std::string>("$$$");
+        }
+    }
+    out << std::endl;
+}

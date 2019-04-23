@@ -19,6 +19,7 @@ public:
     // Loads parser from saved representation
     Parser(LexicalAnalyzer&, std::istream&);
 
+    // Saves the parser according to the Parsers Saved Representation Format
     void save(std::ostream&);
 
     void initProgramParse(std::istream&);

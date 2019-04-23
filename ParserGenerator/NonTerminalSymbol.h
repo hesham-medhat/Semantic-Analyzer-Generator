@@ -6,9 +6,9 @@
 #include <unordered_set>
 #include <memory>
 #include <vector>
+#include <iostream>
 #include "TerminalSymbol.h"
 #include "GrammarSymbol.h"
-#include <iostream>
 
 class NonTerminalSymbol : public GrammarSymbol {
 public:
@@ -20,7 +20,7 @@ public:
     std::unordered_set<TerminalSymbol::ptr> getFollow(std::unordered_set<std::string>);
 
     Type getType() override;
-    
+
     // Assumes epsilon production to be of single Symbol whose name is an
     // empty string
     void addProduction(GrammarSymbol::Production);
@@ -28,9 +28,14 @@ public:
             GrammarSymbol::Production);
     GrammarSymbol::Production getProduction(TerminalSymbol::ptr);
     void addUsingProduction(NonTerminalSymbol::ptr, GrammarSymbol::Production);
+
+    // Saves productions according to the Parsers Saved Representation Format
+    void saveProductions(std::ostream&, std::unordered_map<std::string,
+            std::shared_ptr<TerminalSymbol>>& terminals);
+
+    bool hasEpsilonProduction;
     bool followCalculated;
     bool firstCalculated;
-    bool hasEpsilonProduction;
     std::vector<GrammarSymbol::Production> productions;
 private:
     std::unordered_map<TerminalSymbol::ptr,
