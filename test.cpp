@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
   }
 
   std::cout << "LOADED PARSER:\n" << std::endl;
-  for (const auto& symbol : parser.nonTerminals) {
+  for (const auto& symbol : loadedParser.nonTerminals) {
     for (const auto& prod : symbol.second->productions) {
       std::cout << symbol.first << " ::= ";
       for (const auto& rhsTerm : prod) {
