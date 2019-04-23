@@ -105,6 +105,7 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
 
 // the stream should be go to lexical analyzer
 void Parser::parseFullProgram(std::istream &) {
+
     Token currentToken = lexicalAnalyzer.nextToken();
     Parser::Sentence sentence;
     std::string output = "";
@@ -122,6 +123,7 @@ void Parser::parseFullProgram(std::istream &) {
                     note = "matched";
                 } else {
                     note = "error insert unmatched symbol " + terminal->getName();
+
                 }
             } else {
                 NonTerminalSymbol::ptr nonTerminal = std::dynamic_pointer_cast<NonTerminalSymbol>(symbol);
@@ -133,6 +135,7 @@ void Parser::parseFullProgram(std::istream &) {
                         note = "error in " + nonTerminal->getName();
                     } else if((*(production.begin()))->getName().compare("") == 0) {
                         note = nonTerminal->getName() + " -> ";
+
                     } else {
                         sentence.insert(sentence.begin(),production.begin(), production.end());
                         note = nonTerminal->getName() + " ->";
@@ -157,6 +160,7 @@ void Parser::parseFullProgram(std::istream &) {
         } else {
             sentence.push_back(startingSymbol);
             note = "end of sentence";
+
             std::cout<<"================="<<std::endl;
             std::cout<<output<<std::endl;
             std::cout<<note<<std::endl;

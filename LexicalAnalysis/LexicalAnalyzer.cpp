@@ -2,6 +2,10 @@
 #include <fstream>
 #include "LexicalAnalyzer.h"
 
+LexicalAnalyzer::LexicalAnalyzer(const LexicalAnalyzer& original) :
+  languageAutomaton(original.languageAutomaton),
+  LACurrentState(original.LACurrentState) { }
+
 LexicalAnalyzer::LexicalAnalyzer(const Automaton& languageAutomaton)
 : languageAutomaton(languageAutomaton) { }
 
@@ -66,11 +70,62 @@ void LexicalAnalyzer::analyzeCompleteProgram(
   }
 }
 
+void LexicalAnalyzer::initProgramParse(const std::string& programFilePath) {
+  programIstream = std::make_unique<std::ifstream>(
+      programFilePath,
+      std::ios_base::in | std::ios_base::binary);
+  if (*programIstream) {
+    LACurrentState = languageAutomaton.startState;
+  } else {
+    programIstream = nullptr;
+  }
+}
+
+Token LexicalAnalyzer::nextToken() {
+  if (!*programIstream) { return Token("", INT_MAX); }
+
+  Token lastMatchedToken("", INT_MAX);
+  char currentChar;
+  std::string currentToken;
+  std::ifstream::pos_type anchor = programIstream->tellg();
+
+  while (programIstream->get(currentChar)) {
+    currentToken += currentChar;
+    std::unordered_set<std::shared_ptr<State>> nextStateSet
+      = LACurrentState->getNextState(currentChar);
+    LACurrentState = nextStateSet.empty() ? nullptr : *nextStateSet.begin();
+
+    if (LACurrentState) {
+      Token token = LACurrentState->getAcceptedToken();
+      if (!token.getType().empty()) {
+        token.setLexeme(currentToken);
+        lastMatchedToken = token;
+        anchor = programIstream->tellg();
+      }
+    } else if (!lastMatchedToken.getType().empty()) {
+      programIstream->seekg(anchor);
+      LACurrentState = languageAutomaton.startState;
+      if (lastMatchedToken.getType() != "=ws=") {
+        return lastMatchedToken;
+      }
+      currentToken.clear();
+      lastMatchedToken = Token("", 0);
+    } else {
+      std::cerr << "[ERROR] Unrecognized token: " << currentToken << std::endl;
+      // Discard one prefix character and restart scanning
+      anchor += 1;
+      programIstream->seekg(anchor);
+      currentToken.clear();
+      LACurrentState = languageAutomaton.startState;
+    }
+  }
+  if (lastMatchedToken.getType() != "=ws=") {
+    return lastMatchedToken;
+  }
+  return Token("", INT_MAX);
+}
+
 void LexicalAnalyzer::saveLexicalAnalyzerAutomaton(std::ostream& outputStream) {
     languageAutomaton.saveIntoFile(outputStream);
 };
 
-Token LexicalAnalyzer::nextToken() {
-    Token t("",0);
-    return t;
-}

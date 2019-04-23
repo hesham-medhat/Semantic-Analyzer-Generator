@@ -17,6 +17,7 @@ public:
     explicit NonTerminalSymbol(std::string name);
 
     std::unordered_set<TerminalSymbol::ptr> getFirst(std::unordered_set<std::string>);
+
     std::unordered_set<TerminalSymbol::ptr> getFollow(std::unordered_set<std::string>);
 
     Type getType() override;
@@ -33,11 +34,13 @@ public:
     void saveProductions(std::ostream&, std::unordered_map<std::string,
             std::shared_ptr<TerminalSymbol>>& terminals);
 
+
     bool hasEpsilonProduction;
     bool followCalculated;
     bool firstCalculated;
     std::vector<GrammarSymbol::Production> productions;
 private:
+
     std::unordered_map<TerminalSymbol::ptr,
             GrammarSymbol::Production> transitions;
     std::vector<NonTerminalSymbol::usingPair> usingProductions;

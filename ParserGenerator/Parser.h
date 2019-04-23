@@ -10,7 +10,7 @@
 class Parser {
 public:
     typedef std::deque<std::shared_ptr<GrammarSymbol>> Sentence;
-
+    std::unordered_map<std::string, std::shared_ptr<NonTerminalSymbol>> nonTerminals;
     Parser(LexicalAnalyzer&, std::shared_ptr<NonTerminalSymbol>
             startingSymbol, std::unordered_map<std::string,
             std::shared_ptr<TerminalSymbol>>& terminals,
@@ -31,8 +31,7 @@ private:
     LexicalAnalyzer lexicalAnalyzer;
     std::shared_ptr<NonTerminalSymbol> startingSymbol;
     std::unordered_map<std::string, std::shared_ptr<TerminalSymbol>> terminals;
-    std::unordered_map<std::string, std::shared_ptr<NonTerminalSymbol>>
-    nonTerminals;
+
 
     std::unique_ptr<std::istream> programStream;
     std::shared_ptr<NonTerminalSymbol> currentSymbol = startingSymbol;

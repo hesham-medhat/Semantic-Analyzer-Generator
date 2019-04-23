@@ -87,6 +87,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unorder
 std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unordered_set<std::string> caller) {
     caller.insert(this->getName());
     if(!followCalculated){
+
         std::vector<NonTerminalSymbol::usingPair>::iterator pairIter;
         for (pairIter = usingProductions.begin();
         pairIter != usingProductions.end(); pairIter++) {
@@ -108,6 +109,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
                                     nextSymbol);
                             std::unordered_set<std::string> emptySet;
                             std::unordered_set<TerminalSymbol::ptr> secFollow = nonTerminal->getFirst(emptySet);
+
                             std::unordered_set<TerminalSymbol::ptr>::iterator secFollowIter;
                             for (secFollowIter = secFollow.begin(); secFollowIter != secFollow.end(); secFollowIter++) {
                                 if ((*secFollowIter)->getName().compare("") != 0) {
@@ -183,6 +185,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
         std::cout<<std::endl;
         std::cout<<"+++++++++++++++++++++++++++"<<std::endl;
     }
+
     return follow;
 }
 
