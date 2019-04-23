@@ -68,7 +68,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unorder
                 }
             }
         }
-        std::cout<<this->getName()<<std::endl;
+       /* std::cout<<this->getName()<<std::endl;
         std::unordered_set<TerminalSymbol::ptr>::iterator iterator;
         for (iterator = first.begin(); iterator != first.end(); iterator++) {
             GrammarSymbol::Production production = transitions[*iterator];
@@ -79,7 +79,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unorder
             }
             std::cout<<std::endl;
         }
-        std::cout<<"+++++++++++++++++++++++++++"<<std::endl;
+        std::cout<<"+++++++++++++++++++++++++++"<<std::endl;*/
     }
     return first;
 }
@@ -114,6 +114,8 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
                             for (secFollowIter = secFollow.begin(); secFollowIter != secFollow.end(); secFollowIter++) {
                                 if ((*secFollowIter)->getName().compare("") != 0) {
                                     follow.insert(*secFollowIter);
+                                } else {
+                                    nonTerminal->hasEpsilonProduction = true;
                                 }
                             }
                             if (!nonTerminal->hasEpsilonProduction) {
@@ -165,7 +167,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
             transitions[synTerminal] = synProduction;
         }*/
 
-        std::cout<<this->getName()<<std::endl;
+        /*std::cout<<this->getName()<<std::endl;
         std::unordered_set<TerminalSymbol::ptr>::iterator iterator;
         for (iterator = follow.begin(); iterator != follow.end(); iterator++) {
             GrammarSymbol::Production production = transitions[*iterator];
@@ -183,7 +185,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
             std::cout<< "$";
         }
         std::cout<<std::endl;
-        std::cout<<"+++++++++++++++++++++++++++"<<std::endl;
+        std::cout<<"+++++++++++++++++++++++++++"<<std::endl;*/
     }
 
     return follow;

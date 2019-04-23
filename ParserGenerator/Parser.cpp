@@ -170,10 +170,10 @@ void Parser::parseFullProgram(std::istream &) {
     }
     while (!sentence.empty()){
         GrammarSymbol::ptr symbol = *sentence.begin();
+        sentence.pop_front();
         if (symbol->getType() == GrammarSymbol::Type::NonTerminal) {
             NonTerminalSymbol::ptr nonTerminal = std::dynamic_pointer_cast<NonTerminalSymbol>(symbol);
             if(nonTerminal->hasEpsilonProduction){
-                sentence.pop_front();
                 note = nonTerminal->getName() + " -> ";
             } else {
                 output += "$ ";

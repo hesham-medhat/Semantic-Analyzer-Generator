@@ -57,31 +57,54 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
         }
     }
 
-    for (const auto& nonTerminal : nonTerminals) {
-      for (const auto& prod : nonTerminal.second->productions) {
-        for (const auto& term : prod) {
-          if (term->getType() == GrammarSymbol::NonTerminal) {
-            NonTerminalSymbol::ptr termPtr =
-              std::dynamic_pointer_cast<NonTerminalSymbol>(term);
-            termPtr->addUsingProduction(nonTerminal.second, prod);
-          }
-        }
-      }
-    }
+
 
     Parser parser(lex, startingSymbol, terminals, nonTerminals);
     removeLeftRecursion(parser);
     leftFactoring(parser);
 
     for (const auto& nonTerminal : parser.nonTerminals) {
-      nonTerminal.second->getFirst(std::unordered_set<std::string>());
-      nonTerminal.second->firstCalculated = true;
+        for (const auto& prod : nonTerminal.second->productions) {
+            for (const auto& term : prod) {
+                if (term->getType() == GrammarSymbol::NonTerminal) {
+                    NonTerminalSymbol::ptr termPtr =
+                            std::dynamic_pointer_cast<NonTerminalSymbol>(term);
+                    termPtr->addUsingProduction(nonTerminal.second, prod);
+                }
+            }
+        }
     }
 
+    std::unordered_set<TerminalSymbol::ptr> first;
+    std::unordered_set<TerminalSymbol::ptr>::iterator iter2;
     for (const auto& nonTerminal : parser.nonTerminals) {
-      nonTerminal.second->getFollow(std::unordered_set<std::string>());
-      nonTerminal.second->followCalculated = true;
+        first = nonTerminal.second->getFirst(std::unordered_set<std::string>());
+        nonTerminal.second->firstCalculated = true;
+        std::cout<<nonTerminal.second->getName()<<std::endl;
+        for (iter2 = first.begin(); iter2 != first.end(); iter2++) {
+            GrammarSymbol::Production production = nonTerminal.second->getProduction(*iter2);
+            GrammarSymbol::Production::iterator symIte;
+            std::cout <<(*iter2)->getName()<<" -> ";
+            for(symIte = production.begin(); symIte != production.end(); symIte++){
+                std::cout<<(*symIte)->getName()<<" ";
+            }
+            std::cout<<std::endl;
+        }
+        std::cout<<"============================="<<std::endl;
     }
+    std::cout<<"############################"<<std::endl;
+    std::unordered_set<TerminalSymbol::ptr> follow;
+    std::unordered_set<TerminalSymbol::ptr>::iterator iter;
+    for (const auto& nonTerminal : parser.nonTerminals) {
+        follow = nonTerminal.second->getFollow(std::unordered_set<std::string>());
+        nonTerminal.second->followCalculated = true;
+        std::cout<<nonTerminal.second->getName()<<std::endl;
+        for (iter = follow.begin(); iter != follow.end(); iter++) {
+            std::cout<<(*iter)->getName()<<std::endl;
+        }
+        std::cout<<"============================="<<std::endl;
+    }
+    std::cout<<"############################"<<std::endl;
 
     return parser;
 }
