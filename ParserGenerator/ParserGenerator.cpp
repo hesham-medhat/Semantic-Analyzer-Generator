@@ -68,7 +68,10 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
         }
       }
     }
-    return Parser(lex, startingSymbol, terminals, nonTerminals);
+    Parser parser(lex, startingSymbol, terminals, nonTerminals);
+    removeLeftRecursion(parser);
+    leftFactoring(parser);
+    return parser;
 }
 
 bool ParserGenerator::skip(std::istream &is, const std::string &str) {
