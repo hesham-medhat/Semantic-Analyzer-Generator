@@ -8,75 +8,6 @@
 #include "LexicalAnalysis/LexicalAnalyzer.h"
 
 
-/*
-std::unordered_map<TerminalSymbol::ptr,
-        GrammarSymbol::Production> transitions;
-std::vector<GrammarSymbol::Production> productions;
-*/
-
-
-/*
-//return empty set if not LL1
-std::unordered_set<TerminalSymbol::ptr> getFirst() {
-    std::unordered_set<TerminalSymbol::ptr> first;
-    std::vector<GrammarSymbol::Production>::iterator prodIte;
-    for(prodIte = productions.begin(); prodIte != productions.end(); prodIte++){
-        GrammarSymbol::Production production = *prodIte;
-        GrammarSymbol::Production::iterator symIte;
-        for(symIte = production.begin(); symIte != production.end(); symIte++){
-            GrammarSymbol::ptr symbol = *symIte;
-            if(symbol->getType() == GrammarSymbol::Type::Terminal){
-                TerminalSymbol::ptr terminal = dynamic_pointer_cast<TerminalSymbol>(symbol);
-                first.insert(terminal);
-                if(terminal->getName().compare("") != 0){
-                    if(transitions.find(terminal) == transitions.end()){
-                        transitions[terminal] = production;
-                    }else {
-                        first.clear();
-                        return first;
-                    }
-                }
-                break;
-            } else {
-                NonTerminalSymbol::ptr nonTerminal = dynamic_pointer_cast<NonTerminalSymbol>(symbol);
-//                NonTerminalSymbol::ptr nonTerminal = make_shared<NonTerminalSymbol>("o");
-                std::unordered_set<TerminalSymbol::ptr> secFirst = nonTerminal->getFirst();
-                std::unordered_set<TerminalSymbol::ptr>::iterator secFirstIte;
-                for (secFirstIte = secFirst.begin(); secFirstIte != secFirst.end(); secFirstIte++) {
-                    TerminalSymbol::ptr terminal = dynamic_pointer_cast<TerminalSymbol>(*secFirstIte);
-                    if(terminal->getName().compare("") != 0){
-                        first.insert(terminal);
-                        if(transitions.find(terminal) == transitions.end()){
-                            transitions[terminal] = production;
-                        }else {
-                            first.clear();
-                            return first;
-                        }
-                    }else if(symIte + 1 == production.end()){
-                        first.insert(terminal);
-                    }
-                }
-                if(!nonTerminal->hasEpsilonProduction) {
-                    break;
-                }
-            }
-        }
-    }
-    return first;
-}
-*/
-
-
-std::unordered_set<TerminalSymbol::ptr> getFollow(){
-
-}
-/*
-
-void addProduction(GrammarSymbol::Production production){
-  productions.push_back(production);
-}
-*/
-
 
 
 int main(int argc, char* argv[]) {
@@ -91,6 +22,7 @@ int main(int argc, char* argv[]) {
     P -> (E) | a | b |Em
     */
 
+/*
 
     GrammarSymbol::ptr E = std::make_shared<NonTerminalSymbol> ("E");
     GrammarSymbol::ptr E_ = std::make_shared<NonTerminalSymbol> ("E`");
@@ -215,108 +147,118 @@ int main(int argc, char* argv[]) {
 
 
     unordered_set<std::string> emptySet;
+
     unordered_set<TerminalSymbol::ptr> follow;
     unordered_set<TerminalSymbol::ptr>::iterator iter;
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFollow(emptySet);
+    follow = En->getFollow(emptySet);
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
-
+    En->followCalculated = true;
     cout<<"============================="<<endl;
 
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(E_))->getFollow(emptySet);
+    follow = E_n->getFollow(emptySet);
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
-
+    E_n->followCalculated = true;
     cout<<"============================="<<endl;
 
 
 
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(T))->getFollow(emptySet);
+    follow = Tn->getFollow(emptySet);
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
+    Tn->followCalculated = true;
     cout<<"============================="<<endl;
 
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(T_))->getFollow(emptySet);
+    follow = T_n->getFollow(emptySet);
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
-
+    T_n->followCalculated = true;
     cout<<"============================="<<endl;
 
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(F))->getFollow(emptySet);
+    follow = Fn->getFollow(emptySet);
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
-
+    Fn->followCalculated = true;
     cout<<"============================="<<endl;
 
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(F_))->getFollow(emptySet);
+    follow = F_n->getFollow(emptySet);
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
-
+    F_n->followCalculated = true;
     cout<<"============================="<<endl;
 
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(P))->getFollow(emptySet);
+    follow = Pn->getFollow(emptySet);
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
+    Pn->followCalculated = true;
 
 
 
-/*
 
-    unordered_set<TerminalSymbol::ptr> first = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFirst();
-    unordered_set<TerminalSymbol::ptr>::iterator iter;
-    for (iter = first.begin(); iter != first.end(); iter++) {
-        cout<<(*iter)->getName()<<endl;
+    cout<<"#####################################"<<endl;
+    cout<<"first"<<endl;
+
+    unordered_set<TerminalSymbol::ptr> first;
+    unordered_set<TerminalSymbol::ptr>::iterator iter2;
+    first = En->getFirst(emptySet);
+    for (iter2 = first.begin(); iter2 != first.end(); iter2++) {
+        cout<<(*iter2)->getName()<<endl;
     }
+    En->firstCalculated = true;
     cout<<"============================="<<endl;
 
-    first = (std::dynamic_pointer_cast<NonTerminalSymbol>(E_))->getFirst();
-    for (iter = first.begin(); iter != first.end(); iter++) {
-        cout<<(*iter)->getName()<<endl;
+    first = E_n->getFirst(emptySet);
+    for (iter2 = first.begin(); iter2 != first.end(); iter2++) {
+        cout<<(*iter2)->getName()<<endl;
     }
-
+    E_n->firstCalculated = true;
     cout<<"============================="<<endl;
 
-    first = (std::dynamic_pointer_cast<NonTerminalSymbol>(T))->getFirst();
-    for (iter = first.begin(); iter != first.end(); iter++) {
-        cout<<(*iter)->getName()<<endl;
+    first = Tn->getFirst(emptySet);
+    for (iter2 = first.begin(); iter2 != first.end(); iter2++) {
+        cout<<(*iter2)->getName()<<endl;
     }
+    Tn->firstCalculated = true;
     cout<<"============================="<<endl;
 
-    first = (std::dynamic_pointer_cast<NonTerminalSymbol>(T_))->getFirst();
-    for (iter = first.begin(); iter != first.end(); iter++) {
-        cout<<(*iter)->getName()<<endl;
+    first = T_n->getFirst(emptySet);
+    for (iter2 = first.begin(); iter2 != first.end(); iter2++) {
+        cout<<(*iter2)->getName()<<endl;
     }
-
+    T_n->firstCalculated = true;
     cout<<"============================="<<endl;
 
-    first = (std::dynamic_pointer_cast<NonTerminalSymbol>(F))->getFirst();
-    for (iter = first.begin(); iter != first.end(); iter++) {
-        cout<<(*iter)->getName()<<endl;
+    first = Fn->getFirst(emptySet);
+    for (iter2 = first.begin(); iter2 != first.end(); iter2++) {
+        cout<<(*iter2)->getName()<<endl;
     }
-
+    Fn->firstCalculated = true;
     cout<<"============================="<<endl;
 
-    first = (std::dynamic_pointer_cast<NonTerminalSymbol>(F_))->getFirst();
-    for (iter = first.begin(); iter != first.end(); iter++) {
-        cout<<(*iter)->getName()<<endl;
+    first = F_n->getFirst(emptySet);
+    for (iter2 = first.begin(); iter2 != first.end(); iter2++) {
+        cout<<(*iter2)->getName()<<endl;
     }
+    F_n->firstCalculated = true;
     cout<<"============================="<<endl;
 
-    first = (std::dynamic_pointer_cast<NonTerminalSymbol>(P))->getFirst();
-    for (iter = first.begin(); iter != first.end(); iter++) {
-        cout<<(*iter)->getName()<<endl;
+    first = Pn->getFirst(emptySet);
+    for (iter2 = first.begin(); iter2 != first.end(); iter2++) {
+        cout<<(*iter2)->getName()<<endl;
     }
-
-
-
+    Pn->firstCalculated = true;
 */
+
+
+
 
 
 
@@ -327,7 +269,7 @@ int main(int argc, char* argv[]) {
     T’ -> *FT’ | 
     F -> (E) | id
     */
-/*
+
 
     GrammarSymbol::ptr E = std::make_shared<NonTerminalSymbol> ("E");
     GrammarSymbol::ptr E_ = std::make_shared<NonTerminalSymbol> ("E`");
@@ -375,11 +317,11 @@ int main(int argc, char* argv[]) {
 
     //production5.pop_front();
     GrammarSymbol::Production::iterator iter3 = production5.begin();
-    GrammarSymbol::Production::iterator iter2 = iter3;
-    iter2++;
+    GrammarSymbol::Production::iterator iter5 = iter3;
+    iter5++;
 
     //cout<<(*iter3)->getName()<<endl;
-    //cout<<(*iter2)->getName()<<endl;
+    //cout<<(*iter5)->getName()<<endl;
 
 
     //cout<<(*(iter + production5.size() - 1))->getName();
@@ -436,77 +378,85 @@ int main(int argc, char* argv[]) {
 
 
     unordered_set<std::string> emptySet;
+
     unordered_set<TerminalSymbol::ptr> follow;
     unordered_set<TerminalSymbol::ptr>::iterator iter;
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFollow(emptySet);
+    follow = En->getFollow(emptySet);
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
-
+    En->followCalculated = true;
     cout<<"============================="<<endl;
 
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(E_))->getFollow(emptySet);
+    follow = E_n->getFollow(emptySet);
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
-
+    E_n->followCalculated = true;
     cout<<"============================="<<endl;
 
 
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(T))->getFollow(emptySet);
+
+    follow = Tn->getFollow(emptySet);
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
+    Tn->followCalculated = true;
     cout<<"============================="<<endl;
 
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(T_))->getFollow(emptySet);
+    follow = T_n->getFollow(emptySet);
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
-
+    T_n->followCalculated = true;
     cout<<"============================="<<endl;
 
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(F))->getFollow(emptySet);
+    follow = Fn->getFollow(emptySet);
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
     }
-
-
-*/
-
-   /* unordered_set<TerminalSymbol::ptr> first = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFirst();
-    unordered_set<TerminalSymbol::ptr>::iterator iter;
-    for (iter = first.begin(); iter != first.end(); iter++) {
-        cout<<(*iter)->getName()<<endl;
-    }
-
+    Fn->followCalculated = true;
     cout<<"============================="<<endl;
 
-    first = (std::dynamic_pointer_cast<NonTerminalSymbol>(E_))->getFirst();
-    for (iter = first.begin(); iter != first.end(); iter++) {
-        cout<<(*iter)->getName()<<endl;
-    }
 
+    cout<<"#####################################"<<endl;
+    cout<<"first"<<endl;
+
+    unordered_set<TerminalSymbol::ptr> first;
+    unordered_set<TerminalSymbol::ptr>::iterator iter2;
+    first = En->getFirst(emptySet);
+    for (iter2 = first.begin(); iter2 != first.end(); iter2++) {
+        cout<<(*iter2)->getName()<<endl;
+    }
+    En->firstCalculated = true;
     cout<<"============================="<<endl;
 
-    first = (std::dynamic_pointer_cast<NonTerminalSymbol>(T))->getFirst();
-    for (iter = first.begin(); iter != first.end(); iter++) {
-        cout<<(*iter)->getName()<<endl;
+    first = E_n->getFirst(emptySet);
+    for (iter2 = first.begin(); iter2 != first.end(); iter2++) {
+        cout<<(*iter2)->getName()<<endl;
     }
+    E_n->firstCalculated = true;
     cout<<"============================="<<endl;
 
-    first = (std::dynamic_pointer_cast<NonTerminalSymbol>(T_))->getFirst();
-    for (iter = first.begin(); iter != first.end(); iter++) {
-        cout<<(*iter)->getName()<<endl;
+    first = Tn->getFirst(emptySet);
+    for (iter2 = first.begin(); iter2 != first.end(); iter2++) {
+        cout<<(*iter2)->getName()<<endl;
     }
-
+    Tn->firstCalculated = true;
     cout<<"============================="<<endl;
 
-    first = (std::dynamic_pointer_cast<NonTerminalSymbol>(F))->getFirst();
-    for (iter = first.begin(); iter != first.end(); iter++) {
-        cout<<(*iter)->getName()<<endl;
+    first = T_n->getFirst(emptySet);
+    for (iter2 = first.begin(); iter2 != first.end(); iter2++) {
+        cout<<(*iter2)->getName()<<endl;
     }
-*/
+    T_n->firstCalculated = true;
+    cout<<"============================="<<endl;
+
+    first = Fn->getFirst(emptySet);
+    for (iter2 = first.begin(); iter2 != first.end(); iter2++) {
+        cout<<(*iter2)->getName()<<endl;
+    }
+    Fn->firstCalculated = true;
 
 
 

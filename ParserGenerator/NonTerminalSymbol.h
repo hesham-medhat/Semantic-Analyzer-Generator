@@ -16,7 +16,7 @@ public:
     typedef std::pair<NonTerminalSymbol::ptr,GrammarSymbol::Production> usingPair;
     explicit NonTerminalSymbol(std::string name);
 
-    std::unordered_set<TerminalSymbol::ptr> getFirst();
+    std::unordered_set<TerminalSymbol::ptr> getFirst(std::unordered_set<std::string>);
     std::unordered_set<TerminalSymbol::ptr> getFollow(std::unordered_set<std::string>);
 
     Type getType() override;
@@ -28,13 +28,11 @@ public:
             GrammarSymbol::Production);
     GrammarSymbol::Production getProduction(TerminalSymbol::ptr);
     void addUsingProduction(NonTerminalSymbol::ptr, GrammarSymbol::Production);
-
-    bool hasEpsilonProduction;
-private:
-
-    bool firstCalculated;
     bool followCalculated;
+    bool firstCalculated;
+    bool hasEpsilonProduction;
     std::vector<GrammarSymbol::Production> productions;
+private:
     std::unordered_map<TerminalSymbol::ptr,
             GrammarSymbol::Production> transitions;
     std::vector<NonTerminalSymbol::usingPair> usingProductions;

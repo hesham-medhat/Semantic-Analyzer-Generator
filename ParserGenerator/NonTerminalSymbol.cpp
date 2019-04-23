@@ -13,7 +13,8 @@ GrammarSymbol::Type NonTerminalSymbol::getType() {
 
 
 //return empty set if not LL1
-std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst() {
+std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unordered_set<std::string> caller) {
+    caller.insert(this->getName());
     if(!firstCalculated) {
         std::vector<GrammarSymbol::Production>::iterator prodIte;
         for (prodIte = productions.begin(); prodIte != productions.end(); prodIte++) {
@@ -27,7 +28,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst() {
                     if (terminal->getName().compare("") != 0) {
                         if (transitions.find(terminal) == transitions.end()) {
                             transitions[terminal] = production;
-                        } else {
+                        } else if(transitions[terminal] != production){
                             first.clear();
                             return first;
                             //throw error not LL1
@@ -36,22 +37,28 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst() {
                     break;
                 } else {
                     NonTerminalSymbol::ptr nonTerminal = std::dynamic_pointer_cast<NonTerminalSymbol>(symbol);
-//                NonTerminalSymbol::ptr nonTerminal = make_shared<NonTerminalSymbol>("o");
-                    std::unordered_set<TerminalSymbol::ptr> secFirst = nonTerminal->getFirst();
-                    std::unordered_set<TerminalSymbol::ptr>::iterator secFirstIte;
-                    for (secFirstIte = secFirst.begin(); secFirstIte != secFirst.end(); secFirstIte++) {
-                        TerminalSymbol::ptr terminal = std::dynamic_pointer_cast<TerminalSymbol>(*secFirstIte);
-                        if (terminal->getName().compare("") != 0) {
-                            first.insert(terminal);
-                            if (transitions.find(terminal) == transitions.end()) {
-                                transitions[terminal] = production;
-                            } else {
-                                first.clear();
-                                return first;
-                                //throw error not LL1
+                    bool noRecursion = true;
+                    std::unordered_set<std::string>::iterator callerIter;
+                    for(callerIter = caller.begin(); callerIter != caller.end(); callerIter++){
+                        noRecursion = noRecursion && nonTerminal->getName().compare(*callerIter) != 0;
+                    }
+                    if (noRecursion) {
+                        std::unordered_set<TerminalSymbol::ptr> secFirst = nonTerminal->getFirst(caller);
+                        std::unordered_set<TerminalSymbol::ptr>::iterator secFirstIte;
+                        for (secFirstIte = secFirst.begin(); secFirstIte != secFirst.end(); secFirstIte++) {
+                            TerminalSymbol::ptr terminal = std::dynamic_pointer_cast<TerminalSymbol>(*secFirstIte);
+                            if (terminal->getName().compare("") != 0) {
+                                first.insert(terminal);
+                                if (transitions.find(terminal) == transitions.end()) {
+                                    transitions[terminal] = production;
+                                } else if(transitions[terminal] != production){
+                                    first.clear();
+                                    return first;
+                                    //throw error not LL1
+                                }
+                            } else if (symIte + 1 == production.end()) {
+                                first.insert(terminal);
                             }
-                        } else if (symIte + 1 == production.end()) {
-                            first.insert(terminal);
                         }
                     }
                     if (!nonTerminal->hasEpsilonProduction) {
@@ -60,26 +67,25 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst() {
                 }
             }
         }
-        firstCalculated = true;
-    }
-    /*std::cout<<this->getName()<<std::endl;
-    std::unordered_set<TerminalSymbol::ptr>::iterator iterator;
-    for (iterator = first.begin(); iterator != first.end(); iterator++) {
-        GrammarSymbol::Production production = transitions[*iterator];
-        GrammarSymbol::Production::iterator symIte;
-        std::cout <<(*iterator)->getName()<<" -> ";
-        for(symIte = production.begin(); symIte != production.end(); symIte++){
-            std::cout<<(*symIte)->getName()<<" ";
+        std::cout<<this->getName()<<std::endl;
+        std::unordered_set<TerminalSymbol::ptr>::iterator iterator;
+        for (iterator = first.begin(); iterator != first.end(); iterator++) {
+            GrammarSymbol::Production production = transitions[*iterator];
+            GrammarSymbol::Production::iterator symIte;
+            std::cout <<(*iterator)->getName()<<" -> ";
+            for(symIte = production.begin(); symIte != production.end(); symIte++){
+                std::cout<<(*symIte)->getName()<<" ";
+            }
+            std::cout<<std::endl;
         }
-        std::cout<<std::endl;
+        std::cout<<"+++++++++++++++++++++++++++"<<std::endl;
     }
-    std::cout<<"+++++++++++++++++++++++++++"<<std::endl;*/
     return first;
 }
 
 std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unordered_set<std::string> caller) {
     caller.insert(this->getName());
-    //if(!followCalculated){
+    if(!followCalculated){
         std::vector<NonTerminalSymbol::usingPair>::iterator pairIter;
         for (pairIter = usingProductions.begin();
         pairIter != usingProductions.end(); pairIter++) {
@@ -99,7 +105,8 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
                         } else {
                             NonTerminalSymbol::ptr nonTerminal = std::dynamic_pointer_cast<NonTerminalSymbol>(
                                     nextSymbol);
-                            std::unordered_set<TerminalSymbol::ptr> secFollow = nonTerminal->getFirst();
+                            std::unordered_set<std::string> emptySet;
+                            std::unordered_set<TerminalSymbol::ptr> secFollow = nonTerminal->getFirst(emptySet);
                             std::unordered_set<TerminalSymbol::ptr>::iterator secFollowIter;
                             for (secFollowIter = secFollow.begin(); secFollowIter != secFollow.end(); secFollowIter++) {
                                 if ((*secFollowIter)->getName().compare("") != 0) {
@@ -149,11 +156,11 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
                     //throw error not LL1
             }
         }
-        if(hasEpsilonProduction){
+        /*if(hasEpsilonProduction){
             transitions[synTerminal] = epsProduction;
         } else {
             transitions[synTerminal] = synProduction;
-        }
+        }*/
 
         std::cout<<this->getName()<<std::endl;
         std::unordered_set<TerminalSymbol::ptr>::iterator iterator;
@@ -166,16 +173,15 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
             }
             std::cout<<std::endl;
         }
-        GrammarSymbol::Production production = transitions[synTerminal];
-        GrammarSymbol::Production::iterator symIte;
         std::cout <<(synTerminal)->getName()<<" -> ";
-        for(symIte = production.begin(); symIte != production.end(); symIte++){
-            std::cout<<(*symIte)->getName()<<" ";
+        if(hasEpsilonProduction){
+            std::cout<< " ";
+        } else {
+            std::cout<< "$";
         }
         std::cout<<std::endl;
         std::cout<<"+++++++++++++++++++++++++++"<<std::endl;
-        followCalculated = true;
-    //}
+    }
     return follow;
 }
 
