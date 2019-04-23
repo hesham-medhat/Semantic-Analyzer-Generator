@@ -19,6 +19,7 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
 
     /* Read non-terminals */
     inputStream >> nonterminalsCount;
+    getline(inputStream, buffer);// End line
     std::shared_ptr<NonTerminalSymbol> nonterminalsArray[nonterminalsCount];
     for (int i = 0; i < nonterminalsCount; i++) {
         getline(inputStream, buffer);
@@ -32,6 +33,7 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
 
     /* Read terminals */
     inputStream >> terminalsCount;
+    getline(inputStream, buffer);// End line
     std::shared_ptr<TerminalSymbol> terminalsArray[terminalsCount];
     for (int i = 0; i < terminalsCount; i++) {
         getline(inputStream, buffer);
