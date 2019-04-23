@@ -146,7 +146,7 @@ inline bool ParserGenerator::contains(const std::unordered_map<K, V> &map,
     return map.find(key) != map.end();
 }
 
-void ParserGenerator::removeLeftRecursion(Parser& parser) {
+void ParserGenerator::removeLeftRecursion(Parser &parser) {
     std::unordered_map<std::string, std::shared_ptr<NonTerminalSymbol>> nonTerminals = parser.nonTerminals;
     for (auto &nonTerminal : nonTerminals) {
         std::vector<GrammarSymbol::Production> production = nonTerminal.second->productions;
@@ -167,11 +167,14 @@ void ParserGenerator::removeLeftRecursion(Parser& parser) {
             for (auto &i : a_dash_vector) {
                 i.push_back(a_dash);
             }
-            //TODO add epsilon production to a_dash_vector
+            GrammarSymbol::ptr epsilon = std::make_shared<TerminalSymbol>("");
+            std::deque<std::shared_ptr<GrammarSymbol>> epsilonProduction;
+            epsilonProduction.push_back(epsilon);
+            a_dash_vector.push_back(epsilonProduction);
             for (auto &i : a_vector) {
                 i.push_back(a_dash);
             }
-            a_dash->productions=a_dash_vector;
+            a_dash->productions = a_dash_vector;
             nonTerminal.second->productions = a_vector;
             parser.nonTerminals[a_dash->getName()] = a_dash;
         }
@@ -181,42 +184,49 @@ void ParserGenerator::removeLeftRecursion(Parser& parser) {
 
 }
 
-void ParserGenerator::leftFactoring(Parser& parser) {
-    std::unordered_map<std::string, std::shared_ptr<NonTerminalSymbol>> nonTerminals = parser.nonTerminals;
-    for (auto &nonTerminal : nonTerminals) {
-        std::vector<GrammarSymbol::Production> production = nonTerminal.second->productions;
-        std::vector<GrammarSymbol::Production> betas;
-        for(int i=0;i<production.size();i++)
-        {
-            for(int j=i+1;j<production.size();j++)
-            {
-                if((*production[i].begin())->getName()==(*production[i].begin())->getName())
-                {
-                    production[j].pop_front();
-                    betas.push_back(production[j]);
-                    production.erase(production.begin()+j);
+void ParserGenerator::leftFactoring(Parser &parser) {
+    bool stillFactoring;
+    do {
+        stillFactoring = false;
+        for (auto &nonTerminal : parser.nonTerminals) {
+            std::vector<GrammarSymbol::Production> production = nonTerminal.second->productions;
+            std::vector<GrammarSymbol::Production> betas;
+            for (int i = 0; i < production.size(); i++) {
+                betas.clear();
+                for (int j = i + 1; j < production.size(); j++) {
+                    if ((*production[i].begin())->getName() == (*production[j].begin())->getName()) {
+                        production[j].pop_front();
+                        if (production[j].empty()) {
+                            GrammarSymbol::ptr epsilon = std::make_shared<TerminalSymbol>("");
+                            std::deque<std::shared_ptr<GrammarSymbol>> epsilonProduction;
+                            epsilonProduction.push_back(epsilon);
+                            betas.push_back(epsilonProduction);
+                        } else {
+                            betas.push_back(production[j]);
+                        }
+                        production.erase(production.begin() + j);
+                    }
                 }
-            }
-            if (!betas.empty()) {
-                GrammarSymbol::Production temp=production[i];
-                temp.pop_front();
-                betas.push_back(temp);
-                while (production[i].size()>1)
-                {
-                    production[i].pop_back();
+                if (!betas.empty()) {
+                    stillFactoring = true;
+                    GrammarSymbol::Production temp = production[i];
+                    temp.pop_front();
+                    betas.push_back(temp);
+                    while (production[i].size() > 1) {
+                        production[i].pop_back();
+                    }
+                    std::shared_ptr<NonTerminalSymbol> a_dash(new NonTerminalSymbol(nonTerminal.first + "'"));
+                    a_dash->productions = betas;
+                    parser.nonTerminals[a_dash->getName()] = a_dash;
+                    production[i].push_back(a_dash);
+
                 }
-                std::shared_ptr<NonTerminalSymbol> a_dash(new NonTerminalSymbol(nonTerminal.first + "'"));
-                a_dash->productions=betas;
-                parser.nonTerminals[a_dash->getName()] = a_dash;
-                production[i].push_back(a_dash);
 
             }
+            nonTerminal.second->productions = production;
+
 
         }
-        nonTerminal.second->productions=production;
-
-
-    }
-
+    } while (stillFactoring);
 
 }

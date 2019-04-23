@@ -17,6 +17,9 @@ public:
     /// @return  generated Parser instance
     static Parser generateParser(std::istream& rulesIstream,
                                  LexicalAnalyzer& lex);
+
+   static void removeLeftRecursion(Parser&);
+    static void leftFactoring(Parser&);
 private:
     ParserGenerator(); // Not implemented on purpose
     static constexpr char eof = std::string::traits_type::eof();
@@ -31,8 +34,7 @@ private:
     static inline bool contains(const std::string&, const char&);
     template<typename K, typename V>
     static inline bool contains(const std::unordered_map<K, V>&, const K&);
-    void removeLeftRecursion(Parser);
-    void leftFactoring(Parser&);
+
 };
 
 
