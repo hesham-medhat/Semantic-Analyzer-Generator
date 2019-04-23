@@ -22,7 +22,7 @@ public:
     // Saves the parser according to the Parsers Saved Representation Format
     void save(std::ostream&);
 
-    void initProgramParse(std::istream&);
+    void initProgramParse(const std::string&);
     Sentence getNextDerivation();
 
     void parseFullProgram(std::istream&);

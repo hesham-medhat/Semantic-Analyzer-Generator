@@ -228,3 +228,7 @@ void Parser::save(std::ostream& out) {
         nonTerminal->saveProductions(out, terminals);
     }
 }
+
+void Parser::initProgramParse(const std::string& path) {
+  lexicalAnalyzer.initProgramParse(path);
+}
