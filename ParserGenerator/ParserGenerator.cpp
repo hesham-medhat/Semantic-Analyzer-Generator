@@ -58,6 +58,8 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
     }
 
     for (const auto& nonTerminal : nonTerminals) {
+      nonTerminal.second->getFirst(std::unordered_set<std::string>());
+      nonTerminal.second->firstCalculated = true;
       for (const auto& prod : nonTerminal.second->productions) {
         for (const auto& term : prod) {
           if (term->getType() == GrammarSymbol::NonTerminal) {
@@ -68,9 +70,16 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
         }
       }
     }
+
+    for (const auto& nonTerminal : nonTerminals) {
+      nonTerminal.second->getFollow(std::unordered_set<std::string>());
+      nonTerminal.second->followCalculated = true;
+    }
+
     Parser parser(lex, startingSymbol, terminals, nonTerminals);
     removeLeftRecursion(parser);
     leftFactoring(parser);
+
     return parser;
 }
 
