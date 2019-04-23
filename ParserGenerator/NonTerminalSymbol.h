@@ -28,13 +28,13 @@ public:
             GrammarSymbol::Production);
     GrammarSymbol::Production getProduction(TerminalSymbol::ptr);
     void addUsingProduction(NonTerminalSymbol::ptr, GrammarSymbol::Production);
-
+    std::vector<GrammarSymbol::Production> productions;
     bool hasEpsilonProduction;
 private:
 
     bool firstCalculated;
     bool followCalculated;
-    std::vector<GrammarSymbol::Production> productions;
+
     std::unordered_map<TerminalSymbol::ptr,
             GrammarSymbol::Production> transitions;
     std::vector<NonTerminalSymbol::usingPair> usingProductions;

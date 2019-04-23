@@ -77,4 +77,5 @@ Parser::Sentence Parser::getNextDerivation() {
         std::cout<<"================="<<std::endl;
         std::cout<<"the sentence not complete"<<std::endl;
     }
+    return sentence;
 }

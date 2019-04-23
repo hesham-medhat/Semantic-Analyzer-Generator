@@ -31,6 +31,8 @@ private:
     static inline bool contains(const std::string&, const char&);
     template<typename K, typename V>
     static inline bool contains(const std::unordered_map<K, V>&, const K&);
+    void removeLeftRecursion(Parser);
+    void leftFactoring(Parser&);
 };
 
 
