@@ -22,7 +22,8 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
         // Extract LHS
         std::string lhs = getUntil(rulesIstream, "=");
         if (!isValidSymbolName(lhs)) {
-            throw std::runtime_error(std::string("invalid symbol name: ") + lhs);
+          throw std::runtime_error(
+              std::string("invalid symbol name in LHS: ") + lhs);
         }
 
         NonTerminalSymbol::ptr symbol;
@@ -69,71 +70,71 @@ bool ParserGenerator::skip(std::istream &is, const std::string &str) {
     return true;
 }
 
-std::string ParserGenerator::getUntil(std::istream &is,
-                                      const std::string &delim) {
-    std::string input;
-    skip(is);
-    char next = is.peek();
-    while (!std::isspace(next) && !contains(delim, next)) {
-        if (next == '\\') {
-            is.get();
-            next = is.peek();
-            if (!contains(reserved, next)) {
-                throw std::runtime_error(
-                        std::string("unrecognized escape sequence: ") + "\\" + next);
-            }
-        }
-        input += is.get();
-        next = is.peek();
+std::string ParserGenerator::getUntil(std::istream& is,
+                                      const std::string& delim) {
+  std::string input;
+  skip(is);
+  char next = is.peek();
+  while (next != eof && !std::isspace(next) && !contains(delim, next)) {
+    if (next == '\\') {
+      is.get();
+      next = is.peek();
+      if (!contains(reserved, next)) {
+        throw std::runtime_error(
+            std::string("unrecognized escape sequence: ") + "\\" + next);
+      }
     }
-    return input;
+    input += is.get();
+    next = is.peek();
+  }
+  return input;
 }
 
 GrammarSymbol::Production ParserGenerator::getProduction(
-        std::istream &is,
-        std::unordered_map<std::string, TerminalSymbol::ptr> &terminals,
-        std::unordered_map<std::string, NonTerminalSymbol::ptr> &nonTerminals) {
-    constexpr char rhsTermDelim[] = "#|";
-    GrammarSymbol::Production prod;
-    if (skip(is, "\\L") && skip(is)) {
-        if (!contains(rhsTermDelim, is.peek())) {
-            throw std::runtime_error("\\L production should not have other symbols");
-        }
-        TerminalSymbol::ptr epsilon =
-                contains(terminals, std::string(""))
-                ? terminals[""]
-                : terminals[""] = std::make_shared<TerminalSymbol>("");
-        prod.push_back(epsilon);
-    } else {
-        std::string rhsTerm = getUntil(is, rhsTermDelim);
-        while (!rhsTerm.empty()) {
-            if (isValidSymbolName(rhsTerm)) {
-                NonTerminalSymbol::ptr nonTermSymbol =
-                        contains(nonTerminals, rhsTerm)
-                        ? nonTerminals[rhsTerm]
-                        : nonTerminals[rhsTerm] =
-                                  std::make_shared<NonTerminalSymbol>(rhsTerm);
-                prod.push_back(nonTermSymbol);
-            } else if (rhsTerm[0] == '\'' && *(rhsTerm.end() - 1) == '\'') {
-                rhsTerm = rhsTerm.substr(1, rhsTerm.length() - 1);
-                TerminalSymbol::ptr terminalSymbol =
-                        contains(terminals, rhsTerm)
-                        ? terminals[rhsTerm]
-                        : terminals[rhsTerm] = std::make_shared<TerminalSymbol>(rhsTerm);
-                prod.push_back(terminalSymbol);
-            } else {
-                throw std::runtime_error(
-                        std::string("invalid symbol name: ") + rhsTerm);
-            }
-            rhsTerm = getUntil(is, rhsTermDelim);
-        }
+    std::istream& is,
+    std::unordered_map<std::string, TerminalSymbol::ptr>& terminals,
+    std::unordered_map<std::string, NonTerminalSymbol::ptr>& nonTerminals) {
+  constexpr char rhsTermDelim[] = "#|";
+  GrammarSymbol::Production prod;
+  if (skip(is, "\\L") && skip(is)) {
+    if (!contains(rhsTermDelim, is.peek())) {
+      throw std::runtime_error("\\L production should not have other symbols");
     }
-    return prod;
+    TerminalSymbol::ptr epsilon =
+      contains(terminals, std::string(""))
+      ? terminals[""]
+      : terminals[""] = std::make_shared<TerminalSymbol>("");
+    prod.push_back(epsilon);
+  } else {
+    std::string rhsTerm = getUntil(is, rhsTermDelim);
+    while (!rhsTerm.empty()) {
+      if (isValidSymbolName(rhsTerm)) {
+        NonTerminalSymbol::ptr nonTermSymbol =
+          contains(nonTerminals, rhsTerm)
+          ? nonTerminals[rhsTerm]
+          : nonTerminals[rhsTerm] =
+              std::make_shared<NonTerminalSymbol>(rhsTerm);
+        prod.push_back(nonTermSymbol);
+      } else if (rhsTerm.front() == '\'' && rhsTerm.back() == '\'') {
+        rhsTerm = rhsTerm.substr(1, rhsTerm.length() - 1);
+        TerminalSymbol::ptr terminalSymbol =
+          contains(terminals, rhsTerm)
+          ? terminals[rhsTerm]
+          : terminals[rhsTerm] = std::make_shared<TerminalSymbol>(rhsTerm);
+        prod.push_back(terminalSymbol);
+      } else {
+        throw std::runtime_error(
+            std::string("invalid symbol name in RHS: ") + rhsTerm);
+      }
+      rhsTerm = getUntil(is, rhsTermDelim);
+    }
+  }
+  return prod;
 }
 
-inline bool ParserGenerator::isValidSymbolName(const std::string &str) {
-    static const std::regex regexSymbolName("[_[:alpha:]]\\w*");
-    return std::regex_match(str, regexSymbolName);
+inline bool ParserGenerator::isValidSymbolName(const std::string& str) {
+  static const std::regex regexSymbolName("[_[:alpha:]]\\w*");
+  return std::regex_match(str, regexSymbolName);
 }
 
 inline bool ParserGenerator::contains(const std::string &str, const char &c) {
