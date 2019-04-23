@@ -71,11 +71,7 @@ LexicalAnalyzerGenerator::LexicalAnalyzerGenerator(std::istream &inputStream)
         std::getline(inputStream, token);
 
     }
-    Token t=Token("punctuation",0);
-    Automaton tempAutomaton=Automaton('\0');
-    punctuation.unionOp(tempAutomaton,t);
-    Automaton r=punctuation;
-    t=Token("",INT_MAX);
+    Token t("",INT_MAX);
     automaton.unionOp(punctuation,t);
     automaton.unionOp(whitespaceAcceptor,t);
 
@@ -391,11 +387,13 @@ void LexicalAnalyzerGenerator::updateKeywords(std::string token) {
 }
 
 void LexicalAnalyzerGenerator::updatePunctuations(std::string token) {
-    Token t = Token("", INT_MAX);
     for (size_t i = 0; i < token.size(); i++) {
         if(token[i]==' '||token[i]=='\\')
             continue;
+        Token t = Token(std::string("")+token[i], 0);
         Automaton a = Automaton(token[i]);
+        a.unionOp(Automaton('\0'), t);
+        t = Token("", INT_MAX);
         punctuation.unionOp(a, t);
     }
 
