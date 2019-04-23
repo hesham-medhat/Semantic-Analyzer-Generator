@@ -222,7 +222,14 @@ void ParserGenerator::leftFactoring(Parser &parser) {
                     stillFactoring = true;
                     GrammarSymbol::Production temp = production[i];
                     temp.pop_front();
-                    betas.push_back(temp);
+                    if (temp.empty()) {
+                        GrammarSymbol::ptr epsilon = std::make_shared<TerminalSymbol>("");
+                        std::deque<std::shared_ptr<GrammarSymbol>> epsilonProduction;
+                        epsilonProduction.push_back(epsilon);
+                        betas.push_back(epsilonProduction);
+                    } else {
+                        betas.push_back(temp);
+                    }
                     while (production[i].size() > 1) {
                         production[i].pop_back();
                     }
