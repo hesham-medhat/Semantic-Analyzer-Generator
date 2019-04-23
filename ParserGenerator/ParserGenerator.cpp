@@ -100,7 +100,13 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
         nonTerminal.second->followCalculated = true;
         std::cout<<nonTerminal.second->getName()<<std::endl;
         for (iter = follow.begin(); iter != follow.end(); iter++) {
-            std::cout<<(*iter)->getName()<<std::endl;
+            GrammarSymbol::Production production = nonTerminal.second->getProduction(*iter);
+            GrammarSymbol::Production::iterator symIte;
+            std::cout <<(*iter)->getName()<<" -> ";
+            for(symIte = production.begin(); symIte != production.end(); symIte++){
+                std::cout<<(*symIte)->getName()<<" ";
+            }
+            std::cout<<std::endl;
         }
         std::cout<<"============================="<<std::endl;
     }

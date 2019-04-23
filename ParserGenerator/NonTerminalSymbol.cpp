@@ -5,6 +5,7 @@ NonTerminalSymbol::NonTerminalSymbol(std::string name) : GrammarSymbol
 (std::move(name)) {
     firstCalculated = false;
     followCalculated = false;
+    hasEpsilonProduction = false;
 }
 
 
@@ -30,10 +31,13 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unorder
                         if (transitions.find(terminal) == transitions.end()) {
                             transitions[terminal] = production;
                         } else if(transitions[terminal] != production){
-                            first.clear();
-                            return first;
+                            //first.clear();
+                            //return first;
                             //throw error not LL1
+                            throw NULL;
                         }
+                    } else {
+                        this->hasEpsilonProduction = true;
                     }
                     break;
                 } else {
@@ -53,9 +57,10 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unorder
                                 if (transitions.find(terminal) == transitions.end()) {
                                     transitions[terminal] = production;
                                 } else if(transitions[terminal] != production){
-                                    first.clear();
-                                    return first;
+                                    //first.clear();
+                                    //return first;
                                     //throw error not LL1
+                                    throw NULL;
                                 }
                             } else if (symIte + 1 == production.end()) {
                                 first.insert(terminal);
@@ -156,9 +161,13 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
                     transitions[*followIter] = synProduction;
                 }
             } else if(hasEpsilonProduction){
-                    follow.clear();
-                    return follow;
-                    //throw error not LL1
+                    GrammarSymbol::Production production = transitions[*followIter];
+                    if((*production.begin())->getName().compare("") != 0) {
+                        throw NULL;
+                        //follow.clear();
+                        //return follow;
+                        //throw error not LL1
+                    }
             }
         }
         /*if(hasEpsilonProduction){
