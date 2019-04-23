@@ -55,9 +55,19 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
             }
             symbol->addProduction(prod);
         }
-        // TODO(abdelhakeem): addUsingProduction
     }
 
+    for (const auto& nonTerminal : nonTerminals) {
+      for (const auto& prod : nonTerminal.second->productions) {
+        for (const auto& term : prod) {
+          if (term->getType() == GrammarSymbol::NonTerminal) {
+            NonTerminalSymbol::ptr termPtr =
+              std::dynamic_pointer_cast<NonTerminalSymbol>(term);
+            termPtr->addUsingProduction(nonTerminal.second, prod);
+          }
+        }
+      }
+    }
     return Parser(lex, startingSymbol, terminals, nonTerminals);
 }
 
