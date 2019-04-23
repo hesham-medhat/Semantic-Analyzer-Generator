@@ -116,7 +116,7 @@ GrammarSymbol::Production ParserGenerator::getProduction(
               std::make_shared<NonTerminalSymbol>(rhsTerm);
         prod.push_back(nonTermSymbol);
       } else if (rhsTerm.front() == '\'' && rhsTerm.back() == '\'') {
-        rhsTerm = rhsTerm.substr(1, rhsTerm.length() - 1);
+        rhsTerm = rhsTerm.substr(1, rhsTerm.length() - 2);
         TerminalSymbol::ptr terminalSymbol =
           contains(terminals, rhsTerm)
           ? terminals[rhsTerm]
