@@ -1,3 +1,4 @@
+/*
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -12,7 +13,8 @@
 
 int main(int argc, char* argv[]) {
 
-    /*
+    */
+/*
     E -> TE’
     E’ -> +E | 
     T -> FT’
@@ -20,8 +22,10 @@ int main(int argc, char* argv[]) {
     F -> PF'
     F' -> *F | 
     P -> (E) | a | b |Em
-    */
+    *//*
 
+
+*/
 /*
 
     GrammarSymbol::ptr E = std::make_shared<NonTerminalSymbol> ("E");
@@ -255,7 +259,7 @@ int main(int argc, char* argv[]) {
         cout<<(*iter2)->getName()<<endl;
     }
     Pn->firstCalculated = true;
-*/
+*//*
 
 
 
@@ -263,7 +267,9 @@ int main(int argc, char* argv[]) {
 
 
 
-    /*
+
+    */
+/*
     E -> TE’
     E’ -> +E | 
     T -> FT’
@@ -271,7 +277,8 @@ int main(int argc, char* argv[]) {
     F -> PF'
     F' -> *F | 
     P -> (E) | a | b |Em
-    */
+    *//*
+
 
 
     GrammarSymbol::ptr E = std::make_shared<NonTerminalSymbol>("E");
@@ -447,6 +454,7 @@ int main(int argc, char* argv[]) {
 
 
 
+*/
 /*
 
     unordered_set<TerminalSymbol::ptr> first = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFirst();
@@ -496,17 +504,21 @@ int main(int argc, char* argv[]) {
 
 
 
-*/
+*//*
 
 
 
 
-    /*E -> TE’
+
+    */
+/*E -> TE’
     E’ -> +TE’ | 
     T -> FT’
     T’ -> *FT’ | 
     F -> (E) | id
-    */
+    *//*
+
+*/
 /*
 
 
@@ -770,4 +782,5 @@ Edit & Run
 Output:
 
 mydeque contains: 1 20 30 30 20 10 2 3 4 5
+*//*
 */

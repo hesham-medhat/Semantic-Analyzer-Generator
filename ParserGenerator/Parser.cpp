@@ -142,7 +142,7 @@ void Parser::parseFullProgram(std::istream &) {
                         note = nonTerminal->getName() + " ->";
                         GrammarSymbol::Production::iterator proIte;
                         for (proIte = production.begin(); proIte != production.end(); proIte++){
-                            note = " " + (*proIte)->getName();
+                            note += " " + (*proIte)->getName();
                         }
                     }
                 } else {
