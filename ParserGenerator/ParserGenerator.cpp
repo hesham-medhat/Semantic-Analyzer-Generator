@@ -73,12 +73,12 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
     removeLeftRecursion(parser);
     leftFactoring(parser);
 
-    for (const auto& nonTerminal : nonTerminals) {
+    for (const auto& nonTerminal : parser.nonTerminals) {
       nonTerminal.second->getFirst(std::unordered_set<std::string>());
       nonTerminal.second->firstCalculated = true;
     }
 
-    for (const auto& nonTerminal : nonTerminals) {
+    for (const auto& nonTerminal : parser.nonTerminals) {
       nonTerminal.second->getFollow(std::unordered_set<std::string>());
       nonTerminal.second->followCalculated = true;
     }
