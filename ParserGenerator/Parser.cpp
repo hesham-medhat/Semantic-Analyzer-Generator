@@ -117,13 +117,12 @@ void Parser::parseFullProgram(std::istream &) {
             if (symbol->getType() == GrammarSymbol::Type::Terminal) {
                 TerminalSymbol::ptr terminal = std::dynamic_pointer_cast<TerminalSymbol>(symbol);
                 sentence.pop_front();
-                currentToken = lexicalAnalyzer.nextToken();
                 output += terminal->getName() + " ";
                 if (terminal->getName().compare(currentToken.getType()) == 0){
                     note = "matched";
+                    currentToken = lexicalAnalyzer.nextToken();
                 } else {
                     note = "error insert unmatched symbol " + terminal->getName();
-
                 }
             } else {
                 NonTerminalSymbol::ptr nonTerminal = std::dynamic_pointer_cast<NonTerminalSymbol>(symbol);
@@ -158,14 +157,13 @@ void Parser::parseFullProgram(std::istream &) {
             std::cout<<std::endl;
             std::cout<<note<<std::endl;
         } else {
-            sentence.push_back(startingSymbol);
-            note = "end of sentence";
+            //sentence.push_back(startingSymbol);
+            note = "error extra token";
 
             std::cout<<"================="<<std::endl;
             std::cout<<output<<std::endl;
             std::cout<<note<<std::endl;
-            output = "";
-            std::cout<<"+++++++++++++++++++"<<std::endl;
+            currentToken = lexicalAnalyzer.nextToken();
         }
     }
     while (!sentence.empty()){
