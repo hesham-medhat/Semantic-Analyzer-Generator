@@ -187,7 +187,7 @@ GrammarSymbol::Production ParserGenerator::getProduction(
 }
 
 inline bool ParserGenerator::isValidSymbolName(const std::string& str) {
-  static const std::regex regexSymbolName("[_[:alpha:]]\\w*");
+  static const std::regex regexSymbolName("[_[:alpha:]][\\w&]*");
   return std::regex_match(str, regexSymbolName);
 }
 

@@ -5,33 +5,29 @@
 #include "ParserGenerator/ParserGenerator.h"
 
 int main(int argc, char* argv[]) {
+  if (argc != 4) {
+    std::cout << "USGAE: "
+              << basename(argv[0]) << " <lex-rules-file> "
+                                   << " <parse-rules-file> "
+                                   << " <program-file>" << std::endl;
+    return 1;
+  }
 
-  std::string x = "C:\\Users\\first\\Desktop\\program.txt";
-  char xc[x.size()];
-  strcpy(xc,x.c_str());
-  std::string y = "C:\\Users\\first\\Desktop\\lexer-rules.txt";
-  char yc[y.size()];
-  strcpy(yc,y.c_str());
-  std::string z = "C:\\Users\\first\\Desktop\\parser-rules.txt";
-  char zc[z.size()];
-  strcpy(zc,z.c_str());
-
-
- std::ifstream lexRulesFile(yc);
+  std::ifstream lexRulesFile(argv[1]);
   if (!lexRulesFile) {
-    std::cerr << "Cannot open file: " << yc << std::endl;
+    std::cerr << "Cannot open file: " << argv[1] << std::endl;
     return 1;
   }
 
-  std::ifstream parseRulesFile(zc);
+  std::ifstream parseRulesFile(argv[2]);
   if (!parseRulesFile) {
-    std::cerr << "Cannot open file: " << zc << std::endl;
+    std::cerr << "Cannot open file: " << argv[2] << std::endl;
     return 1;
   }
 
-  std::ifstream programFile(xc);
+  std::ifstream programFile(argv[3]);
   if (!programFile) {
-    std::cerr << "Cannot open file: " << xc << std::endl;
+    std::cerr << "Cannot open file: " << argv[3] << std::endl;
     return 1;
   }
 
@@ -43,7 +39,7 @@ int main(int argc, char* argv[]) {
   Parser parser = ParserGenerator::generateParser(parseRulesFile, lex);
 
   std::cout << "Parsing program..." << std::endl;
-  parser.initProgramParse(xc);
+  parser.initProgramParse(argv[3]);
   parser.parseFullProgram(programFile);
 
   return 0;
