@@ -117,9 +117,13 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
 
 bool ParserGenerator::skip(std::istream &is, const std::string &str) {
     while (std::isspace(is.peek())) { is.get(); }
+    std::istream::pos_type originalPos = is.tellg();
     for (const char &current : str) {
-        if (is.peek() != current) { return false; }
-        is.get();
+        if (is.peek() != current) {
+          is.seekg(originalPos);
+          return false;
+        }
+        is.seekg(1, std::ios::cur);
     }
     return true;
 }
