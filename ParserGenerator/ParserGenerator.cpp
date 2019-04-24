@@ -150,7 +150,7 @@ GrammarSymbol::Production ParserGenerator::getProduction(
     std::unordered_map<std::string, NonTerminalSymbol::ptr>& nonTerminals) {
   constexpr char rhsTermDelim[] = "#|";
   GrammarSymbol::Production prod;
-  if (skip(is, "\\L") && skip(is)) {
+  if (skip(is, "'\\L'") && skip(is)) {
     if (!contains(rhsTermDelim, is.peek())) {
       throw std::runtime_error("\\L production should not have other symbols");
     }
