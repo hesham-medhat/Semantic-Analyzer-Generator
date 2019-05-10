@@ -6,11 +6,16 @@
 #include "GrammarSymbol.h"
 #include "NonTerminalSymbol.h"
 #include "../LexicalAnalysis/LexicalAnalyzer.h"
+#include "../SemanticAnalyzerGenerator/AbstractSemanticAnalyzerFactory.h"
 
 class Parser {
 public:
     typedef std::deque<std::shared_ptr<GrammarSymbol>> Sentence;
-    std::unordered_map<std::string, std::shared_ptr<NonTerminalSymbol>> nonTerminals;
+
+    std::unique_ptr<AbstractSemanticAnalyzerFactory> semanticAnalyzerFactory;
+
+    std::unordered_map<std::string, std::shared_ptr<NonTerminalSymbol>>
+    nonTerminals;
     Parser(LexicalAnalyzer&, std::shared_ptr<NonTerminalSymbol>
             startingSymbol, std::unordered_map<std::string,
             std::shared_ptr<TerminalSymbol>>& terminals,
