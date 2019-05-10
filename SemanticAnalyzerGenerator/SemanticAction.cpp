@@ -14,5 +14,5 @@ void SemanticAction::setSemanticAnalyzer(std::shared_ptr<SemanticAnalyzer>
 }
 
 void SemanticAction::execute() {
-    semanticAnalyzer.executeAction();
+    semanticAnalyzer->execute();
 }

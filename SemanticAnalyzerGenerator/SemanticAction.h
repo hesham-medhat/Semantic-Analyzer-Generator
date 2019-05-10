@@ -3,6 +3,7 @@
 
 
 #include "../ParserGenerator/GrammarSymbol.h"
+#include "SemanticAnalyzer.h"
 
 class SemanticAction : public GrammarSymbol {
 public:
