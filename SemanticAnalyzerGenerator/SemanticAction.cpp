@@ -10,9 +10,9 @@ GrammarSymbol::Type SemanticAction::getType() {
 
 void SemanticAction::setSemanticAnalyzer(std::shared_ptr<SemanticAnalyzer>
         semanticAnalyzerIn) {
-    semanticAnalyzer = semanticAnalyzerIn;
+    semanticAnalyzer = std::move(semanticAnalyzerIn);
 }
 
-void SemanticAction::execute() {
-    semanticAnalyzer->execute();
+void SemanticAction::execute(std::string input) {
+    semanticAnalyzer->execute(std::move(input));
 }

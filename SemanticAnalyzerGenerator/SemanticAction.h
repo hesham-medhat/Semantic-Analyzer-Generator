@@ -13,7 +13,7 @@ public:
 
     void setSemanticAnalyzer(std::shared_ptr<SemanticAnalyzer>);
 
-    void execute();
+    void execute(std::string input);
 private:
     std::shared_ptr<SemanticAnalyzer> semanticAnalyzer;
 };
