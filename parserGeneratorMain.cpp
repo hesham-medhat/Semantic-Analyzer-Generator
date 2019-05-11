@@ -40,9 +40,11 @@ int main(int argc, char* argv[]) {
 
   /* TODO: Create semantic analyzer factory and set to parser */
 
+  /* Parsing is not for this stage
   std::cout << "Parsing program..." << std::endl;
   parser.initProgramParse(argv[3]);
   parser.parseFullProgram(programFile);
+  */
 
   return 0;
 }
