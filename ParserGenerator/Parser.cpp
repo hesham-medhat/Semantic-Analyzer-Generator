@@ -230,5 +230,10 @@ void Parser::save(std::ostream& out) {
 }
 
 void Parser::initProgramParse(const std::string& path) {
-  lexicalAnalyzer.initProgramParse(path);
+    lexicalAnalyzer.initProgramParse(path);
+}
+
+void Parser::setSemanticAnalyzerFactory(
+        std::unique_ptr<AbstractSemanticAnalyzerFactory> value) {
+    semanticAnalyzerFactory = std::move(value);
 }

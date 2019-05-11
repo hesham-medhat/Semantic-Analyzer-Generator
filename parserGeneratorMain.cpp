@@ -38,6 +38,8 @@ int main(int argc, char* argv[]) {
   std::cout << "Generating parser..." << std::endl;
   Parser parser = ParserGenerator::generateParser(parseRulesFile, lex);
 
+  /* TODO: Create semantic analyzer factory and set to parser */
+
   std::cout << "Parsing program..." << std::endl;
   parser.initProgramParse(argv[3]);
   parser.parseFullProgram(programFile);
