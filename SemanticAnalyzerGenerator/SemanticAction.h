@@ -5,9 +5,11 @@
 #include "../ParserGenerator/GrammarSymbol.h"
 #include "SemanticAnalyzer.h"
 
+static const std::string RESERVED_ACTION_NAME = "$$$$";
+
 class SemanticAction : public GrammarSymbol {
 public:
-    explicit SemanticAction(std::string name);
+    SemanticAction();
 
     Type getType() override;
 
