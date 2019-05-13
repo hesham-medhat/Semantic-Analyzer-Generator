@@ -44,17 +44,22 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
     /* Prepare epsilon production */
     std::shared_ptr<TerminalSymbol> epsilonTerminal =
             terminals[""] = std::make_shared<TerminalSymbol> ("");
-    GrammarSymbol::Production epsilonProduction;
-    epsilonProduction.push_back(epsilonTerminal);
+    std::shared_ptr<GrammarSymbol::Production> epsilonProduction =
+            std::make_shared<GrammarSymbol::Production>();
+
+    epsilonProduction->push_back(epsilonTerminal);
 
     /* Prepare synchronization production */
     std::shared_ptr<TerminalSymbol> synchTerminal =
             terminals["$"] = std::make_shared<TerminalSymbol> ("$");
-    GrammarSymbol::Production synchProduction;
-    synchProduction.push_back(synchTerminal);
+    std::shared_ptr<GrammarSymbol::Production> synchProduction =
+            std::make_shared<GrammarSymbol::Production>();
+    synchProduction->push_back(synchTerminal);
 
     /* Read non-terminals productions */
-    std::string productionTok, grammarSymbolTok;
+    std::string productionTok, grammarSymbolTok, productionIdTok;
+    int productionId;
+    std::unordered_map<int, std::shared_ptr<Sentence>> prodIdMapper;
     for (int i = 0; i < nonterminalsCount; i++) {
         getline(inputStream, buffer);
 
@@ -62,6 +67,11 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
         std::stringstream productionsSS (buffer);
         for (int terminalIndex = 0; getline(productionsSS, productionTok,
                                             ' '); terminalIndex++) {
+            /* Read associated production id*/
+            getline(productionsSS, productionIdTok, ' ');
+            std::stringstream productionIdSS(productionIdTok);
+            productionIdSS >> productionId;
+
             if (productionTok == "$") {
                 nonterminalsArray[i]->addTransition
                         (terminalsArray[terminalIndex], synchProduction);
@@ -71,8 +81,17 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
             } else if (productionTok == "$$$") {
                 continue;
             } else {
+                /* Check if same sentence already read */
+                if (prodIdMapper.find(productionId) != prodIdMapper.end()) {
+                    nonterminalsArray[i]->addTransition
+                            (terminalsArray[terminalIndex],
+                                    prodIdMapper[productionId]);
+                    continue;
+                }
+
                 /* Tokenize productionToken on $ */
-                NonTerminalSymbol::Production newProduction;
+                std::shared_ptr<Sentence> newProduction =
+                        std::make_shared<Sentence>();
                 std::stringstream grammarSymbolsSS(productionTok);
                 while (getline(grammarSymbolsSS, grammarSymbolTok, '$')) {
                     std::shared_ptr<GrammarSymbol> symbol;
@@ -92,10 +111,11 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
                         symbol = terminals[grammarSymbolTok];
                     }
 
-                    newProduction.push_back(symbol);
+                    newProduction->push_back(symbol);
                 }
                 nonterminalsArray[i]->addTransition
                         (terminalsArray[terminalIndex], newProduction);
+                productionIds[newProduction] = productionId;
             }
         }
 
@@ -128,7 +148,8 @@ void Parser::parseFullProgram(std::istream &) {
                 }
             } else {
                 NonTerminalSymbol::ptr nonTerminal = std::dynamic_pointer_cast<NonTerminalSymbol>(symbol);
-                GrammarSymbol::Production production = nonTerminal->getProduction(terminals[currentToken.getType()]);
+                GrammarSymbol::Production production =
+                        *nonTerminal->getProduction(terminals[currentToken.getType()]);
                 if(!production.empty()){
                     sentence.pop_front();
                     if((*(production.begin()))->getName().compare("$") == 0){
@@ -225,7 +246,7 @@ void Parser::save(std::ostream& out) {
     for (const auto& nonTerminalMapEntry : nonTerminals) {
         std::shared_ptr<NonTerminalSymbol> nonTerminal =
                 nonTerminalMapEntry.second;
-        nonTerminal->saveProductions(out, terminals);
+        nonTerminal->saveProductions(out, terminals, productionIds);
     }
 }
 

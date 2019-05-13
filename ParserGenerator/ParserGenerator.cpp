@@ -82,7 +82,8 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
         nonTerminal.second->firstCalculated = true;
         std::cout<<nonTerminal.second->getName()<<std::endl;
         for (iter2 = first.begin(); iter2 != first.end(); iter2++) {
-            GrammarSymbol::Production production = nonTerminal.second->getProduction(*iter2);
+            GrammarSymbol::Production production = *nonTerminal
+                    .second->getProduction(*iter2);
             GrammarSymbol::Production::iterator symIte;
             std::cout <<(*iter2)->getName()<<" -> ";
             for(symIte = production.begin(); symIte != production.end(); symIte++){
@@ -100,7 +101,8 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
         nonTerminal.second->followCalculated = true;
         std::cout<<nonTerminal.second->getName()<<std::endl;
         for (iter = follow.begin(); iter != follow.end(); iter++) {
-            GrammarSymbol::Production production = nonTerminal.second->getProduction(*iter);
+            GrammarSymbol::Production production = *nonTerminal
+                    .second->getProduction(*iter);
             GrammarSymbol::Production::iterator symIte;
             std::cout <<(*iter)->getName()<<" -> ";
             for(symIte = production.begin(); symIte != production.end(); symIte++){

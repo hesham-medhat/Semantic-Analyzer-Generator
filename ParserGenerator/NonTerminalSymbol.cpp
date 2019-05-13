@@ -29,8 +29,8 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unorder
                     first.insert(terminal);
                     if (terminal->getName().compare("") != 0) {
                         if (transitions.find(terminal) == transitions.end()) {
-                            transitions[terminal] = production;
-                        } else if(transitions[terminal] != production){
+                            *transitions[terminal] = production;
+                        } else if(*transitions[terminal] != production){
                             //first.clear();
                             //return first;
                             //throw error not LL1
@@ -55,8 +55,8 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unorder
                             if (terminal->getName().compare("") != 0) {
                                 first.insert(terminal);
                                 if (transitions.find(terminal) == transitions.end()) {
-                                    transitions[terminal] = production;
-                                } else if(transitions[terminal] != production){
+                                    *transitions[terminal] = production;
+                                } else if(*transitions[terminal] != production){
                                     //first.clear();
                                     //return first;
                                     //throw error not LL1
@@ -156,12 +156,13 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
         for (followIter = follow.begin(); followIter != follow.end(); followIter++) {
             if(transitions.find(*followIter) == transitions.end()){
                 if(hasEpsilonProduction){
-                    transitions[*followIter] = epsProduction;
+                    *transitions[*followIter] = epsProduction;
                 } else {
-                    transitions[*followIter] = synProduction;
+                    *transitions[*followIter] = synProduction;
                 }
             } else if(hasEpsilonProduction){
-                    GrammarSymbol::Production production = transitions[*followIter];
+                    GrammarSymbol::Production production =
+                            *transitions[*followIter];
                     if((*production.begin())->getName().compare("") != 0) {
                         throw NULL;
                         //follow.clear();
@@ -201,12 +202,12 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
 }
 
 void NonTerminalSymbol::addTransition(TerminalSymbol::ptr input,
-                                      GrammarSymbol::Production newProduction) {
+        std::shared_ptr<GrammarSymbol::Production> newProduction) {
 
 /* Update hasEpsilonProduction if epsilon */
 
-    if (newProduction.size() == 1) {
-        std::shared_ptr<GrammarSymbol> singleTerminal = *newProduction.begin();
+    if (newProduction->size() == 1) {
+        std::shared_ptr<GrammarSymbol> singleTerminal = *newProduction->begin();
         std::string name = singleTerminal->getName();
         if (name.empty()) {// Epsilon transition
             hasEpsilonProduction = true;
@@ -227,9 +228,10 @@ void NonTerminalSymbol::addUsingProduction(NonTerminalSymbol::ptr nonTerm, Gramm
 
 
 
-GrammarSymbol::Production NonTerminalSymbol::getProduction(TerminalSymbol::ptr terminal) {
-    GrammarSymbol::Production production;
-    if(transitions.find(terminal) != transitions.end()){
+std::shared_ptr<GrammarSymbol::Production> NonTerminalSymbol::getProduction(
+        TerminalSymbol::ptr terminal) {
+    std::shared_ptr<GrammarSymbol::Production> production;
+    if(transitions.find(terminal) != transitions.end()) {
         production = transitions[terminal];
     }
     return production;
@@ -240,17 +242,20 @@ GrammarSymbol::Production NonTerminalSymbol::getProduction(TerminalSymbol::ptr t
 
 void NonTerminalSymbol::saveProductions(std::ostream &out,
         std::unordered_map<std::string, std::shared_ptr<TerminalSymbol>>&
-        terminals) {
+        terminals, std::unordered_map<std::shared_ptr<Production>, int>&
+                productionIds) {
+    int productionId = -1;// Meaning not a tracked production
     for (const auto& terminalEntry : terminals) {
         const std::shared_ptr<TerminalSymbol> terminal = terminalEntry.second;
         if (transitions.find(terminal) != transitions.end()) {
-            Production& production = transitions[terminal];
-            if (production.size() == 1 &&
-            (*production.begin())->getName().empty()) {// Epsilon production
+            std::shared_ptr<Production> production = transitions[terminal];
+            if (production->size() == 1 &&
+            (*production->begin())->getName().empty()) {// Epsilon production
                 out << static_cast<std::string>("$$");
             } else {
+                productionId = productionIds[production];
                 bool firstSymbol = true;
-                for (const auto& grammarSymbol : production) {
+                for (const auto& grammarSymbol : *production) {
                     if (!firstSymbol) out.put('$');
                     out << grammarSymbol->getName();
                     firstSymbol = false;
@@ -259,7 +264,7 @@ void NonTerminalSymbol::saveProductions(std::ostream &out,
         } else {// Error production. Terminal symbol not mapped
             out << static_cast<std::string>("$$$");
         }
-        out << " ";
+        out << " " << productionId;
     }
     out << std::endl;
 }
