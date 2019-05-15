@@ -5,19 +5,21 @@
 #include <string>
 #include <unordered_map>
 #include <fstream>
+#include "../ParserGenerator/GrammarSymbol.h"
+#include "../ParserGenerator/NonTerminalSymbol.h"
 
 class SemanticAnalyzerGenerator {
 public:
-    explicit SemanticAnalyzerGenerator(std::unordered_map<std::string,
-            std::string>&);
+    explicit SemanticAnalyzerGenerator(std::string header);
 
-    void generateSemanticAnalyzer(int productionId, std::string production);
+    void generateSemanticAnalyzer(int productionId, NonTerminalSymbol
+    producingSymbol, std::shared_ptr<GrammarSymbol::Production>);
 private:
     std::ofstream outStream;
     // Maps names of non-terminals to their structure definitions
     std::unordered_map<std::string, std::string> nonTerminalsStructs;
 
-    void writeNTStructureDefinitions();
+    void writeHeader(std::string header);
 };
 
 
