@@ -22,6 +22,7 @@ private:
     ParserGenerator(); // Not implemented on purpose
     static constexpr char eof = std::string::traits_type::eof();
     static const std::string reserved;
+    static const std::string whitespaces;
     static bool skip(std::istream&, const std::string& = "");
     static std::string getUntil(std::istream&, const std::string&);
     static GrammarSymbol::Production getProduction(

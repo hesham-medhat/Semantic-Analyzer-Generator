@@ -2,6 +2,7 @@
 #include "ParserGenerator.h"
 
 const std::string ParserGenerator::reserved = "#=|'\\";
+const std::string ParserGenerator::whitespaces = " \f\n\r\t\v";
 
 Parser ParserGenerator::generateParser(std::istream &rulesIstream,
                                        LexicalAnalyzer &lex) {
@@ -9,9 +10,19 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
         throw std::invalid_argument("invalid stream passed to generateParser()");
     }
 
-    std::shared_ptr<NonTerminalSymbol> startingSymbol;
+    NonTerminalSymbol::ptr startingSymbol;
     std::unordered_map<std::string, TerminalSymbol::ptr> terminals;
     std::unordered_map<std::string, NonTerminalSymbol::ptr> nonTerminals;
+
+    // Parse initial code block
+    std::string initialCodeBlock;
+    if (skip(rulesIstream, "$")) {
+      initialCodeBlock = getUntil(rulesIstream, "$");
+    }
+
+    if (!rulesIstream) {
+      throw std::runtime_error("no rules in file");
+    }
 
     // Parse next rule
     while (rulesIstream) {
@@ -20,7 +31,7 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
         }
 
         // Extract LHS
-        std::string lhs = getUntil(rulesIstream, "=");
+        std::string lhs = getUntil(rulesIstream, whitespaces + "=");
         if (!isValidSymbolName(lhs)) {
           throw std::runtime_error(
               std::string("invalid symbol name in LHS: ") + lhs);
@@ -75,44 +86,15 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
         }
     }
 
-    std::unordered_set<TerminalSymbol::ptr> first;
-    std::unordered_set<TerminalSymbol::ptr>::iterator iter2;
     for (const auto& nonTerminal : parser.nonTerminals) {
-        first = nonTerminal.second->getFirst(std::unordered_set<std::string>());
+        nonTerminal.second->getFirst(std::unordered_set<std::string>());
         nonTerminal.second->firstCalculated = true;
-        std::cout<<nonTerminal.second->getName()<<std::endl;
-        for (iter2 = first.begin(); iter2 != first.end(); iter2++) {
-            GrammarSymbol::Production production = *nonTerminal
-                    .second->getProduction(*iter2);
-            GrammarSymbol::Production::iterator symIte;
-            std::cout <<(*iter2)->getName()<<" -> ";
-            for(symIte = production.begin(); symIte != production.end(); symIte++){
-                std::cout<<(*symIte)->getName()<<" ";
-            }
-            std::cout<<std::endl;
-        }
-        std::cout<<"============================="<<std::endl;
     }
-    std::cout<<"############################"<<std::endl;
-    std::unordered_set<TerminalSymbol::ptr> follow;
-    std::unordered_set<TerminalSymbol::ptr>::iterator iter;
+
     for (const auto& nonTerminal : parser.nonTerminals) {
-        follow = nonTerminal.second->getFollow(std::unordered_set<std::string>());
+        nonTerminal.second->getFollow(std::unordered_set<std::string>());
         nonTerminal.second->followCalculated = true;
-        std::cout<<nonTerminal.second->getName()<<std::endl;
-        for (iter = follow.begin(); iter != follow.end(); iter++) {
-            GrammarSymbol::Production production = *nonTerminal
-                    .second->getProduction(*iter);
-            GrammarSymbol::Production::iterator symIte;
-            std::cout <<(*iter)->getName()<<" -> ";
-            for(symIte = production.begin(); symIte != production.end(); symIte++){
-                std::cout<<(*symIte)->getName()<<" ";
-            }
-            std::cout<<std::endl;
-        }
-        std::cout<<"============================="<<std::endl;
     }
-    std::cout<<"############################"<<std::endl;
 
     return parser;
 }
@@ -135,7 +117,7 @@ std::string ParserGenerator::getUntil(std::istream& is,
   std::string input;
   skip(is);
   char next = is.peek();
-  while (next != eof && !std::isspace(next) && !contains(delim, next)) {
+  while (next != eof && !contains(delim, next)) {
     if (next == '\\') {
       is.get();
       next = is.peek();
@@ -165,8 +147,15 @@ GrammarSymbol::Production ParserGenerator::getProduction(
       ? terminals[""]
       : terminals[""] = std::make_shared<TerminalSymbol>("");
     prod.push_back(epsilon);
+  } else if (skip(is, "{")) {
+    std::string codeFragment = getUntil(is, "}");
+    if (!is) {
+      throw std::runtime_error("premature end of file, expected '}'");
+
+    }
+    // TODO(ahmed127011): write to parser source (create SemanticAction, etc..)
   } else {
-    std::string rhsTerm = getUntil(is, rhsTermDelim);
+    std::string rhsTerm = getUntil(is, whitespaces + rhsTermDelim);
     while (!rhsTerm.empty()) {
       if (isValidSymbolName(rhsTerm)) {
         NonTerminalSymbol::ptr nonTermSymbol =
@@ -186,7 +175,7 @@ GrammarSymbol::Production ParserGenerator::getProduction(
         throw std::runtime_error(
             std::string("invalid symbol name in RHS: ") + rhsTerm);
       }
-      rhsTerm = getUntil(is, rhsTermDelim);
+      rhsTerm = getUntil(is, whitespaces + rhsTermDelim);
     }
   }
   return prod;
