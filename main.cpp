@@ -6,7 +6,7 @@
 
 int main(int argc, char* argv[]) {
   if (argc != 3) {
-    std::cout << "USGAE: "
+    std::cout << "USAGE: "
               << basename(argv[0])
               << " <lexer-rules-file>"
               << " <parser-rules-file>"

@@ -9,7 +9,7 @@ $ mkdir build && cd build
 $ ../configure
 $ make
 $ ./pgen
-USGAE: pgen <lexer-rules-file> <parser-rules-file>
+USAGE: pgen <lexer-rules-file> <parser-rules-file>
 ```
 
 ## Lexical Analyzer
