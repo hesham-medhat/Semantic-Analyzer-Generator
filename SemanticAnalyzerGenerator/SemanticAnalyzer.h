@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <deque>
 #include <memory>
+#include <vector>
 
 /* Considered as base class for semantic analyzers for single productions
  * executing their semantic actions and holding their data */
@@ -13,14 +14,15 @@ class SemanticAnalyzer {
 public:
     // Execute the next semantic action; which should be nothing in this base
     // class case, and increment the iterator curAction to point
-    void execute(std::string);
+    virtual void execute(std::string);
+    void* getNextNonTerminal();
+    std::string _input;
 protected:
-    std::deque<std::shared_ptr<void (std::string)>> actions;
-    // Iterator pointing to current action
-    std::deque<std::shared_ptr<void (std::string)>>::iterator curAction;
 
     // Structure map mapping name to its struct object pointer
-    std::unordered_map<std::string, void*> map;
+    std::vector<void *> structs;
+private:
+    int nonTerminalCounter=0;
 };
 
 
