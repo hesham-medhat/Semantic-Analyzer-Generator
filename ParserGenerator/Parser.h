@@ -48,6 +48,7 @@ private:
     // Current discrete parsing
     std::unique_ptr<std::istream> programStream;
     std::shared_ptr<NonTerminalSymbol> currentSymbol = startingSymbol;
+    std::string lastToken;
 };
 
 
