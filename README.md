@@ -108,6 +108,7 @@ Code fragments are given in production bodies and enclosed between curly braces.
 
 ```c
 $
+#include <stdio.h>
 #include <stdlib.h>
 
 struct SIMPLE_EXPR {
