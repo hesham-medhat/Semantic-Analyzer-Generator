@@ -1,5 +1,6 @@
 #include <sstream>
 #include "Parser.h"
+#include "../SemanticAnalyzerGenerator/SemanticAction.h"
 
 
 Parser::Parser(LexicalAnalyzer & lexicalAnalyzer,
@@ -133,36 +134,61 @@ void Parser::parseFullProgram(std::istream &) {
     std::string output = "";
     std::string note = "";
     sentence.push_back(startingSymbol);
-    while (currentToken.getType().compare("") != 0){
+    while (!currentToken.getType().empty()){
         if(!sentence.empty()) {
             GrammarSymbol::ptr symbol = *sentence.begin();
             if (symbol->getType() == GrammarSymbol::Type::Terminal) {
-                TerminalSymbol::ptr terminal = std::dynamic_pointer_cast<TerminalSymbol>(symbol);
+                TerminalSymbol::ptr terminal = std::dynamic_pointer_cast<TerminalSymbol>(
+                        symbol);
                 sentence.pop_front();
                 output += terminal->getName() + " ";
-                if (terminal->getName().compare(currentToken.getType()) == 0){
+                if (terminal->getName() == currentToken.getType()) {
                     note = "matched";
                     currentToken = lexicalAnalyzer.nextToken();
                 } else {
-                    note = "error insert unmatched symbol " + terminal->getName();
+                    note = "error insert unmatched symbol " +
+                           terminal->getName();
                 }
+            } else if (symbol->getType() ==
+            GrammarSymbol::Type::SemanticAction) {
+                std::shared_ptr<SemanticAction> action =
+                        std::dynamic_pointer_cast<SemanticAction>(symbol);
+                action->execute(currentToken.getLexeme());
             } else {
                 NonTerminalSymbol::ptr nonTerminal = std::dynamic_pointer_cast<NonTerminalSymbol>(symbol);
-                GrammarSymbol::Production production =
-                        *nonTerminal->getProduction(terminals[currentToken.getType()]);
-                if(!production.empty()){
+                std::shared_ptr<GrammarSymbol::Production> production =
+                        nonTerminal->getProduction(terminals[currentToken.getType()]);
+                if(!production->empty()){
                     sentence.pop_front();
-                    if((*(production.begin()))->getName().compare("$") == 0){
+                    if((*(production->begin()))->getName().compare("$") == 0){
                         output += "$ ";
                         note = "error in " + nonTerminal->getName();
-                    } else if((*(production.begin()))->getName().compare("") == 0) {
+                    } else if((*(production->begin()))->getName().empty()) {
                         note = nonTerminal->getName() + " -> ";
 
                     } else {
-                        sentence.insert(sentence.begin(),production.begin(), production.end());
+                        std::shared_ptr<SemanticAnalyzer> derivationAnalyzer =
+                                semanticAnalyzerFactory->getSemanticAnalyzer
+                                (productionIds[production]);
+                        Sentence derivation;
+                        for(const auto& symbolRef : *production) {
+                            std::shared_ptr<GrammarSymbol> newSymbol;
+                            if (symbolRef->getType() ==
+                            GrammarSymbol::Type::SemanticAction) {
+                                newSymbol = std::make_shared<SemanticAction>();
+                                std::shared_ptr<SemanticAction> action =
+                                        std::dynamic_pointer_cast<SemanticAction>(newSymbol);
+                                action->setSemanticAnalyzer(derivationAnalyzer);
+                            }
+                            derivation.push_back(newSymbol);
+                        }
+                        // INSERT DERIVATION
+                        sentence.insert(sentence.begin(),derivation.begin(),
+                                derivation.end());
                         note = nonTerminal->getName() + " ->";
                         GrammarSymbol::Production::iterator proIte;
-                        for (proIte = production.begin(); proIte != production.end(); proIte++){
+                        for (proIte = production->begin(); proIte !=
+                        production->end(); proIte++){
                             note += " " + (*proIte)->getName();
                         }
                     }

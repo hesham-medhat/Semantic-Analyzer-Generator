@@ -73,3 +73,4 @@ void SemanticAnalyzerGenerator::generateSemanticAnalyzer(int productionId, NonTe
     outStream << "\t\tfunctionCounter++;\n\t\t}";
     outStream << "\n\t}\n}";
 }
+
