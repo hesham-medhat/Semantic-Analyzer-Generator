@@ -2,6 +2,16 @@
 
 This is an LL(1) parser generator which supports Syntax-Directed Translation Schemes with C/C++ code fragments within the production bodies of grammar rules.
 
+## Usage
+
+```
+$ mkdir build && cd build
+$ ../configure
+$ make
+$ ./pgen
+USGAE: pgen <lexer-rules-file> <parser-rules-file>
+```
+
 ## Lexical Analyzer
 
 In order for the included lexical analyzer to tokenize the target input stream, you must provide a lexical rules file declaring the different types of tokens together with their regex patterns. The longest matching prefix is always chosen, where tokens corresponding to rules appearing first in the rules file have higher priorities in case of ties.
