@@ -86,7 +86,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = pgen$(EXEEXT)
+bin_PROGRAMS = pgen$(EXEEXT) parser$(EXEEXT) parser_gen$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -118,6 +118,14 @@ am__objects_2 = ParserGenerator/GrammarSymbol.$(OBJEXT) \
 am__objects_3 = SemanticAnalyzerGenerator/SemanticAction.$(OBJEXT) \
 	SemanticAnalyzerGenerator/SemanticAnalyzer.$(OBJEXT) \
 	SemanticAnalyzerGenerator/SemanticAnalyzerGenerator.$(OBJEXT)
+am_parser_OBJECTS = parser.pgen.$(OBJEXT) $(am__objects_1) \
+	$(am__objects_2) $(am__objects_3)
+parser_OBJECTS = $(am_parser_OBJECTS)
+parser_LDADD = $(LDADD)
+am_parser_gen_OBJECTS = Testing/testing1.$(OBJEXT) $(am__objects_1) \
+	$(am__objects_2) $(am__objects_3)
+parser_gen_OBJECTS = $(am_parser_gen_OBJECTS)
+parser_gen_LDADD = $(LDADD)
 am_pgen_OBJECTS = main.$(OBJEXT) $(am__objects_1) $(am__objects_2) \
 	$(am__objects_3)
 pgen_OBJECTS = $(am_pgen_OBJECTS)
@@ -137,7 +145,7 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/main.Po \
+am__depfiles_remade = ./$(DEPDIR)/main.Po ./$(DEPDIR)/parser.pgen.Po \
 	LexicalAnalysis/$(DEPDIR)/LexicalAnalyzer.Po \
 	LexicalAnalysis/$(DEPDIR)/LexicalAnalyzerGenerator.Po \
 	LexicalAnalysis/$(DEPDIR)/Token.Po \
@@ -153,7 +161,8 @@ am__depfiles_remade = ./$(DEPDIR)/main.Po \
 	ParserGenerator/$(DEPDIR)/TerminalSymbol.Po \
 	SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAction.Po \
 	SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAnalyzer.Po \
-	SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAnalyzerGenerator.Po
+	SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAnalyzerGenerator.Po \
+	Testing/$(DEPDIR)/testing1.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -168,8 +177,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(pgen_SOURCES)
-DIST_SOURCES = $(pgen_SOURCES)
+SOURCES = $(parser_SOURCES) $(parser_gen_SOURCES) $(pgen_SOURCES)
+DIST_SOURCES = $(parser_SOURCES) $(parser_gen_SOURCES) $(pgen_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -326,6 +335,18 @@ pgen_SOURCES = \
   $(parser_generator_src) \
   $(semantic_analyzer_src)
 
+parser_SOURCES = \
+  parser.pgen.cpp \
+  $(lexical_analyzer_generator_src) \
+  $(parser_generator_src) \
+  $(semantic_analyzer_src)
+
+parser_gen_SOURCES = \
+  Testing/testing1.cpp \
+  $(lexical_analyzer_generator_src) \
+  $(parser_generator_src) \
+  $(semantic_analyzer_src)
+
 all: all-am
 
 .SUFFIXES:
@@ -476,6 +497,22 @@ SemanticAnalyzerGenerator/SemanticAnalyzerGenerator.$(OBJEXT):  \
 	SemanticAnalyzerGenerator/$(am__dirstamp) \
 	SemanticAnalyzerGenerator/$(DEPDIR)/$(am__dirstamp)
 
+parser$(EXEEXT): $(parser_OBJECTS) $(parser_DEPENDENCIES) $(EXTRA_parser_DEPENDENCIES) 
+	@rm -f parser$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(parser_OBJECTS) $(parser_LDADD) $(LIBS)
+Testing/$(am__dirstamp):
+	@$(MKDIR_P) Testing
+	@: > Testing/$(am__dirstamp)
+Testing/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) Testing/$(DEPDIR)
+	@: > Testing/$(DEPDIR)/$(am__dirstamp)
+Testing/testing1.$(OBJEXT): Testing/$(am__dirstamp) \
+	Testing/$(DEPDIR)/$(am__dirstamp)
+
+parser_gen$(EXEEXT): $(parser_gen_OBJECTS) $(parser_gen_DEPENDENCIES) $(EXTRA_parser_gen_DEPENDENCIES) 
+	@rm -f parser_gen$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(parser_gen_OBJECTS) $(parser_gen_LDADD) $(LIBS)
+
 pgen$(EXEEXT): $(pgen_OBJECTS) $(pgen_DEPENDENCIES) $(EXTRA_pgen_DEPENDENCIES) 
 	@rm -f pgen$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(pgen_OBJECTS) $(pgen_LDADD) $(LIBS)
@@ -486,11 +523,13 @@ mostlyclean-compile:
 	-rm -f LexicalAnalysis/Automata/*.$(OBJEXT)
 	-rm -f ParserGenerator/*.$(OBJEXT)
 	-rm -f SemanticAnalyzerGenerator/*.$(OBJEXT)
+	-rm -f Testing/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser.pgen.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@LexicalAnalysis/$(DEPDIR)/LexicalAnalyzer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@LexicalAnalysis/$(DEPDIR)/LexicalAnalyzerGenerator.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@LexicalAnalysis/$(DEPDIR)/Token.Po@am__quote@ # am--include-marker
@@ -507,6 +546,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAction.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAnalyzer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAnalyzerGenerator.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@Testing/$(DEPDIR)/testing1.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -796,6 +836,8 @@ distclean-generic:
 	-rm -f ParserGenerator/$(am__dirstamp)
 	-rm -f SemanticAnalyzerGenerator/$(DEPDIR)/$(am__dirstamp)
 	-rm -f SemanticAnalyzerGenerator/$(am__dirstamp)
+	-rm -f Testing/$(DEPDIR)/$(am__dirstamp)
+	-rm -f Testing/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -807,6 +849,7 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 		-rm -f ./$(DEPDIR)/main.Po
+	-rm -f ./$(DEPDIR)/parser.pgen.Po
 	-rm -f LexicalAnalysis/$(DEPDIR)/LexicalAnalyzer.Po
 	-rm -f LexicalAnalysis/$(DEPDIR)/LexicalAnalyzerGenerator.Po
 	-rm -f LexicalAnalysis/$(DEPDIR)/Token.Po
@@ -823,6 +866,7 @@ distclean: distclean-am
 	-rm -f SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAction.Po
 	-rm -f SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAnalyzer.Po
 	-rm -f SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAnalyzerGenerator.Po
+	-rm -f Testing/$(DEPDIR)/testing1.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -871,6 +915,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
 		-rm -f ./$(DEPDIR)/main.Po
+	-rm -f ./$(DEPDIR)/parser.pgen.Po
 	-rm -f LexicalAnalysis/$(DEPDIR)/LexicalAnalyzer.Po
 	-rm -f LexicalAnalysis/$(DEPDIR)/LexicalAnalyzerGenerator.Po
 	-rm -f LexicalAnalysis/$(DEPDIR)/Token.Po
@@ -887,6 +932,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAction.Po
 	-rm -f SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAnalyzer.Po
 	-rm -f SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAnalyzerGenerator.Po
+	-rm -f Testing/$(DEPDIR)/testing1.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
