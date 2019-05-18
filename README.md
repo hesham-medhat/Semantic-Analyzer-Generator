@@ -59,6 +59,7 @@ mulop: \* | /
 
 ## Parser Generator
 
+The input grammar is assumed to be an LL(1) left-factored grammar with no left recursion.
 Parsing rules are specified in a text file that takes the following general form:
 ```
 $
@@ -72,7 +73,7 @@ Rules start with hash signs (`#`) and take the following form (whitespaces are o
 # {LHS} = {RHS}
 ```
 
-The left-hand side is the name of a non-terminal symbol, and the right-hand side is a list of production bodies separated by `|`'s. Terminal symbols are enclosed in single quotes and must match the names of the corresponding tokens in the lexical rules file. Punctuation symbols are specified literally and enclosed in single quotes as well. `'\L'` is a special symbol for the empty string.
+The left-hand side is the name of a non-terminal symbol, and the right-hand side is a list of production bodies separated by `|`'s. Terminal symbols are enclosed in single quotes and must match the names of the corresponding tokens in the lexical rules file. The names of all grammar symbols must be valid C/C++ identifiers. `'\L'` is a special symbol for the empty string.
 
 ### Example:
 
@@ -102,14 +103,14 @@ The code block at the top of the parsing rules file is taken as is and placed in
 
 Any semantic attributes of non-terminal symbols _must_ be defined in the initial code block as members of `struct`'s with exactly the same names as the associated non-terminal symbols.
 
-Code fragments are given in production bodies and enclosed between curly braces. The head of a production is referred to in code fragments by its name, while occurrences of non-terminal and terminal symbols are referred to by a number, denoting their order of occurrence in the production body with respect to other symbols of the same type, concatenated to their names. (e.g.: `num1` for the first occurrence of `num`).
+Code fragments are given in production bodies and enclosed between curly braces. The head of a production is referred to in code fragments by its name, while occurrences of non-terminal and terminal symbols are referred to by a number, denoting their order of occurrence in the production body with respect to other symbols of the same type, concatenated to their names. (e.g.: `num1` for the first occurrence of `num`). Terminal symbols are `std::string`'s, representing the lexemes of the corresponding tokens. Non-terminal symbols are `struct`'s with the same names as theirs.
 
 #### Example:
 
 ```c
 $
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 struct SIMPLE_EXPR {
   int value;
@@ -120,6 +121,6 @@ struct ADDITION {
   int value;
 };
 $
-# SIMPLE_EXPR = 'num' { ADDITION1.prevNum = atoi(num1); } ADDITION { SIMPLE_EXPR.value = ADDITION.value; printf("Result: %d", SIMPLE_EXPR.value); }
-# ADDITION = '+' 'num' { ADDITION1.prevNum = ADDITION.prevNum + atoi(num); } ADDITION { ADDITION.value = ADDITION1.value; } | '\L' { ADDITION.value = ADDITION.prevNum; }
+# SIMPLE_EXPR = 'num' { ADDITION1.prevNum = atoi(num1.c_str()); } ADDITION { SIMPLE_EXPR.value = ADDITION.value; printf("Result: %d", SIMPLE_EXPR.value); }
+# ADDITION = 'addop' 'num' { ADDITION1.prevNum = ADDITION.prevNum + atoi(num.c_str()); } ADDITION { ADDITION.value = ADDITION1.value; } | '\L' { ADDITION.value = ADDITION.prevNum; }
 ```
