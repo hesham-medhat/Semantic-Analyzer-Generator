@@ -1,5 +1,6 @@
 #include <regex>
 #include "ParserGenerator.h"
+#include "SemanticAnalyzerGenerator/SemanticAnalyzerGenerator.h"
 
 const std::string ParserGenerator::reserved = "#=|'\\";
 const std::string ParserGenerator::whitespaces = " \f\n\r\t\v";
@@ -18,11 +19,14 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
     std::string initialCodeBlock;
     if (skip(rulesIstream, "$")) {
       initialCodeBlock = getUntil(rulesIstream, "$");
+      skip(rulesIstream, "$");
     }
 
     if (!rulesIstream) {
       throw std::runtime_error("no rules in file");
     }
+
+    SemanticAnalyzerGenerator SAG(initialCodeBlock);
 
     // Parse next rule
     while (rulesIstream) {
@@ -52,19 +56,29 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
         }
 
         // Extract RHS
+        int productionId = 0;
+        std::vector<std::string> codeFrags;
         GrammarSymbol::Production prod =
-                getProduction(rulesIstream, terminals, nonTerminals);
+                getProduction(rulesIstream, terminals,
+                              nonTerminals, codeFrags);
         if (prod.empty()) {
             throw std::runtime_error(
                     std::string("expected at least one production in rule: ") + lhs);
         }
         symbol->addProduction(prod);
+        SAG.generateSemanticAnalyzer(
+            productionId++, *symbol,
+            std::make_shared<GrammarSymbol::Production>(), codeFrags);
         while (skip(rulesIstream, "|")) {
-            prod = getProduction(rulesIstream, terminals, nonTerminals);
+            prod = getProduction(rulesIstream, terminals,
+                                 nonTerminals, codeFrags);
             if (prod.empty()) {
                 throw std::runtime_error("expected production after '|'");
             }
             symbol->addProduction(prod);
+            SAG.generateSemanticAnalyzer(
+                productionId++, *symbol,
+                std::make_shared<GrammarSymbol::Production>(), codeFrags);
         }
     }
 
@@ -132,51 +146,58 @@ std::string ParserGenerator::getUntil(std::istream& is,
   return input;
 }
 
+std::string ParserGenerator::getProductionTerm(std::istream& is) {
+  constexpr char lambdaTerm[] = "'\\L'";
+  constexpr char rhsTermDelim[] = "#|";
+  std::string term;
+  if (skip(is, lambdaTerm)) {
+    term = lambdaTerm;
+  } else if (skip(is, "{")) {
+    term = "{";
+    term += getUntil(is, "}");
+    if (!is) {
+      throw std::runtime_error("premature end of file, expected '}'");
+    }
+    skip(is, "}");
+    term += "}";
+  } else {
+    term = getUntil(is, whitespaces + rhsTermDelim);
+  }
+  return term;
+}
+
 GrammarSymbol::Production ParserGenerator::getProduction(
     std::istream& is,
     std::unordered_map<std::string, TerminalSymbol::ptr>& terminals,
-    std::unordered_map<std::string, NonTerminalSymbol::ptr>& nonTerminals) {
-  constexpr char rhsTermDelim[] = "#|";
+    std::unordered_map<std::string, NonTerminalSymbol::ptr>& nonTerminals,
+    std::vector<std::string>& codeFrags) {
+  codeFrags.clear();
   GrammarSymbol::Production prod;
-  if (skip(is, "'\\L'") && skip(is)) {
-    if (!contains(rhsTermDelim, is.peek())) {
-      throw std::runtime_error("\\L production should not have other symbols");
+  std::string rhsTerm = getProductionTerm(is);
+  while (!rhsTerm.empty()) {
+    if (isValidSymbolName(rhsTerm)) {
+      NonTerminalSymbol::ptr nonTermSymbol =
+        contains(nonTerminals, rhsTerm)
+        ? nonTerminals[rhsTerm]
+        : nonTerminals[rhsTerm] =
+            std::make_shared<NonTerminalSymbol>(rhsTerm);
+      prod.push_back(nonTermSymbol);
+    } else if (rhsTerm.front() == '\'' && rhsTerm.back() == '\'') {
+      rhsTerm = rhsTerm.substr(1, rhsTerm.length() - 2);
+      rhsTerm = rhsTerm == "\\L" ? "" : rhsTerm;
+      TerminalSymbol::ptr terminalSymbol =
+        contains(terminals, rhsTerm)
+        ? terminals[rhsTerm]
+        : terminals[rhsTerm] = std::make_shared<TerminalSymbol>(rhsTerm);
+      prod.push_back(terminalSymbol);
+    } else if (rhsTerm.front() == '{' && rhsTerm.back() == '}') {
+      rhsTerm = rhsTerm.substr(1, rhsTerm.length() - 2);
+      codeFrags.push_back(rhsTerm);
+    } else {
+      throw std::runtime_error(
+          std::string("invalid symbol name in RHS: ") + rhsTerm);
     }
-    TerminalSymbol::ptr epsilon =
-      contains(terminals, std::string(""))
-      ? terminals[""]
-      : terminals[""] = std::make_shared<TerminalSymbol>("");
-    prod.push_back(epsilon);
-  } else if (skip(is), "{") {
-    std::string codeFragment = getUntil(is, "}");
-    if (!is) {
-      throw std::runtime_error("premature end of file, expected '}'");
-
-    }
-    // TODO(ahmed127011): write to parser source (create SemanticAction, etc..)
-  } else {
-    std::string rhsTerm = getUntil(is, whitespaces + rhsTermDelim);
-    while (!rhsTerm.empty()) {
-      if (isValidSymbolName(rhsTerm)) {
-        NonTerminalSymbol::ptr nonTermSymbol =
-          contains(nonTerminals, rhsTerm)
-          ? nonTerminals[rhsTerm]
-          : nonTerminals[rhsTerm] =
-              std::make_shared<NonTerminalSymbol>(rhsTerm);
-        prod.push_back(nonTermSymbol);
-      } else if (rhsTerm.front() == '\'' && rhsTerm.back() == '\'') {
-        rhsTerm = rhsTerm.substr(1, rhsTerm.length() - 2);
-        TerminalSymbol::ptr terminalSymbol =
-          contains(terminals, rhsTerm)
-          ? terminals[rhsTerm]
-          : terminals[rhsTerm] = std::make_shared<TerminalSymbol>(rhsTerm);
-        prod.push_back(terminalSymbol);
-      } else {
-        throw std::runtime_error(
-            std::string("invalid symbol name in RHS: ") + rhsTerm);
-      }
-      rhsTerm = getUntil(is, whitespaces + rhsTermDelim);
-    }
+    rhsTerm = getProductionTerm(is);
   }
   return prod;
 }

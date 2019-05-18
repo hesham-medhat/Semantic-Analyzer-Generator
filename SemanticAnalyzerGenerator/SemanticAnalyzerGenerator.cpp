@@ -14,7 +14,7 @@ SemanticAnalyzerGenerator::SemanticAnalyzerGenerator(
 }
 
 SemanticAnalyzerGenerator::SemanticAnalyzerGenerator(std::string header) {
-    outStream.open("lex.cpp", std::ofstream::app);
+    outStream.open("lex.cpp", std::ofstream::out);
     outStream << "#include \"SemanticAnalyzer.h\"\n";
     outStream << header << std::endl;
     outStream.close();
@@ -72,5 +72,5 @@ void SemanticAnalyzerGenerator::generateSemanticAnalyzer(int productionId, NonTe
     outStream << "\t\t\tdefault: {break;}\n\t\t}";
     outStream << "\t\tfunctionCounter++;\n\t\t}";
     outStream << "\n\t}\n}";
+    outStream.close();
 }
-

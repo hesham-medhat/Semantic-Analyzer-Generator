@@ -29,7 +29,9 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unorder
                     first.insert(terminal);
                     if (terminal->getName().compare("") != 0) {
                         if (transitions.find(terminal) == transitions.end()) {
-                            *transitions[terminal] = production;
+                          transitions[terminal] =
+                            std::make_shared<GrammarSymbol::Production>(
+                                production);
                         } else if(*transitions[terminal] != production){
                             //first.clear();
                             //return first;

@@ -25,10 +25,12 @@ private:
     static const std::string whitespaces;
     static bool skip(std::istream&, const std::string& = "");
     static std::string getUntil(std::istream&, const std::string&);
+    static std::string getProductionTerm(std::istream&);
     static GrammarSymbol::Production getProduction(
         std::istream&,
         std::unordered_map<std::string, TerminalSymbol::ptr>&,
-        std::unordered_map<std::string, NonTerminalSymbol::ptr>&);
+        std::unordered_map<std::string, NonTerminalSymbol::ptr>&,
+        std::vector<std::string>&);
     static inline bool isValidSymbolName(const std::string&);
     static inline bool contains(const std::string&, const char&);
     template<typename K, typename V>
