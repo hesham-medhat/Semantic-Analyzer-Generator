@@ -98,13 +98,18 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
                     std::shared_ptr<GrammarSymbol> symbol;
 
                     /* Find given symbol */
-                    if (terminals.find(grammarSymbolTok) == terminals.end()) {
+                    if (grammarSymbolTok == SemanticAction::RESERVED_NAME) {
+                        symbol = std::make_shared<SemanticAction>();
+                    } else if (terminals.find(grammarSymbolTok) == terminals
+                    .end()) {
                         if (nonTerminals.find(grammarSymbolTok) ==
                             nonTerminals.end()) {
                             throw std::runtime_error("A grammar symbol is "
                                                      "neither "
                                                      "a given terminal nor "
-                                                     "non-terminal");
+                                                     "non-terminal nor the "
+                                                     "reserved semantic "
+                                                     "action name");
                         } else {
                             symbol = nonTerminals[grammarSymbolTok];
                         }

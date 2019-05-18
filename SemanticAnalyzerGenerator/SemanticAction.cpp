@@ -1,7 +1,7 @@
 #include "SemanticAction.h"
 
 SemanticAction::SemanticAction()
-: GrammarSymbol("___ACTION___"){}
+: GrammarSymbol(SemanticAction::RESERVED_NAME){}
 
 GrammarSymbol::Type SemanticAction::getType() {
     return GrammarSymbol::Type::SemanticAction;

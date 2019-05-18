@@ -7,6 +7,7 @@
 
 class SemanticAction : public GrammarSymbol {
 public:
+    static constexpr const char* RESERVED_NAME = "__ACTION__";
     SemanticAction();
 
     Type getType() override;
