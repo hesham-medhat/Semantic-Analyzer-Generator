@@ -122,5 +122,5 @@ struct ADDITION {
 };
 $
 # SIMPLE_EXPR = 'num' { ADDITION1.prevNum = atoi(num1.c_str()); } ADDITION { SIMPLE_EXPR.value = ADDITION1.value; printf("Result: %d", SIMPLE_EXPR.value); }
-# ADDITION = 'addop' 'num' { ADDITION1.prevNum = ADDITION.prevNum + atoi(num.c_str()); } ADDITION { ADDITION.value = ADDITION1.value; } | '\L' { ADDITION.value = ADDITION.prevNum; }
+# ADDITION = 'addop' 'num' { ADDITION1.prevNum = ADDITION.prevNum + atoi(num1.c_str()); } ADDITION { ADDITION.value = ADDITION1.value; } | '\L' { ADDITION.value = ADDITION.prevNum; }
 ```
