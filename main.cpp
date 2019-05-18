@@ -29,6 +29,8 @@ int main(int argc, char* argv[]) {
   LexicalAnalyzerGenerator lexGen(lexerRulesFile);
   LexicalAnalyzer lex = lexGen.buildLexicalAnalyzer();
   Parser parser = ParserGenerator::generateParser(parserRulesFile, lex);
+  std::ofstream offf("pgen.parser");
+  parser.save(offf);
 
   // TODO: write parser source code to output file
 
