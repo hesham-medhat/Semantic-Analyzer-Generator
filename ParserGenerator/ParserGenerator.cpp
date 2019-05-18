@@ -26,7 +26,7 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
       throw std::runtime_error("no rules in file");
     }
 
-    SemanticAnalyzerGenerator SAG(initialCodeBlock);
+    SemanticAnalyzerGenerator semanticAnalyzerGenerator(initialCodeBlock);
 
     // Parse next rule
     while (rulesIstream) {
@@ -66,7 +66,7 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
                     std::string("expected at least one production in rule: ") + lhs);
         }
         symbol->addProduction(prod);
-        SAG.generateSemanticAnalyzer(
+        semanticAnalyzerGenerator.generateSemanticAnalyzer(
             productionId++, *symbol,
             std::make_shared<GrammarSymbol::Production>(prod), codeFrags);
         while (skip(rulesIstream, "|")) {
@@ -76,7 +76,7 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
                 throw std::runtime_error("expected production after '|'");
             }
             symbol->addProduction(prod);
-            SAG.generateSemanticAnalyzer(
+            semanticAnalyzerGenerator.generateSemanticAnalyzer(
                 productionId++, *symbol,
                 std::make_shared<GrammarSymbol::Production>(prod), codeFrags);
         }
@@ -109,6 +109,8 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
         nonTerminal.second->getFollow(std::unordered_set<std::string>());
         nonTerminal.second->followCalculated = true;
     }
+
+    semanticAnalyzerGenerator.makeFactory();
 
     return parser;
 }

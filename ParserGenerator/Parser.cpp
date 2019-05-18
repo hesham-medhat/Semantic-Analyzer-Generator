@@ -138,7 +138,6 @@ void Parser::parseFullProgram(std::istream &) {
 
     std::deque<SymbolAnalyzerPair> sentence;
 
-    bool firstProduction = true;
     SymbolAnalyzerPair startingPair(startingSymbol, nullptr);
     sentence.push_back(startingPair);
     while (!currentToken.getType().empty()) {

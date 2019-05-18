@@ -20,8 +20,6 @@ public:
     ~SemanticAnalyzerGenerator();
 private:
     std::ofstream outStream;
-    // Maps names of non-terminals to their structure definitions
-    std::unordered_map<std::string, std::string> nonTerminalsStructs;
     int productionCounter=0;
 };
 
