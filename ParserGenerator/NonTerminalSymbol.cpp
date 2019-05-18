@@ -248,6 +248,7 @@ void NonTerminalSymbol::saveProductions(std::ostream &out,
                 productionIds) {
     int productionId = -1;// Meaning not a tracked production
     for (const auto& terminalEntry : terminals) {
+        productionId = -1;
         const std::shared_ptr<TerminalSymbol> terminal = terminalEntry.second;
         if (transitions.find(terminal) != transitions.end()) {
             std::shared_ptr<Production> production = transitions[terminal];
