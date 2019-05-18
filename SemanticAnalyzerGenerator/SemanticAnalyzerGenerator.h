@@ -16,6 +16,7 @@ public:
     void generateSemanticAnalyzer(int productionId, NonTerminalSymbol
     producingSymbol, std::shared_ptr<GrammarSymbol::Production>,
                                   std::vector<std::string>);
+    void makeFactory();
 private:
     std::ofstream outStream;
     // Maps names of non-terminals to their structure definitions
