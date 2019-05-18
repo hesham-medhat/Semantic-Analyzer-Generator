@@ -68,7 +68,7 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
         symbol->addProduction(prod);
         SAG.generateSemanticAnalyzer(
             productionId++, *symbol,
-            std::make_shared<GrammarSymbol::Production>(), codeFrags);
+            std::make_shared<GrammarSymbol::Production>(prod), codeFrags);
         while (skip(rulesIstream, "|")) {
             prod = getProduction(rulesIstream, terminals,
                                  nonTerminals, codeFrags);
@@ -78,7 +78,7 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
             symbol->addProduction(prod);
             SAG.generateSemanticAnalyzer(
                 productionId++, *symbol,
-                std::make_shared<GrammarSymbol::Production>(), codeFrags);
+                std::make_shared<GrammarSymbol::Production>(prod), codeFrags);
         }
     }
 
