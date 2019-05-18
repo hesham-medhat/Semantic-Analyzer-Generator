@@ -11,19 +11,18 @@
 class SemanticAnalyzerGenerator {
 public:
     explicit SemanticAnalyzerGenerator(std::string header);
-    SemanticAnalyzerGenerator(std::unordered_map<std::string,std::string>&);
 
     void generateSemanticAnalyzer(int productionId, NonTerminalSymbol
     producingSymbol, std::shared_ptr<GrammarSymbol::Production>,
                                   std::vector<std::string>);
     void makeFactory();
+
+    ~SemanticAnalyzerGenerator();
 private:
     std::ofstream outStream;
     // Maps names of non-terminals to their structure definitions
     std::unordered_map<std::string, std::string> nonTerminalsStructs;
     int productionCounter=0;
-
-    void writeHeader(std::string header);
 };
 
 

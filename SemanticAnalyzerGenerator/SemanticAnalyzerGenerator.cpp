@@ -3,20 +3,15 @@
 
 
 SemanticAnalyzerGenerator::SemanticAnalyzerGenerator(std::string header) {
-    outStream.open("C:\\Users\\Ahmed\\Desktop\\semantic\\Semantic-Analyzer-Generator\\SemanticAnalyzerGenerator\\lex.h",
-                   std::ofstream::out);
+    outStream.open("GeneratedSemanticAnalyzer.h");
     outStream << "#include \"SemanticAnalyzer.h\"\n";
     outStream << "#include \"AbstractSemanticAnalyzerFactory.h\"\n";
     outStream << header << std::endl;
-    outStream.close();
-
 }
 
 void SemanticAnalyzerGenerator::generateSemanticAnalyzer(int productionId, NonTerminalSymbol producingSymbol,
                                                          std::shared_ptr<GrammarSymbol::Production> production,
                                                          std::vector<std::string> functions) {
-    outStream.open("C:\\Users\\Ahmed\\Desktop\\semantic\\Semantic-Analyzer-Generator\\SemanticAnalyzerGenerator\\lex.h",
-                   std::ofstream::app);
     std::string className = "production" + std::to_string(productionCounter);
     productionCounter++;
     outStream << "class " << className << ":public SemanticAnalyzer {\n";
@@ -80,14 +75,17 @@ void SemanticAnalyzerGenerator::generateSemanticAnalyzer(int productionId, NonTe
 }
 
 void SemanticAnalyzerGenerator::makeFactory() {
-    outStream.open(
-            "C:\\Users\\Ahmed\\Desktop\\semantic\\Semantic-Analyzer-Generator\\SemanticAnalyzerGenerator\\lex.h",
-            std::ofstream::out);
-    outStream<<"std::shared_ptr<SemanticAnalyzer> getSemanticAnalyzer(int productionId, void * parent) {\n";
+
+    outStream<<"#include \"AbstractSemanticAnalyzerFactory.h\"\n";
+    outStream<<"std::shared_ptr<SemanticAnalyzer> AbstractSemanticAnalyzerFactory::getSemanticAnalyzer(int productionId, void * parent) {\n";
     outStream<<"\tswitch (productionId){\n";
     for(int i=0;i<productionCounter;i++){
         outStream<<"\t\tcase "<<i<<":return std::make_shared<production"<<i<<">(parent);\n";
     }
     outStream<<"\t}\n}";
 
+}
+
+SemanticAnalyzerGenerator::~SemanticAnalyzerGenerator() {
+    outStream.close();
 }
