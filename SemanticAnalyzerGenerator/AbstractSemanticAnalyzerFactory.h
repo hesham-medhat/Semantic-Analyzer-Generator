@@ -6,6 +6,7 @@
 
 class AbstractSemanticAnalyzerFactory {
 public:
+    // Not implemented on purpose as this is an abstract class
     virtual std::shared_ptr<SemanticAnalyzer> getSemanticAnalyzer(int
     productionId, void* producingObject);
 };
