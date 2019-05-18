@@ -18,7 +18,7 @@ public:
 
     // Execute the next semantic action; which should be nothing in this base
     // class case, and increment the iterator curAction to point
-    virtual void execute(std::string);
+    virtual void execute(std::string) = 0;
     void* getNextNonTerminal();
     std::string _input;
 protected:
