@@ -14,6 +14,7 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
     NonTerminalSymbol::ptr startingSymbol;
     std::unordered_map<std::string, TerminalSymbol::ptr> terminals;
     std::unordered_map<std::string, NonTerminalSymbol::ptr> nonTerminals;
+    std::unordered_map<std::shared_ptr<Parser::Sentence>, int> prodIds;
 
     // Parse initial code block
     std::string initialCodeBlock;
@@ -66,9 +67,12 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
                     std::string("expected at least one production in rule: ") + lhs);
         }
         symbol->addProduction(prod);
+        std::shared_ptr<Parser::Sentence> prodPtr =
+          std::make_shared<Parser::Sentence>(prod);
+        prodIds[prodPtr] = productionId;
         semanticAnalyzerGenerator.generateSemanticAnalyzer(
             productionId++, *symbol,
-            std::make_shared<GrammarSymbol::Production>(prod), codeFrags);
+            prodPtr, codeFrags);
         while (skip(rulesIstream, "|")) {
             prod = getProduction(rulesIstream, terminals,
                                  nonTerminals, codeFrags);
@@ -76,15 +80,19 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
                 throw std::runtime_error("expected production after '|'");
             }
             symbol->addProduction(prod);
+            std::shared_ptr<Parser::Sentence> prodPtr =
+              std::make_shared<Parser::Sentence>(prod);
+            prodIds[prodPtr] = productionId;
             semanticAnalyzerGenerator.generateSemanticAnalyzer(
                 productionId++, *symbol,
-                std::make_shared<GrammarSymbol::Production>(prod), codeFrags);
+                prodPtr, codeFrags);
         }
     }
 
 
 
     Parser parser(lex, startingSymbol, terminals, nonTerminals);
+    parser.productionIds = prodIds;
     removeLeftRecursion(parser);
     leftFactoring(parser);
 
