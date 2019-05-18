@@ -15,6 +15,7 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
     std::unordered_map<std::string, TerminalSymbol::ptr> terminals;
     std::unordered_map<std::string, NonTerminalSymbol::ptr> nonTerminals;
     std::unordered_map<std::shared_ptr<Parser::Sentence>, int> prodIds;
+    int productionId = 0;
 
     // Parse initial code block
     std::string initialCodeBlock;
@@ -57,7 +58,6 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
         }
 
         // Extract RHS
-        int productionId = 0;
         std::vector<std::string> codeFrags;
         GrammarSymbol::Production prod =
                 getProduction(rulesIstream, terminals,
@@ -93,8 +93,6 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
 
     Parser parser(lex, startingSymbol, terminals, nonTerminals);
     parser.productionIds = prodIds;
-    removeLeftRecursion(parser);
-    leftFactoring(parser);
 
     for (const auto& nonTerminal : parser.nonTerminals) {
         for (const auto& prod : nonTerminal.second->productions) {
