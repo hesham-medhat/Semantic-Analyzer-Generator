@@ -25,14 +25,15 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unorder
             for (symIte = production.begin(); symIte != production.end(); symIte++) {
                 GrammarSymbol::ptr symbol = *symIte;
                 if (symbol->getType() == GrammarSymbol::Type::Terminal) {
-                    TerminalSymbol::ptr terminal = std::dynamic_pointer_cast<TerminalSymbol>(symbol);
+                    TerminalSymbol::ptr terminal = std::dynamic_pointer_cast<TerminalSymbol>(
+                            symbol);
                     first.insert(terminal);
                     if (terminal->getName().compare("") != 0) {
                         if (transitions.find(terminal) == transitions.end()) {
-                          transitions[terminal] =
-                            std::make_shared<GrammarSymbol::Production>(
-                                production);
-                        } else if(*transitions[terminal] != production){
+                            transitions[terminal] =
+                                    std::make_shared<GrammarSymbol::Production>(
+                                            production);
+                        } else if (*transitions[terminal] != production) {
                             //first.clear();
                             //return first;
                             //throw error not LL1
@@ -42,6 +43,9 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unorder
                         this->hasEpsilonProduction = true;
                     }
                     break;
+                } else if (symbol->getType() ==
+                GrammarSymbol::Type::SemanticAction) {
+                    continue;
                 } else {
                     NonTerminalSymbol::ptr nonTerminal = std::dynamic_pointer_cast<NonTerminalSymbol>(symbol);
                     bool noRecursion = true;
@@ -107,10 +111,15 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
                     prodIter2++;
                     while (prodIter2 != production.end()) {
                         GrammarSymbol::ptr nextSymbol = *prodIter2;
-                        if (nextSymbol->getType() == GrammarSymbol::Type::Terminal) {
-                            TerminalSymbol::ptr terminal = std::dynamic_pointer_cast<TerminalSymbol>(nextSymbol);
+                        if (nextSymbol->getType() ==
+                        GrammarSymbol::Type::Terminal) {
+                            TerminalSymbol::ptr terminal = std::dynamic_pointer_cast<TerminalSymbol>(
+                                    nextSymbol);
                             follow.insert(terminal);
                             break;
+                        } else if (nextSymbol->getType() ==
+                                   GrammarSymbol::Type::SemanticAction) {
+                            continue;
                         } else {
                             NonTerminalSymbol::ptr nonTerminal = std::dynamic_pointer_cast<NonTerminalSymbol>(
                                     nextSymbol);
