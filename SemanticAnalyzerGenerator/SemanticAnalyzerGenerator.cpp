@@ -6,6 +6,7 @@ SemanticAnalyzerGenerator::SemanticAnalyzerGenerator(std::string header) {
     outStream.open("C:\\Users\\Ahmed\\Desktop\\semantic\\Semantic-Analyzer-Generator\\SemanticAnalyzerGenerator\\lex.h",
                    std::ofstream::out);
     outStream << "#include \"SemanticAnalyzer.h\"\n";
+    outStream << "#include \"AbstractSemanticAnalyzerFactory.h\"\n";
     outStream << header << std::endl;
     outStream.close();
 
@@ -80,10 +81,9 @@ void SemanticAnalyzerGenerator::generateSemanticAnalyzer(int productionId, NonTe
 
 void SemanticAnalyzerGenerator::makeFactory() {
     outStream.open(
-            "C:\\Users\\Ahmed\\Desktop\\semantic\\Semantic-Analyzer-Generator\\SemanticAnalyzerGenerator\\AbstractSemanticAnalyzerFactory.cpp",
+            "C:\\Users\\Ahmed\\Desktop\\semantic\\Semantic-Analyzer-Generator\\SemanticAnalyzerGenerator\\lex.h",
             std::ofstream::out);
-    outStream<<"#include \"AbstractSemanticAnalyzerFactory.h\"\n";
-    outStream<<"std::shared_ptr<SemanticAnalyzer> AbstractSemanticAnalyzerFactory::getSemanticAnalyzer(int productionId, void * parent) {\n";
+    outStream<<"std::shared_ptr<SemanticAnalyzer> getSemanticAnalyzer(int productionId, void * parent) {\n";
     outStream<<"\tswitch (productionId){\n";
     for(int i=0;i<productionCounter;i++){
         outStream<<"\t\tcase "<<i<<":return std::make_shared<production"<<i<<">(parent);\n";
