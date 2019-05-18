@@ -4,8 +4,8 @@
 
 SemanticAnalyzerGenerator::SemanticAnalyzerGenerator(std::string header) {
     outStream.open("GeneratedSemanticAnalyzer.h");
-    outStream << "#include \"SemanticAnalyzer.h\"\n";
-    outStream << "#include \"AbstractSemanticAnalyzerFactory.h\"\n";
+    outStream << "#include \"SemanticAnalyzerGenerator/SemanticAnalyzer.h\"\n";
+    outStream << "#include \"SemanticAnalyzerGenerator/AbstractSemanticAnalyzerFactory.h\"\n";
     outStream << header << std::endl;
 }
 
