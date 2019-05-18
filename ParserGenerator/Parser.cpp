@@ -90,9 +90,21 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
                     continue;
                 }
 
-                /* Tokenize productionToken on $ */
                 std::shared_ptr<Sentence> newProduction =
                         std::make_shared<Sentence>();
+                if (productionIdTok == "$$$$$") {// Epsilon production with
+                    // semantic action
+                    newProduction->push_back(epsilonTerminal);
+                    std::shared_ptr<SemanticAction> action =
+                            std::make_shared<SemanticAction>();
+
+                    newProduction->push_back(epsilonTerminal);
+                    nonterminalsArray[i]->addTransition
+                            (terminalsArray[terminalIndex], newProduction);
+                    productionIds[newProduction] = productionId;
+                }
+
+                /* Tokenize productionToken on $ */
                 std::stringstream grammarSymbolsSS(productionTok);
                 while (getline(grammarSymbolsSS, grammarSymbolTok, '$')) {
                     std::shared_ptr<GrammarSymbol> symbol;

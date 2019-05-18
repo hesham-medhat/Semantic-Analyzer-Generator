@@ -264,6 +264,11 @@ void NonTerminalSymbol::saveProductions(std::ostream &out,
             if (production->size() == 1 &&
             (*production->begin())->getName().empty()) {// Epsilon production
                 out << static_cast<std::string>("$$");
+            } else if (production->size() == 2 &&
+                       (*production->begin())->getName().empty()) {
+                // Epsilon production with a Semantic Action
+                productionId = productionIds[production];
+                out << static_cast<std::string>("$$$$$");
             } else {
                 productionId = productionIds[production];
                 bool firstSymbol = true;

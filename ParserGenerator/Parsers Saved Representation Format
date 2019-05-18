@@ -15,3 +15,4 @@ N lines:
         -Synch. production is marked with a single $
         -Epsilon production is marked with $$
         -Error production is marked with $$$
+        -Epsilon production with a semantic action is marked with $$$$$
