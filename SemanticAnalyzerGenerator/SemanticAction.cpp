@@ -1,9 +1,7 @@
 #include "SemanticAction.h"
 
 SemanticAction::SemanticAction()
-: GrammarSymbol(RESERVED_ACTION_NAME){}
-
-const std::string SemanticAction::RESERVED_ACTION_NAME = "___ACTION___";
+: GrammarSymbol("___ACTION___"){}
 
 GrammarSymbol::Type SemanticAction::getType() {
     return GrammarSymbol::Type::SemanticAction;

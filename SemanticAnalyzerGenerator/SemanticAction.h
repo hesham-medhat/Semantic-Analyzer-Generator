@@ -7,8 +7,6 @@
 
 class SemanticAction : public GrammarSymbol {
 public:
-    static const std::string RESERVED_ACTION_NAME;
-
     SemanticAction();
 
     Type getType() override;
