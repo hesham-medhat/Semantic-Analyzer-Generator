@@ -12,6 +12,10 @@
  * executing their semantic actions and holding their data */
 class SemanticAnalyzer {
 public:
+    // Takes the producing non-terminal's struct object. Not implemented as this
+    // is an abstract class that should not be initialized
+    explicit SemanticAnalyzer(void* producingObject);
+
     // Execute the next semantic action; which should be nothing in this base
     // class case, and increment the iterator curAction to point
     virtual void execute(std::string);

@@ -130,13 +130,21 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
 void Parser::parseFullProgram(std::istream &) {
 
     Token currentToken = lexicalAnalyzer.nextToken();
-    Parser::Sentence sentence;
-    std::string output = "";
-    std::string note = "";
-    sentence.push_back(startingSymbol);
-    while (!currentToken.getType().empty()){
+    std::string output;
+    std::string note;
+
+    typedef std::pair<std::shared_ptr<GrammarSymbol>,
+            std::shared_ptr<SemanticAnalyzer>> SymbolAnalyzerPair;
+
+    std::deque<SymbolAnalyzerPair> sentence;
+
+    bool firstProduction = true;
+    SymbolAnalyzerPair startingPair(startingSymbol, nullptr);
+    sentence.push_back(startingPair);
+    while (!currentToken.getType().empty()) {
         if(!sentence.empty()) {
-            GrammarSymbol::ptr symbol = *sentence.begin();
+            SymbolAnalyzerPair sap = *sentence.begin();
+            GrammarSymbol::ptr symbol = sap.first;
             if (symbol->getType() == GrammarSymbol::Type::Terminal) {
                 TerminalSymbol::ptr terminal = std::dynamic_pointer_cast<TerminalSymbol>(
                         symbol);
@@ -169,18 +177,22 @@ void Parser::parseFullProgram(std::istream &) {
                     } else {
                         std::shared_ptr<SemanticAnalyzer> derivationAnalyzer =
                                 semanticAnalyzerFactory->getSemanticAnalyzer
-                                (productionIds[production]);
-                        Sentence derivation;
+                                (productionIds[production],sap.second->
+                                getNextNonTerminal());
+                        std::deque<SymbolAnalyzerPair> derivation;
                         for(const auto& symbolRef : *production) {
                             std::shared_ptr<GrammarSymbol> newSymbol;
                             if (symbolRef->getType() ==
                             GrammarSymbol::Type::SemanticAction) {
                                 newSymbol = std::make_shared<SemanticAction>();
                                 std::shared_ptr<SemanticAction> action =
-                                        std::dynamic_pointer_cast<SemanticAction>(newSymbol);
+                                        std::dynamic_pointer_cast
+                                                <SemanticAction>(newSymbol);
                                 action->setSemanticAnalyzer(derivationAnalyzer);
                             }
-                            derivation.push_back(newSymbol);
+                            SymbolAnalyzerPair derivedSAP(newSymbol,
+                                    derivationAnalyzer);
+                            derivation.push_back(derivedSAP);
                         }
                         // INSERT DERIVATION
                         sentence.insert(sentence.begin(),derivation.begin(),
@@ -199,9 +211,8 @@ void Parser::parseFullProgram(std::istream &) {
             }
             std::cout<<"================="<<std::endl;
             std::cout<<output;
-            Parser::Sentence::iterator stackIte;
-            for (stackIte = sentence.begin(); stackIte != sentence.end(); stackIte++){
-                std::cout<<(*stackIte)->getName()+ " ";
+            for (auto& stackIte : sentence) {
+                std::cout<<stackIte.first->getName()+ " ";
             }
             std::cout<<std::endl;
             std::cout<<note<<std::endl;
@@ -216,7 +227,7 @@ void Parser::parseFullProgram(std::istream &) {
         }
     }
     while (!sentence.empty()){
-        GrammarSymbol::ptr symbol = *sentence.begin();
+        GrammarSymbol::ptr symbol = (*sentence.begin()).first;
         sentence.pop_front();
         if (symbol->getType() == GrammarSymbol::Type::NonTerminal) {
             NonTerminalSymbol::ptr nonTerminal = std::dynamic_pointer_cast<NonTerminalSymbol>(symbol);
@@ -232,9 +243,8 @@ void Parser::parseFullProgram(std::istream &) {
         }
         std::cout<<"================="<<std::endl;
         std::cout<<output;
-        Parser::Sentence::iterator stackIte;
-        for (stackIte = sentence.begin(); stackIte != sentence.end(); stackIte++){
-            std::cout<<(*stackIte)->getName()+ " ";
+        for (auto& stackIte : sentence) {
+            std::cout<<stackIte.first->getName()+ " ";
         }
         std::cout<<std::endl;
         std::cout<<note<<std::endl;
@@ -247,8 +257,7 @@ void Parser::parseFullProgram(std::istream &) {
 
 //not implemented
 Parser::Sentence Parser::getNextDerivation() {
-    Parser::Sentence sentence;
-    return sentence;
+    throw std::runtime_error("Parser::getNextDerivation is not implemented");
 }
 
 void Parser::save(std::ostream& out) {

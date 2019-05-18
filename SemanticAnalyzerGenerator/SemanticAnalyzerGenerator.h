@@ -11,7 +11,6 @@
 class SemanticAnalyzerGenerator {
 public:
     explicit SemanticAnalyzerGenerator(std::string header);
-    SemanticAnalyzerGenerator(std::unordered_map<std::string,std::string>&);
 
     void generateSemanticAnalyzer(int productionId, NonTerminalSymbol
     producingSymbol, std::shared_ptr<GrammarSymbol::Production>,

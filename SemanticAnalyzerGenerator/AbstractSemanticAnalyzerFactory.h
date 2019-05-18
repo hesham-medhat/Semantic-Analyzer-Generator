@@ -7,7 +7,7 @@
 class AbstractSemanticAnalyzerFactory {
 public:
     virtual std::shared_ptr<SemanticAnalyzer> getSemanticAnalyzer(int
-    productionId);
+    productionId, void* producingObject);
 };
 
 

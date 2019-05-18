@@ -1,6 +1,6 @@
 #include <regex>
 #include "ParserGenerator.h"
-#include "SemanticAnalyzerGenerator/SemanticAnalyzerGenerator.h"
+#include "../SemanticAnalyzerGenerator/SemanticAnalyzerGenerator.h"
 
 const std::string ParserGenerator::reserved = "#=|'\\";
 const std::string ParserGenerator::whitespaces = " \f\n\r\t\v";
