@@ -31,6 +31,8 @@ int main(int argc, char* argv[]) {
 
   LexicalAnalyzer lex(lexerFile);
   Parser parser(lex, parserFile);
+  std::ofstream offf("FINALSTAGE");
+  parser.save(offf);
   std::unique_ptr<SemanticAnalyzerFactory> fact =
     std::make_unique<SemanticAnalyzerFactory>();
   parser.setSemanticAnalyzerFactory(std::move(fact));
