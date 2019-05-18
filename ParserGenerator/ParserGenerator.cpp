@@ -1,6 +1,7 @@
 #include <regex>
 #include "ParserGenerator.h"
 #include "../SemanticAnalyzerGenerator/SemanticAnalyzerGenerator.h"
+#include "../SemanticAnalyzerGenerator/SemanticAction.h"
 
 const std::string ParserGenerator::reserved = "#=|'\\";
 const std::string ParserGenerator::whitespaces = " \f\n\r\t\v";
@@ -203,6 +204,8 @@ GrammarSymbol::Production ParserGenerator::getProduction(
     } else if (rhsTerm.front() == '{' && rhsTerm.back() == '}') {
       rhsTerm = rhsTerm.substr(1, rhsTerm.length() - 2);
       codeFrags.push_back(rhsTerm);
+      std::shared_ptr<SemanticAction> sa = std::make_shared<SemanticAction>();
+      prod.push_back(sa);
     } else {
       throw std::runtime_error(
           std::string("invalid symbol name in RHS: ") + rhsTerm);
