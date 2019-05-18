@@ -74,14 +74,13 @@ void SemanticAnalyzerGenerator::generateSemanticAnalyzer(int productionId, NonTe
 }
 
 void SemanticAnalyzerGenerator::makeFactory() {
-
-    outStream<<"#include \"AbstractSemanticAnalyzerFactory.h\"\n";
-    outStream<<"std::shared_ptr<SemanticAnalyzer> AbstractSemanticAnalyzerFactory::getSemanticAnalyzer(int productionId, void * parent) {\n";
+    outStream<<"class SemanticAnalyzerFactory: public AbstractSemanticAnalyzerFactory {\n";
+    outStream<<"\t std::shared_ptr<SemanticAnalyzer> getSemanticAnalyzer(int productionId, void * parent) {\n";
     outStream<<"\tswitch (productionId){\n";
     for(int i=0;i<productionCounter;i++){
         outStream<<"\t\tcase "<<i<<":return std::make_shared<production"<<i<<">(parent);\n";
     }
-    outStream<<"\t}\n}";
+    outStream<<"\t}\n}\n};";
 
 }
 
