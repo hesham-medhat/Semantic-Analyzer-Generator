@@ -115,8 +115,7 @@ am__objects_2 = ParserGenerator/GrammarSymbol.$(OBJEXT) \
 	ParserGenerator/TerminalSymbol.$(OBJEXT) \
 	ParserGenerator/Parser.$(OBJEXT) \
 	ParserGenerator/ParserGenerator.$(OBJEXT)
-am__objects_3 = SemanticAnalyzerGenerator/AbstractSemanticAnalyzerFactory.$(OBJEXT) \
-	SemanticAnalyzerGenerator/SemanticAction.$(OBJEXT) \
+am__objects_3 = SemanticAnalyzerGenerator/SemanticAction.$(OBJEXT) \
 	SemanticAnalyzerGenerator/SemanticAnalyzer.$(OBJEXT) \
 	SemanticAnalyzerGenerator/SemanticAnalyzerGenerator.$(OBJEXT)
 am_pgen_OBJECTS = main.$(OBJEXT) $(am__objects_1) $(am__objects_2) \
@@ -152,7 +151,6 @@ am__depfiles_remade = ./$(DEPDIR)/main.Po \
 	ParserGenerator/$(DEPDIR)/Parser.Po \
 	ParserGenerator/$(DEPDIR)/ParserGenerator.Po \
 	ParserGenerator/$(DEPDIR)/TerminalSymbol.Po \
-	SemanticAnalyzerGenerator/$(DEPDIR)/AbstractSemanticAnalyzerFactory.Po \
 	SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAction.Po \
 	SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAnalyzer.Po \
 	SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAnalyzerGenerator.Po
@@ -318,7 +316,6 @@ parser_generator_src = \
   ParserGenerator/ParserGenerator.cpp
 
 semantic_analyzer_src = \
-  SemanticAnalyzerGenerator/AbstractSemanticAnalyzerFactory.cpp \
   SemanticAnalyzerGenerator/SemanticAction.cpp \
   SemanticAnalyzerGenerator/SemanticAnalyzer.cpp \
   SemanticAnalyzerGenerator/SemanticAnalyzerGenerator.cpp
@@ -469,9 +466,6 @@ SemanticAnalyzerGenerator/$(am__dirstamp):
 SemanticAnalyzerGenerator/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) SemanticAnalyzerGenerator/$(DEPDIR)
 	@: > SemanticAnalyzerGenerator/$(DEPDIR)/$(am__dirstamp)
-SemanticAnalyzerGenerator/AbstractSemanticAnalyzerFactory.$(OBJEXT):  \
-	SemanticAnalyzerGenerator/$(am__dirstamp) \
-	SemanticAnalyzerGenerator/$(DEPDIR)/$(am__dirstamp)
 SemanticAnalyzerGenerator/SemanticAction.$(OBJEXT):  \
 	SemanticAnalyzerGenerator/$(am__dirstamp) \
 	SemanticAnalyzerGenerator/$(DEPDIR)/$(am__dirstamp)
@@ -510,7 +504,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ParserGenerator/$(DEPDIR)/Parser.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ParserGenerator/$(DEPDIR)/ParserGenerator.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ParserGenerator/$(DEPDIR)/TerminalSymbol.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@SemanticAnalyzerGenerator/$(DEPDIR)/AbstractSemanticAnalyzerFactory.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAction.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAnalyzer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAnalyzerGenerator.Po@am__quote@ # am--include-marker
@@ -827,7 +820,6 @@ distclean: distclean-am
 	-rm -f ParserGenerator/$(DEPDIR)/Parser.Po
 	-rm -f ParserGenerator/$(DEPDIR)/ParserGenerator.Po
 	-rm -f ParserGenerator/$(DEPDIR)/TerminalSymbol.Po
-	-rm -f SemanticAnalyzerGenerator/$(DEPDIR)/AbstractSemanticAnalyzerFactory.Po
 	-rm -f SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAction.Po
 	-rm -f SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAnalyzer.Po
 	-rm -f SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAnalyzerGenerator.Po
@@ -892,7 +884,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ParserGenerator/$(DEPDIR)/Parser.Po
 	-rm -f ParserGenerator/$(DEPDIR)/ParserGenerator.Po
 	-rm -f ParserGenerator/$(DEPDIR)/TerminalSymbol.Po
-	-rm -f SemanticAnalyzerGenerator/$(DEPDIR)/AbstractSemanticAnalyzerFactory.Po
 	-rm -f SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAction.Po
 	-rm -f SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAnalyzer.Po
 	-rm -f SemanticAnalyzerGenerator/$(DEPDIR)/SemanticAnalyzerGenerator.Po
