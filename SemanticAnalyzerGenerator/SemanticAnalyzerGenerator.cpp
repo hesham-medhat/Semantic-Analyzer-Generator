@@ -50,7 +50,7 @@ void SemanticAnalyzerGenerator::generateSemanticAnalyzer(int productionId, NonTe
             }
         }
     }
-    outStream << "\t" << className << " (void* parent){\n\t\t";
+    outStream << "public:\t" << className << " (void* parent){\n\t\t";
     outStream <<"if(parent!= nullptr)\n\t\t\t";
     outStream << producingSymbol.getName() << "=*(struct " << producingSymbol.getName() << "*) parent;\n";
     for (std::string x:nonTerminals) {
