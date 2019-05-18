@@ -70,7 +70,6 @@ void SemanticAnalyzerGenerator::generateSemanticAnalyzer(int productionId, NonTe
     outStream << "\t\t\tdefault: {break;}\n\t\t}";
     outStream << "\n\t\tfunctionCounter++;\n\t\t}";
     outStream << "\n};\n";
-    outStream.close();
 }
 
 void SemanticAnalyzerGenerator::makeFactory() {
