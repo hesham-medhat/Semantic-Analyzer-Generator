@@ -2,10 +2,13 @@
 #include <iostream>
 #include <libgen.h>
 #include <memory>
-#include "ParserGenerator/Parser.h"
 #include "build/GeneratedSemanticAnalyzer.h"
+#include "ParserGenerator/Parser.h"
 
 int main(int argc, char* argv[]) {
+  constexpr auto SAVED_LEXER_FNAME = "pgen.lexer";
+  constexpr auto SAVED_PARSER_FNAME = "pgen.parser";
+
   if (argc != 2) {
     std::cout << "USAGE: " << basename(argv[0]) << " <source>" << std::endl;
     return 1;
@@ -17,22 +20,22 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  std::ifstream lexerFile("pgen.lexer");
+  std::ifstream lexerFile(SAVED_LEXER_FNAME);
   if (!lexerFile) {
-    std::cerr << "Cannot open lexer file: pgen.lexer" << std::endl;
+    std::cerr << "Cannot open lexer file: "
+              << SAVED_LEXER_FNAME << std::endl;
     return 1;
   }
 
-  std::ifstream parserFile("pgen.parser");
+  std::ifstream parserFile(SAVED_PARSER_FNAME);
   if (!parserFile) {
-    std::cerr << "Cannot open parser file: pgen.parser" << std::endl;
+    std::cerr << "Cannot open parser file: "
+              << SAVED_PARSER_FNAME << std::endl;
     return 1;
   }
 
   LexicalAnalyzer lex(lexerFile);
   Parser parser(lex, parserFile);
-  std::ofstream offf("FINALSTAGE");
-  parser.save(offf);
   std::unique_ptr<SemanticAnalyzerFactory> fact =
     std::make_unique<SemanticAnalyzerFactory>();
   parser.setSemanticAnalyzerFactory(std::move(fact));
