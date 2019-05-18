@@ -52,7 +52,7 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
 
     /* Prepare synchronization production */
     std::shared_ptr<TerminalSymbol> synchTerminal =
-            terminals["$"] = std::make_shared<TerminalSymbol> ("$");
+            std::make_shared<TerminalSymbol> ("$");
     std::shared_ptr<GrammarSymbol::Production> synchProduction =
             std::make_shared<GrammarSymbol::Production>();
     synchProduction->push_back(synchTerminal);
