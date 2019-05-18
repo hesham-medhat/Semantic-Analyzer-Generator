@@ -5,10 +5,10 @@
 #include "../ParserGenerator/GrammarSymbol.h"
 #include "SemanticAnalyzer.h"
 
-static const std::string RESERVED_ACTION_NAME = "___ACTION___";
-
 class SemanticAction : public GrammarSymbol {
 public:
+    static const std::string RESERVED_ACTION_NAME;
+
     SemanticAction();
 
     Type getType() override;
