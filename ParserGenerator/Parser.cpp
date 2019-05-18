@@ -162,7 +162,8 @@ void Parser::parseFullProgram(std::istream &) {
                         std::dynamic_pointer_cast<SemanticAction>(symbol);
                 action->execute(currentToken.getLexeme());
             } else {
-                NonTerminalSymbol::ptr nonTerminal = std::dynamic_pointer_cast<NonTerminalSymbol>(symbol);
+                NonTerminalSymbol::ptr nonTerminal =
+                        std::dynamic_pointer_cast<NonTerminalSymbol>(symbol);
                 std::shared_ptr<GrammarSymbol::Production> production =
                         nonTerminal->getProduction(terminals[currentToken.getType()]);
                 if(!production->empty()){
@@ -176,8 +177,8 @@ void Parser::parseFullProgram(std::istream &) {
                     } else {
                         std::shared_ptr<SemanticAnalyzer> derivationAnalyzer =
                                 semanticAnalyzerFactory->getSemanticAnalyzer
-                                (productionIds[production],sap.second->
-                                getNextNonTerminal());
+                                (productionIds[production], (sap.second? sap
+                                .second->getNextNonTerminal() : nullptr));
                         std::deque<SymbolAnalyzerPair> derivation;
                         for(const auto& symbolRef : *production) {
                             std::shared_ptr<GrammarSymbol> newSymbol;
