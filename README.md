@@ -103,14 +103,13 @@ The code block at the top of the parsing rules file is taken as is and placed in
 
 Any semantic attributes of non-terminal symbols _must_ be defined in the initial code block as members of `struct`'s with exactly the same names as the associated non-terminal symbols.
 
-Code fragments are given in production bodies and enclosed between curly braces. The head of a production is referred to in code fragments by its name, while occurrences of non-terminal and terminal symbols are referred to by a number, denoting their order of occurrence in the production body with respect to other symbols of the same type, concatenated to their names. (e.g.: `num1` for the first occurrence of `num`). Terminal symbols are `std::string`'s, representing the lexemes of the corresponding tokens. Non-terminal symbols are `struct`'s with the same names as theirs.
+Code fragments are given in production bodies and enclosed between curly braces. The head of a production is referred to in code fragments by its name, while occurrences of non-terminal and terminal symbols are referred to by numbers, denoting their orders of occurrence in the production body with respect to other symbols of the same type, concatenated to their names. (e.g.: `num1` for the first occurrence of `num`). Terminal symbols are empty `std::string`'s; to capture the value of a terminal symbol, you _have to_ set the corresponding `std::string` to `_input` in a code fragment right after the occurrence of the symbol. Non-terminal symbols are `struct`'s with the same names.
 
 #### Example:
 
 ```c
 $
-#include <cstdio>
-#include <cstdlib>
+#include <iostream>
 
 struct SIMPLE_EXPR {
   int value;
@@ -121,6 +120,18 @@ struct ADDITION {
   int value;
 };
 $
-# SIMPLE_EXPR = 'num' { ADDITION1.prevNum = atoi(num1.c_str()); } ADDITION { SIMPLE_EXPR.value = ADDITION1.value; printf("Result: %d", SIMPLE_EXPR.value); }
-# ADDITION = 'addop' 'num' { ADDITION1.prevNum = ADDITION.prevNum + atoi(num1.c_str()); } ADDITION { ADDITION.value = ADDITION1.value; } | '\L' { ADDITION.value = ADDITION.prevNum; }
+# SIMPLE_EXPR = 'num'
+                { num1 = _input;
+                  std::cout << num1 << std::endl;
+                  ADDITION1.prevNum = std::stoi(num1); }
+                ADDITION
+                { SIMPLE_EXPR.value = ADDITION1.value;
+                  std::cout << "Result: " << SIMPLE_EXPR.value; }
+# ADDITION = 'addop' 'num'
+             { num1 = _input;
+               std::cout << num1 << std::endl;
+               ADDITION1.prevNum = ADDITION.prevNum + std::stoi(num1); }
+             ADDITION
+             { ADDITION.value = ADDITION1.value; } |
+             '\L' { ADDITION.value = ADDITION.prevNum; }
 ```
