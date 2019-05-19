@@ -97,6 +97,7 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
                     newProduction->push_back(epsilonTerminal);
                     std::shared_ptr<SemanticAction> action =
                             std::make_shared<SemanticAction>();
+                    newProduction->push_back(action);
                     nonterminalsArray[i]->addTransition
                             (terminalsArray[terminalIndex], newProduction);
                     productionIds[newProduction] = productionId;
@@ -146,6 +147,7 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
 void Parser::parseFullProgram(std::istream &) {
 
     Token currentToken = lexicalAnalyzer.nextToken();
+    Token previousToken = currentToken;
     std::string output;
     std::string note;
 
@@ -167,6 +169,7 @@ void Parser::parseFullProgram(std::istream &) {
                 output += terminal->getName() + " ";
                 if (terminal->getName() == currentToken.getType()) {
                     note = "matched";
+                    previousToken = currentToken;
                     currentToken = lexicalAnalyzer.nextToken();
                 } else {
                     note = "error insert unmatched symbol " +
@@ -176,7 +179,7 @@ void Parser::parseFullProgram(std::istream &) {
             GrammarSymbol::Type::SemanticAction) {
                 std::shared_ptr<SemanticAction> action =
                         std::dynamic_pointer_cast<SemanticAction>(symbol);
-                action->execute(currentToken.getLexeme());
+                action->execute(previousToken.getLexeme());
                 sentence.pop_front();
             } else {
                 NonTerminalSymbol::ptr nonTerminal =
@@ -188,7 +191,8 @@ void Parser::parseFullProgram(std::istream &) {
                     if((*(production->begin()))->getName().compare("$") == 0){
                         output += "$ ";
                         note = "error in " + nonTerminal->getName();
-                    } else if((*(production->begin()))->getName().empty()) {
+                    } else if((*(production->begin()))->getName().empty() &&
+                              production->size() == 1) {
                         note = nonTerminal->getName() + " -> ";
 
                     } else {// Non-terminal
@@ -225,6 +229,7 @@ void Parser::parseFullProgram(std::istream &) {
                     }
                 } else {
                     note = "discard the token";
+                    previousToken = currentToken;
                     currentToken = lexicalAnalyzer.nextToken();
                 }
             }
@@ -242,6 +247,7 @@ void Parser::parseFullProgram(std::istream &) {
             std::cout<<"================="<<std::endl;
             std::cout<<output<<std::endl;
             std::cout<<note<<std::endl;
+            previousToken = currentToken;
             currentToken = lexicalAnalyzer.nextToken();
         }
     }
@@ -260,7 +266,7 @@ void Parser::parseFullProgram(std::istream &) {
         } else if (symbol->getType() == GrammarSymbol::Type::SemanticAction) {
             std::shared_ptr<SemanticAction> action =
                     std::dynamic_pointer_cast<SemanticAction>(symbol);
-            action->execute(currentToken.getLexeme());
+            action->execute(previousToken.getLexeme());
         } else {// Non-terminal
             output += symbol->getName() + " ";
             note = "error insert unmatched symbol " + symbol->getName();
