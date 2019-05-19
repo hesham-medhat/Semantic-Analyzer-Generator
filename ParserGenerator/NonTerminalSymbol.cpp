@@ -30,9 +30,8 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unorder
                     first.insert(terminal);
                     if (terminal->getName().compare("") != 0) {
                         if (transitions.find(terminal) == transitions.end()) {
-                            transitions[terminal] =
-                                    std::make_shared<GrammarSymbol::Production>(
-                                            production);
+                            addTransition(terminal,
+                                          std::make_shared<Production>(production));
                         } else if (*transitions[terminal] != production) {
                             //first.clear();
                             //return first;
@@ -64,9 +63,8 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unorder
                             if (terminal->getName().compare("") != 0) {
                                 first.insert(terminal);
                                 if (transitions.find(terminal) == transitions.end()) {
-                                  transitions[terminal] =
-                                          std::make_shared<GrammarSymbol::Production>(
-                                                  production);
+                                  addTransition(terminal,
+                                                std::make_shared<Production>(production));
                                 } else if(*transitions[terminal] != production){
                                     //first.clear();
                                     //return first;
@@ -192,11 +190,11 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
         for (followIter = follow.begin(); followIter != follow.end(); followIter++) {
             if(transitions.find(*followIter) == transitions.end()){
                 if(hasEpsilonProduction){
-                    transitions[*followIter] = std::make_shared<Production>(
-                        epsProduction);
+                  addTransition(*followIter,
+                                std::make_shared<Production>(epsProduction));
                 } else {
-                    transitions[*followIter] = std::make_shared<Production>(
-                        synProduction);
+                  addTransition(*followIter,
+                                std::make_shared<Production>(synProduction));
                 }
             } else if(hasEpsilonProduction){
                     GrammarSymbol::Production production =
