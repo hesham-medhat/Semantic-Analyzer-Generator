@@ -144,7 +144,7 @@ std::string ParserGenerator::getUntil(std::istream& is,
   skip(is);
   char next = is.peek();
   while (next != eof && !contains(delim, next)) {
-    if (next == '\\') {
+    if (delim != "}" && next == '\\') {
       is.get();
       next = is.peek();
       if (!contains(reserved, next)) {
