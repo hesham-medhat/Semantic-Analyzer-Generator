@@ -41,7 +41,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unorder
                     } else {
                         this->hasEpsilonProduction = true;
                         this->addTransition(
-                          std::make_shared<TerminalSymbol>(""),
+                          epsilon,
                           std::make_shared<Production>(production));
                     }
                     break;
@@ -140,7 +140,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
                                       GrammarSymbol::ptr firstSymbol = *p.begin();
                                       if (firstSymbol == *secFollowIter) {
                                         nonTerminal->addTransition(
-                                          std::make_shared<TerminalSymbol>(""),
+                                          epsilon,
                                           std::make_shared<Production>(p));
                                         break;
                                       } else if (firstSymbol->getType() == NonTerminal) {
@@ -149,7 +149,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
                                         auto fSymFirstSet = nonTerminal->getFirst(emptySet);
                                         if (fSymFirstSet.find(*secFollowIter) != fSymFirstSet.end()) {
                                         nonTerminal->addTransition(
-                                          std::make_shared<TerminalSymbol>(""),
+                                          epsilon,
                                           std::make_shared<Production>(p));
                                           break;
                                         }
@@ -180,7 +180,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
             }
         }
 
-        TerminalSymbol::ptr epsTerminal = std::make_shared<TerminalSymbol>("");
+        TerminalSymbol::ptr epsTerminal = epsilon;
         TerminalSymbol::ptr synTerminal = std::make_shared<TerminalSymbol>("$");
         GrammarSymbol::Production epsProduction;
         epsProduction.push_back(epsTerminal);
@@ -190,7 +190,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
         for (followIter = follow.begin(); followIter != follow.end(); followIter++) {
             if(transitions.find(*followIter) == transitions.end()){
                 if(hasEpsilonProduction){
-                  addTransition(std::make_shared<TerminalSymbol>(""),
+                  addTransition(epsilon,
                                 std::make_shared<Production>(epsProduction));
                 } else {
                   addTransition(*followIter,

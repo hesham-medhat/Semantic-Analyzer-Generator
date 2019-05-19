@@ -35,6 +35,7 @@ public:
             std::shared_ptr<TerminalSymbol>>& terminals,
             std::unordered_map<std::shared_ptr<Production>, int>&
                     productionIds);
+    TerminalSymbol::ptr epsilon;
 
 
     bool hasEpsilonProduction;

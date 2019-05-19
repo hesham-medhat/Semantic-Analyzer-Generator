@@ -107,7 +107,14 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
         }
     }
 
+    TerminalSymbol::ptr epsilon;
+    const auto& epsIt = parser.terminals.find("");
+    if (epsIt != parser.terminals.end()) {
+      epsilon = epsIt->second;
+    }
+
     for (const auto& nonTerminal : parser.nonTerminals) {
+        nonTerminal.second->epsilon = epsilon;
         nonTerminal.second->getFirst(std::unordered_set<std::string>());
         nonTerminal.second->firstCalculated = true;
     }
@@ -249,7 +256,7 @@ void ParserGenerator::removeLeftRecursion(Parser &parser) {
             for (auto &i : a_dash_vector) {
                 i.push_back(a_dash);
             }
-            GrammarSymbol::ptr epsilon = std::make_shared<TerminalSymbol>("");
+            GrammarSymbol::ptr epsilon = parser.terminals[""];
             std::deque<std::shared_ptr<GrammarSymbol>> epsilonProduction;
             epsilonProduction.push_back(epsilon);
             a_dash_vector.push_back(epsilonProduction);
@@ -279,7 +286,7 @@ void ParserGenerator::leftFactoring(Parser &parser) {
                     if ((*production[i].begin())->getName() == (*production[j].begin())->getName()) {
                         production[j].pop_front();
                         if (production[j].empty()) {
-                            GrammarSymbol::ptr epsilon = std::make_shared<TerminalSymbol>("");
+                            GrammarSymbol::ptr epsilon = parser.terminals[""];
                             std::deque<std::shared_ptr<GrammarSymbol>> epsilonProduction;
                             epsilonProduction.push_back(epsilon);
                             betas.push_back(epsilonProduction);
@@ -294,7 +301,7 @@ void ParserGenerator::leftFactoring(Parser &parser) {
                     GrammarSymbol::Production temp = production[i];
                     temp.pop_front();
                     if (temp.empty()) {
-                        GrammarSymbol::ptr epsilon = std::make_shared<TerminalSymbol>("");
+                        GrammarSymbol::ptr epsilon = parser.terminals[""];
                         std::deque<std::shared_ptr<GrammarSymbol>> epsilonProduction;
                         epsilonProduction.push_back(epsilon);
                         betas.push_back(epsilonProduction);

@@ -43,8 +43,7 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
     }
 
     /* Prepare epsilon production */
-    std::shared_ptr<TerminalSymbol> epsilonTerminal =
-            terminals[""] = std::make_shared<TerminalSymbol> ("");
+    std::shared_ptr<TerminalSymbol> epsilonTerminal = terminals[""];
     std::shared_ptr<GrammarSymbol::Production> epsilonProduction =
             std::make_shared<GrammarSymbol::Production>();
 

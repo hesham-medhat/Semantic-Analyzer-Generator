@@ -12,8 +12,10 @@ class Parser {
 public:
     typedef std::deque<std::shared_ptr<GrammarSymbol>> Sentence;
 
+    std::unordered_map<std::string, std::shared_ptr<TerminalSymbol>>
+      terminals;
     std::unordered_map<std::string, std::shared_ptr<NonTerminalSymbol>>
-    nonTerminals;
+     nonTerminals;
 
     // Maps productions to their ids
     std::unordered_map<std::shared_ptr<Sentence>, int> productionIds;
@@ -40,7 +42,6 @@ private:
     // The lexical analyzer for the language that this parser parses
     LexicalAnalyzer lexicalAnalyzer;
     std::shared_ptr<NonTerminalSymbol> startingSymbol;
-    std::unordered_map<std::string, std::shared_ptr<TerminalSymbol>> terminals;
 
     // Semantic analysis
     std::unique_ptr<AbstractSemanticAnalyzerFactory> semanticAnalyzerFactory;
