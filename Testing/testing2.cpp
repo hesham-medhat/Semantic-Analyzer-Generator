@@ -1,12 +1,12 @@
 /*
+#include "LexicalAnalysis/LexicalAnalyzer.h"
+#include "LexicalAnalysis/LexicalAnalyzerGenerator.h"
+#include "ParserGenerator/GrammarSymbol.h"
+#include "ParserGenerator/NonTerminalSymbol.h"
+#include "ParserGenerator/TerminalSymbol.h"
+#include <fstream>
 #include <iostream>
 #include <string>
-#include <fstream>
-#include "ParserGenerator/GrammarSymbol.h"
-#include "ParserGenerator/TerminalSymbol.h"
-#include "ParserGenerator/NonTerminalSymbol.h"
-#include "LexicalAnalysis/LexicalAnalyzerGenerator.h"
-#include "LexicalAnalysis/LexicalAnalyzer.h"
 
 
 
@@ -98,12 +98,13 @@ int main(int argc, char* argv[]) {
     production13.push_back(Em);
 
     NonTerminalSymbol::ptr En = std::dynamic_pointer_cast<NonTerminalSymbol>(E);
-    NonTerminalSymbol::ptr E_n = std::dynamic_pointer_cast<NonTerminalSymbol>(E_);
-    NonTerminalSymbol::ptr Tn = std::dynamic_pointer_cast<NonTerminalSymbol>(T);
-    NonTerminalSymbol::ptr T_n = std::dynamic_pointer_cast<NonTerminalSymbol>(T_);
-    NonTerminalSymbol::ptr Fn = std::dynamic_pointer_cast<NonTerminalSymbol>(F);
-    NonTerminalSymbol::ptr F_n = std::dynamic_pointer_cast<NonTerminalSymbol>(F_);
-    NonTerminalSymbol::ptr Pn = std::dynamic_pointer_cast<NonTerminalSymbol>(P);
+    NonTerminalSymbol::ptr E_n =
+   std::dynamic_pointer_cast<NonTerminalSymbol>(E_); NonTerminalSymbol::ptr Tn =
+   std::dynamic_pointer_cast<NonTerminalSymbol>(T); NonTerminalSymbol::ptr T_n =
+   std::dynamic_pointer_cast<NonTerminalSymbol>(T_); NonTerminalSymbol::ptr Fn =
+   std::dynamic_pointer_cast<NonTerminalSymbol>(F); NonTerminalSymbol::ptr F_n =
+   std::dynamic_pointer_cast<NonTerminalSymbol>(F_); NonTerminalSymbol::ptr Pn =
+   std::dynamic_pointer_cast<NonTerminalSymbol>(P);
 
 
     En->addProduction(production1);
@@ -457,7 +458,8 @@ int main(int argc, char* argv[]) {
 */
 /*
 
-    unordered_set<TerminalSymbol::ptr> first = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFirst();
+    unordered_set<TerminalSymbol::ptr> first =
+   (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFirst();
     unordered_set<TerminalSymbol::ptr>::iterator iter;
     for (iter = first.begin(); iter != first.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
@@ -597,10 +599,11 @@ int main(int argc, char* argv[]) {
     production8.push_back(id);
 
     NonTerminalSymbol::ptr En = std::dynamic_pointer_cast<NonTerminalSymbol>(E);
-    NonTerminalSymbol::ptr E_n = std::dynamic_pointer_cast<NonTerminalSymbol>(E_);
-    NonTerminalSymbol::ptr Tn = std::dynamic_pointer_cast<NonTerminalSymbol>(T);
-    NonTerminalSymbol::ptr T_n = std::dynamic_pointer_cast<NonTerminalSymbol>(T_);
-    NonTerminalSymbol::ptr Fn = std::dynamic_pointer_cast<NonTerminalSymbol>(F);
+    NonTerminalSymbol::ptr E_n =
+std::dynamic_pointer_cast<NonTerminalSymbol>(E_); NonTerminalSymbol::ptr Tn =
+std::dynamic_pointer_cast<NonTerminalSymbol>(T); NonTerminalSymbol::ptr T_n =
+std::dynamic_pointer_cast<NonTerminalSymbol>(T_); NonTerminalSymbol::ptr Fn =
+std::dynamic_pointer_cast<NonTerminalSymbol>(F);
 
     En->addProduction(production1);
     E_n->addProduction(production2);
@@ -653,7 +656,8 @@ int main(int argc, char* argv[]) {
     unordered_set<std::string> emptySet;
     unordered_set<TerminalSymbol::ptr> follow;
     unordered_set<TerminalSymbol::ptr>::iterator iter;
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFollow(emptySet);
+    follow =
+(std::dynamic_pointer_cast<NonTerminalSymbol>(E))->getFollow(emptySet);
 >>>>>>> LL1
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;
@@ -664,7 +668,8 @@ int main(int argc, char* argv[]) {
 <<<<<<< HEAD
     follow = E_n->getFollow(emptySet);
 =======
-    follow = (std::dynamic_pointer_cast<NonTerminalSymbol>(E_))->getFollow(emptySet);
+    follow =
+(std::dynamic_pointer_cast<NonTerminalSymbol>(E_))->getFollow(emptySet);
 >>>>>>> LL1
     for (iter = follow.begin(); iter != follow.end(); iter++) {
         cout<<(*iter)->getName()<<endl;

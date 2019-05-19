@@ -1,19 +1,16 @@
+#include "LexicalAnalysis/LexicalAnalyzerGenerator.h"
+#include "ParserGenerator/ParserGenerator.h"
 #include <fstream>
 #include <iostream>
 #include <libgen.h>
-#include "LexicalAnalysis/LexicalAnalyzerGenerator.h"
-#include "ParserGenerator/ParserGenerator.h"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   constexpr auto SAVED_LEXER_FNAME = "pgen.lexer";
   constexpr auto SAVED_PARSER_FNAME = "pgen.parser";
 
   if (argc != 3) {
-    std::cout << "USAGE: "
-              << basename(argv[0])
-              << " <lexer-rules-file>"
-              << " <parser-rules-file>"
-              << std::endl;
+    std::cout << "USAGE: " << basename(argv[0]) << " <lexer-rules-file>"
+              << " <parser-rules-file>" << std::endl;
     return 1;
   }
 

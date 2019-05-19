@@ -1,9 +1,9 @@
 /*
+#include "LexicalAnalysis/LexicalAnalyzer.h"
+#include "ParserGenerator/ParserGenerator.h"
 #include <fstream>
 #include <iostream>
 #include <libgen.h>
-#include "LexicalAnalysis/LexicalAnalyzer.h"
-#include "ParserGenerator/ParserGenerator.h"
 
 int main(int argc, char* argv[]) {
   if (argc != 2) {

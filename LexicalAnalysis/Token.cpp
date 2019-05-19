@@ -1,8 +1,7 @@
 #include "Token.h"
 
 Token::Token(const std::string &type, const int priority)
-        : type(type), priority(priority) {}
-
+    : type(type), priority(priority) {}
 
 std::string Token::getType() { return type; }
 

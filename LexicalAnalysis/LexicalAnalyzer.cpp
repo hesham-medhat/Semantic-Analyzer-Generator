@@ -1,23 +1,26 @@
-#include <iostream>
-#include <fstream>
 #include "LexicalAnalyzer.h"
+#include <fstream>
+#include <iostream>
 
-LexicalAnalyzer::LexicalAnalyzer(const LexicalAnalyzer& original) :
-  languageAutomaton(original.languageAutomaton),
-  LACurrentState(original.LACurrentState) { }
+LexicalAnalyzer::LexicalAnalyzer(const LexicalAnalyzer &original)
+    : languageAutomaton(original.languageAutomaton),
+      LACurrentState(original.LACurrentState) {}
 
-LexicalAnalyzer::LexicalAnalyzer(const Automaton& languageAutomaton)
-: languageAutomaton(languageAutomaton) { }
+LexicalAnalyzer::LexicalAnalyzer(const Automaton &languageAutomaton)
+    : languageAutomaton(languageAutomaton) {}
 
-LexicalAnalyzer::LexicalAnalyzer(std::istream& inputDFAStream)
-: languageAutomaton(inputDFAStream) { }
+LexicalAnalyzer::LexicalAnalyzer(std::istream &inputDFAStream)
+    : languageAutomaton(inputDFAStream) {}
 
 void LexicalAnalyzer::analyzeCompleteProgram(
-    const std::string& programFilePath) {
+    const std::string &programFilePath) {
   std::ifstream input(programFilePath,
                       std::ios_base::in | std::ios_base::binary);
-    if (!input) return;
-  std::ofstream output(programFilePath + ".tokens"); if (!output) return;
+  if (!input)
+    return;
+  std::ofstream output(programFilePath + ".tokens");
+  if (!output)
+    return;
 
   char currentChar;
   std::shared_ptr<State> currentState = languageAutomaton.startState;
@@ -28,8 +31,8 @@ void LexicalAnalyzer::analyzeCompleteProgram(
 
   while (input.get(currentChar)) {
     currentToken += currentChar;
-    std::unordered_set<std::shared_ptr<State>> nextStateSet
-      = currentState->getNextState(currentChar);
+    std::unordered_set<std::shared_ptr<State>> nextStateSet =
+        currentState->getNextState(currentChar);
     currentState = nextStateSet.empty() ? nullptr : *nextStateSet.begin();
 
     if (currentState) {
@@ -41,9 +44,8 @@ void LexicalAnalyzer::analyzeCompleteProgram(
       }
     } else if (!lastMatchedToken.getType().empty()) {
       if (lastMatchedToken.getType() != "=ws=") {
-        std::cerr << "Matched '" << lastMatchedToken.getLexeme()
-                  << "' for '" << lastMatchedToken.getType() << "'"
-                  << std::endl;
+        std::cerr << "Matched '" << lastMatchedToken.getLexeme() << "' for '"
+                  << lastMatchedToken.getType() << "'" << std::endl;
         output << lastMatchedToken.getType() << std::endl;
       }
       anchor = lastMatchedPos;
@@ -61,19 +63,17 @@ void LexicalAnalyzer::analyzeCompleteProgram(
       currentState = languageAutomaton.startState;
     }
   }
-  if (!lastMatchedToken.getType().empty()
-      && lastMatchedToken.getType() != "=ws=") {
-    std::cerr << "Matched '" << lastMatchedToken.getLexeme()
-              << "' for '" << lastMatchedToken.getType() << "'"
-              << std::endl;
+  if (!lastMatchedToken.getType().empty() &&
+      lastMatchedToken.getType() != "=ws=") {
+    std::cerr << "Matched '" << lastMatchedToken.getLexeme() << "' for '"
+              << lastMatchedToken.getType() << "'" << std::endl;
     output << lastMatchedToken.getType() << std::endl;
   }
 }
 
-void LexicalAnalyzer::initProgramParse(const std::string& programFilePath) {
+void LexicalAnalyzer::initProgramParse(const std::string &programFilePath) {
   programIstream = std::make_unique<std::ifstream>(
-      programFilePath,
-      std::ios_base::in | std::ios_base::binary);
+      programFilePath, std::ios_base::in | std::ios_base::binary);
   if (*programIstream) {
     LACurrentState = languageAutomaton.startState;
   } else {
@@ -82,7 +82,9 @@ void LexicalAnalyzer::initProgramParse(const std::string& programFilePath) {
 }
 
 Token LexicalAnalyzer::nextToken() {
-  if (!*programIstream) { return Token("", INT_MAX); }
+  if (!*programIstream) {
+    return Token("", INT_MAX);
+  }
 
   Token lastMatchedToken("", INT_MAX);
   char currentChar;
@@ -91,8 +93,8 @@ Token LexicalAnalyzer::nextToken() {
 
   while (programIstream->get(currentChar)) {
     currentToken += currentChar;
-    std::unordered_set<std::shared_ptr<State>> nextStateSet
-      = LACurrentState->getNextState(currentChar);
+    std::unordered_set<std::shared_ptr<State>> nextStateSet =
+        LACurrentState->getNextState(currentChar);
     LACurrentState = nextStateSet.empty() ? nullptr : *nextStateSet.begin();
 
     if (LACurrentState) {
@@ -125,6 +127,6 @@ Token LexicalAnalyzer::nextToken() {
   return Token("", INT_MAX);
 }
 
-void LexicalAnalyzer::saveLexicalAnalyzerAutomaton(std::ostream& outputStream) {
-    languageAutomaton.saveIntoFile(outputStream);
+void LexicalAnalyzer::saveLexicalAnalyzerAutomaton(std::ostream &outputStream) {
+  languageAutomaton.saveIntoFile(outputStream);
 };

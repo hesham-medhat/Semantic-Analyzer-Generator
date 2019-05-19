@@ -1,9 +1,8 @@
 #include "TerminalSymbol.h"
 
-TerminalSymbol::TerminalSymbol(std::string name) : GrammarSymbol
-(std::move(name)) {}
-
+TerminalSymbol::TerminalSymbol(std::string name)
+    : GrammarSymbol(std::move(name)) {}
 
 GrammarSymbol::Type TerminalSymbol::getType() {
-    return GrammarSymbol::Type::Terminal;
+  return GrammarSymbol::Type::Terminal;
 }
