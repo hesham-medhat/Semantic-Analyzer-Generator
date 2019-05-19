@@ -190,7 +190,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
         for (followIter = follow.begin(); followIter != follow.end(); followIter++) {
             if(transitions.find(*followIter) == transitions.end()){
                 if(hasEpsilonProduction){
-                  addTransition(*followIter,
+                  addTransition(std::make_shared<TerminalSymbol>(""),
                                 std::make_shared<Production>(epsProduction));
                 } else {
                   addTransition(*followIter,
