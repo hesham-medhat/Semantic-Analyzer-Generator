@@ -191,7 +191,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
                     GrammarSymbol::Production production =
                             *transitions[*followIter];
                     if((*production.begin())->getName().compare("") != 0) {
-                        throw NULL;
+                        throw std::runtime_error("not an LL(1) grammar");
                         //follow.clear();
                         //return follow;
                         //throw error not LL1
