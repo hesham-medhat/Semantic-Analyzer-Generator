@@ -41,8 +41,9 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unorder
                         }
                     } else {
                         this->hasEpsilonProduction = true;
-                        this->transitions[nullptr] =
-                          std::make_shared<Production>(production);
+                        this->addTransition(
+                          std::make_shared<TerminalSymbol>(""),
+                          std::make_shared<Production>(production));
                     }
                     break;
                 } else if (symbol->getType() ==
@@ -140,16 +141,18 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
                                     for (const auto& p : nonTerminal->productions) {
                                       GrammarSymbol::ptr firstSymbol = *p.begin();
                                       if (firstSymbol == *secFollowIter) {
-                                        nonTerminal->transitions[nullptr] =
-                                          std::make_shared<Production>(p);
+                                        nonTerminal->addTransition(
+                                          std::make_shared<TerminalSymbol>(""),
+                                          std::make_shared<Production>(p));
                                         break;
                                       } else if (firstSymbol->getType() == NonTerminal) {
                                         NonTerminalSymbol::ptr fSymNT =
                                           std::dynamic_pointer_cast<NonTerminalSymbol>(firstSymbol);
                                         auto fSymFirstSet = nonTerminal->getFirst(emptySet);
                                         if (fSymFirstSet.find(*secFollowIter) != fSymFirstSet.end()) {
-                                          nonTerminal->transitions[nullptr] =
-                                            std::make_shared<Production>(p);
+                                        nonTerminal->addTransition(
+                                          std::make_shared<TerminalSymbol>(""),
+                                          std::make_shared<Production>(p));
                                           break;
                                         }
                                       }
