@@ -176,15 +176,14 @@ void Parser::parseFullProgram(std::istream &) {
             std::dynamic_pointer_cast<NonTerminalSymbol>(symbol);
         std::shared_ptr<GrammarSymbol::Production> production =
             nonTerminal->getProduction(terminals[currentToken.getType()]);
+        if (!production && nonTerminal->hasEpsilonProduction) {
+          production = nonTerminal->getProduction(terminals[""]);
+        }
         if (!production->empty()) {
           sentence.pop_front();
           if ((*(production->begin()))->getName().compare("$") == 0) {
             output += "$ ";
             note = "error in " + nonTerminal->getName();
-          } else if ((*(production->begin()))->getName().empty() &&
-                     production->size() == 1) {
-            note = nonTerminal->getName() + " -> ";
-
           } else { // Non-terminal
             std::shared_ptr<SemanticAnalyzer> derivationAnalyzer =
                 semanticAnalyzerFactory->getSemanticAnalyzer(
@@ -201,8 +200,10 @@ void Parser::parseFullProgram(std::istream &) {
               } else {
                 newSymbol = symbolRef;
               }
-              SymbolAnalyzerPair derivedSAP(newSymbol, derivationAnalyzer);
-              derivation.push_back(derivedSAP);
+              if (!newSymbol->getName().empty()) {
+                SymbolAnalyzerPair derivedSAP(newSymbol, derivationAnalyzer);
+                derivation.push_back(derivedSAP);
+              }
             }
             // INSERT DERIVATION
             sentence.insert(sentence.begin(), derivation.begin(),
@@ -239,12 +240,43 @@ void Parser::parseFullProgram(std::istream &) {
     }
   }
   while (!sentence.empty()) {
-    GrammarSymbol::ptr symbol = (*sentence.begin()).first;
+    SymbolAnalyzerPair sap = *sentence.begin();
+    GrammarSymbol::ptr symbol = sap.first;
     sentence.pop_front();
     if (symbol->getType() == GrammarSymbol::Type::NonTerminal) {
       NonTerminalSymbol::ptr nonTerminal =
           std::dynamic_pointer_cast<NonTerminalSymbol>(symbol);
       if (nonTerminal->hasEpsilonProduction) {
+        GrammarSymbol::ProductionPtr production =
+            nonTerminal->getProduction(terminals[""]);
+        std::shared_ptr<SemanticAnalyzer> derivationAnalyzer =
+            semanticAnalyzerFactory->getSemanticAnalyzer(
+                productionIds[production],
+                (sap.second ? sap.second->getNextNonTerminal() : nullptr));
+        std::deque<SymbolAnalyzerPair> derivation;
+        for (const auto &symbolRef : *production) {
+          std::shared_ptr<GrammarSymbol> newSymbol;
+          if (symbolRef->getType() == GrammarSymbol::Type::SemanticAction) {
+            newSymbol = std::make_shared<SemanticAction>();
+            std::shared_ptr<SemanticAction> action =
+                std::dynamic_pointer_cast<SemanticAction>(newSymbol);
+            action->setSemanticAnalyzer(derivationAnalyzer);
+          } else {
+            newSymbol = symbolRef;
+          }
+          if (!newSymbol->getName().empty()) {
+            SymbolAnalyzerPair derivedSAP(newSymbol, derivationAnalyzer);
+            derivation.push_back(derivedSAP);
+          }
+        }
+        // INSERT DERIVATION
+        sentence.insert(sentence.begin(), derivation.begin(), derivation.end());
+        note = nonTerminal->getName() + " ->";
+        GrammarSymbol::Production::iterator proIte;
+        for (proIte = production->begin(); proIte != production->end();
+             proIte++) {
+          note += " " + (*proIte)->getName();
+        }
         note = nonTerminal->getName() + " -> ";
       } else {
         output += "$ ";
