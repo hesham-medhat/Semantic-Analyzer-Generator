@@ -125,7 +125,7 @@ $
                   ADDITION1.prevNum = std::stoi(num1); }
                 ADDITION
                 { SIMPLE_EXPR.value = ADDITION1.value;
-                  std::cout << "Result: " << SIMPLE_EXPR.value; }
+                  std::cout << "Result: " << SIMPLE_EXPR.value << std::endl; }
 # ADDITION = 'addop' 'num'
              { num1 = _input;
                ADDITION1.prevNum = ADDITION.prevNum + std::stoi(num1); }
