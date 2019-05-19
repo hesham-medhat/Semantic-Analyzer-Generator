@@ -177,6 +177,7 @@ void Parser::parseFullProgram(std::istream &) {
                 std::shared_ptr<SemanticAction> action =
                         std::dynamic_pointer_cast<SemanticAction>(symbol);
                 action->execute(currentToken.getLexeme());
+                sentence.pop_front();
             } else {
                 NonTerminalSymbol::ptr nonTerminal =
                         std::dynamic_pointer_cast<NonTerminalSymbol>(symbol);
