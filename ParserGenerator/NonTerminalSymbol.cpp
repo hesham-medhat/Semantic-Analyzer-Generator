@@ -244,12 +244,12 @@ void NonTerminalSymbol::addTransition(TerminalSymbol::ptr input,
 
 /* Update hasEpsilonProduction if epsilon */
 
-    if (newProduction->size() == 1) {
+    if (newProduction->size() <= 2 &&
+        (*newProduction->begin())->getName().empty()) {
         std::shared_ptr<GrammarSymbol> singleTerminal = *newProduction->begin();
         std::string name = singleTerminal->getName();
         if (name.empty()) {// Epsilon transition
             hasEpsilonProduction = true;
-            transitions[nullptr] = newProduction;
         }
     }
 
