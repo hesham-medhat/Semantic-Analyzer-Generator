@@ -122,14 +122,12 @@ struct ADDITION {
 $
 # SIMPLE_EXPR = 'num'
                 { num1 = _input;
-                  std::cout << num1 << std::endl;
                   ADDITION1.prevNum = std::stoi(num1); }
                 ADDITION
                 { SIMPLE_EXPR.value = ADDITION1.value;
                   std::cout << "Result: " << SIMPLE_EXPR.value; }
 # ADDITION = 'addop' 'num'
              { num1 = _input;
-               std::cout << num1 << std::endl;
                ADDITION1.prevNum = ADDITION.prevNum + std::stoi(num1); }
              ADDITION
              { ADDITION.value = ADDITION1.value; } |
