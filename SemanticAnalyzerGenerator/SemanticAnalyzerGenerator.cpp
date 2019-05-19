@@ -18,7 +18,7 @@ void SemanticAnalyzerGenerator::generateSemanticAnalyzer(
   productionCounter++;
   outStream << "class " << className << ":public SemanticAnalyzer {\n";
   outStream << "\tint functionCounter = 0;\n";
-  outStream << "\t struct " << producingSymbol.getName() << " "
+  outStream << "\t struct " << producingSymbol.getName() << "& "
             << producingSymbol.getName() << ";\n";
   std::unordered_map<std::string, int> NonTerminalCount;
   std::unordered_map<std::string, int> TerminalCount;
@@ -55,10 +55,10 @@ void SemanticAnalyzerGenerator::generateSemanticAnalyzer(
       }
     }
   }
-  outStream << "public:\t" << className << " (void* parent){\n\t\t";
-  outStream << "if(parent!= nullptr)\n\t\t\t";
-  outStream << producingSymbol.getName() << "=*(struct "
-            << producingSymbol.getName() << "*) parent;\n";
+  outStream << "public:\t" << className << " (void* parent) : ";
+  outStream << producingSymbol.getName()
+            << "(*(struct " << producingSymbol.getName()
+            << " *)parent) {\n\t\t\t";
   for (std::string x : nonTerminals) {
     outStream << "\t\tstructs.push_back(&" << x << ");\n";
   }

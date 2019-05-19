@@ -185,10 +185,13 @@ void Parser::parseFullProgram(std::istream &) {
             output += "$ ";
             note = "error in " + nonTerminal->getName();
           } else { // Non-terminal
+            struct {
+            } dummyHead;
             std::shared_ptr<SemanticAnalyzer> derivationAnalyzer =
                 semanticAnalyzerFactory->getSemanticAnalyzer(
                     productionIds[production],
-                    (sap.second ? sap.second->getNextNonTerminal() : nullptr));
+                    (sap.second ? sap.second->getNextNonTerminal()
+                                : &dummyHead));
             std::deque<SymbolAnalyzerPair> derivation;
             for (const auto &symbolRef : *production) {
               std::shared_ptr<GrammarSymbol> newSymbol;
@@ -249,10 +252,12 @@ void Parser::parseFullProgram(std::istream &) {
       if (nonTerminal->hasEpsilonProduction) {
         GrammarSymbol::ProductionPtr production =
             nonTerminal->getProduction(terminals[""]);
+        struct {
+        } dummyHead;
         std::shared_ptr<SemanticAnalyzer> derivationAnalyzer =
             semanticAnalyzerFactory->getSemanticAnalyzer(
                 productionIds[production],
-                (sap.second ? sap.second->getNextNonTerminal() : nullptr));
+                (sap.second ? sap.second->getNextNonTerminal() : &dummyHead));
         std::deque<SymbolAnalyzerPair> derivation;
         for (const auto &symbolRef : *production) {
           std::shared_ptr<GrammarSymbol> newSymbol;
