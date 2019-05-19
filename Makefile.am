@@ -1,4 +1,4 @@
-bin_PROGRAMS = pgen parser
+bin_PROGRAMS = pgen parser dump_parser
 
 lexical_analyzer_generator_src = \
   LexicalAnalysis/Token.cpp \
@@ -30,6 +30,12 @@ pgen_SOURCES = \
 
 parser_SOURCES = \
   parser.pgen.cpp \
+  $(lexical_analyzer_generator_src) \
+  $(parser_generator_src) \
+  $(semantic_analyzer_generator_src)
+
+dump_parser_SOURCES = \
+  dump-parser.cpp \
   $(lexical_analyzer_generator_src) \
   $(parser_generator_src) \
   $(semantic_analyzer_generator_src)

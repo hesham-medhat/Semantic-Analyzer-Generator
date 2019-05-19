@@ -86,7 +86,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = pgen$(EXEEXT) parser$(EXEEXT)
+bin_PROGRAMS = pgen$(EXEEXT) parser$(EXEEXT) dump_parser$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -118,6 +118,10 @@ am__objects_2 = ParserGenerator/GrammarSymbol.$(OBJEXT) \
 am__objects_3 = SemanticAnalyzerGenerator/SemanticAction.$(OBJEXT) \
 	SemanticAnalyzerGenerator/SemanticAnalyzer.$(OBJEXT) \
 	SemanticAnalyzerGenerator/SemanticAnalyzerGenerator.$(OBJEXT)
+am_dump_parser_OBJECTS = dump-parser.$(OBJEXT) $(am__objects_1) \
+	$(am__objects_2) $(am__objects_3)
+dump_parser_OBJECTS = $(am_dump_parser_OBJECTS)
+dump_parser_LDADD = $(LDADD)
 am_parser_OBJECTS = parser.pgen.$(OBJEXT) $(am__objects_1) \
 	$(am__objects_2) $(am__objects_3)
 parser_OBJECTS = $(am_parser_OBJECTS)
@@ -141,7 +145,8 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/main.Po ./$(DEPDIR)/parser.pgen.Po \
+am__depfiles_remade = ./$(DEPDIR)/dump-parser.Po ./$(DEPDIR)/main.Po \
+	./$(DEPDIR)/parser.pgen.Po \
 	LexicalAnalysis/$(DEPDIR)/LexicalAnalyzer.Po \
 	LexicalAnalysis/$(DEPDIR)/LexicalAnalyzerGenerator.Po \
 	LexicalAnalysis/$(DEPDIR)/Token.Po \
@@ -172,8 +177,9 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(parser_SOURCES) $(pgen_SOURCES)
-DIST_SOURCES = $(parser_SOURCES) $(pgen_SOURCES)
+SOURCES = $(dump_parser_SOURCES) $(parser_SOURCES) $(pgen_SOURCES)
+DIST_SOURCES = $(dump_parser_SOURCES) $(parser_SOURCES) \
+	$(pgen_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -336,6 +342,12 @@ parser_SOURCES = \
   $(parser_generator_src) \
   $(semantic_analyzer_generator_src)
 
+dump_parser_SOURCES = \
+  dump-parser.cpp \
+  $(lexical_analyzer_generator_src) \
+  $(parser_generator_src) \
+  $(semantic_analyzer_generator_src)
+
 all: all-am
 
 .SUFFIXES:
@@ -486,6 +498,10 @@ SemanticAnalyzerGenerator/SemanticAnalyzerGenerator.$(OBJEXT):  \
 	SemanticAnalyzerGenerator/$(am__dirstamp) \
 	SemanticAnalyzerGenerator/$(DEPDIR)/$(am__dirstamp)
 
+dump_parser$(EXEEXT): $(dump_parser_OBJECTS) $(dump_parser_DEPENDENCIES) $(EXTRA_dump_parser_DEPENDENCIES) 
+	@rm -f dump_parser$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(dump_parser_OBJECTS) $(dump_parser_LDADD) $(LIBS)
+
 parser$(EXEEXT): $(parser_OBJECTS) $(parser_DEPENDENCIES) $(EXTRA_parser_DEPENDENCIES) 
 	@rm -f parser$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(parser_OBJECTS) $(parser_LDADD) $(LIBS)
@@ -504,6 +520,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dump-parser.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser.pgen.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@LexicalAnalysis/$(DEPDIR)/LexicalAnalyzer.Po@am__quote@ # am--include-marker
@@ -821,7 +838,8 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-		-rm -f ./$(DEPDIR)/main.Po
+		-rm -f ./$(DEPDIR)/dump-parser.Po
+	-rm -f ./$(DEPDIR)/main.Po
 	-rm -f ./$(DEPDIR)/parser.pgen.Po
 	-rm -f LexicalAnalysis/$(DEPDIR)/LexicalAnalyzer.Po
 	-rm -f LexicalAnalysis/$(DEPDIR)/LexicalAnalyzerGenerator.Po
@@ -886,7 +904,8 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-		-rm -f ./$(DEPDIR)/main.Po
+		-rm -f ./$(DEPDIR)/dump-parser.Po
+	-rm -f ./$(DEPDIR)/main.Po
 	-rm -f ./$(DEPDIR)/parser.pgen.Po
 	-rm -f LexicalAnalysis/$(DEPDIR)/LexicalAnalyzer.Po
 	-rm -f LexicalAnalysis/$(DEPDIR)/LexicalAnalyzerGenerator.Po
