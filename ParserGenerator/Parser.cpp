@@ -78,6 +78,7 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
             } else if (productionTok == "$$") {
                 nonterminalsArray[i]->addTransition
                         (terminalsArray[terminalIndex], epsilonProduction);
+                nonterminalsArray[i]->hasEpsilonProduction = true;
             } else if (productionTok == "$$$") {
                 continue;
             } else {
@@ -96,11 +97,11 @@ Parser::Parser(LexicalAnalyzer &lexicalAnalyzer, std::istream &inputStream)
                     newProduction->push_back(epsilonTerminal);
                     std::shared_ptr<SemanticAction> action =
                             std::make_shared<SemanticAction>();
-
                     newProduction->push_back(epsilonTerminal);
                     nonterminalsArray[i]->addTransition
                             (terminalsArray[terminalIndex], newProduction);
                     productionIds[newProduction] = productionId;
+                    nonterminalsArray[i]->hasEpsilonProduction = true;
                 }
 
                 /* Tokenize productionToken on $ */
