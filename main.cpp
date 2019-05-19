@@ -35,7 +35,6 @@ int main(int argc, char* argv[]) {
 
   std::cout << "Generating parser and semantic analyzer..." << std::endl;
   Parser parser = ParserGenerator::generateParser(parserRulesFile, lex);
-  std::cout << "Parser implementation written to pgen.parser.cpp" << std::endl;
 
   std::ofstream savedLexer(SAVED_LEXER_FNAME);
   if (!savedLexer) {

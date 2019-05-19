@@ -119,6 +119,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
                             break;
                         } else if (nextSymbol->getType() ==
                                    GrammarSymbol::Type::SemanticAction) {
+                            prodIter2++;
                             continue;
                         } else {
                             NonTerminalSymbol::ptr nonTerminal = std::dynamic_pointer_cast<NonTerminalSymbol>(
