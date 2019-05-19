@@ -205,6 +205,8 @@ void Parser::parseFullProgram(std::istream &) {
                                         std::dynamic_pointer_cast
                                                 <SemanticAction>(newSymbol);
                                 action->setSemanticAnalyzer(derivationAnalyzer);
+                            } else {
+                                newSymbol = symbolRef;
                             }
                             SymbolAnalyzerPair derivedSAP(newSymbol,
                                     derivationAnalyzer);
