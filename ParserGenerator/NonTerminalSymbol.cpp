@@ -1,3 +1,4 @@
+
 #include <ostream>
 #include "NonTerminalSymbol.h"
 
@@ -18,11 +19,9 @@ GrammarSymbol::Type NonTerminalSymbol::getType() {
 std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unordered_set<std::string> caller) {
     caller.insert(this->getName());
     if(!firstCalculated) {
-        std::vector<GrammarSymbol::Production>::iterator prodIte;
-        for (prodIte = productions.begin(); prodIte != productions.end(); prodIte++) {
-            GrammarSymbol::Production production = *prodIte;
+        for (const auto& production : productions) {
             GrammarSymbol::Production::iterator symIte;
-            for (symIte = production.begin(); symIte != production.end(); symIte++) {
+            for (symIte = production->begin(); symIte != production->end(); symIte++) {
                 GrammarSymbol::ptr symbol = *symIte;
                 if (symbol->getType() == GrammarSymbol::Type::Terminal) {
                     TerminalSymbol::ptr terminal = std::dynamic_pointer_cast<TerminalSymbol>(
@@ -30,9 +29,8 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unorder
                     first.insert(terminal);
                     if (terminal->getName().compare("") != 0) {
                         if (transitions.find(terminal) == transitions.end()) {
-                            addTransition(terminal,
-                                          std::make_shared<Production>(production));
-                        } else if (*transitions[terminal] != production) {
+                            addTransition(terminal, production);
+                        } else if (transitions[terminal] != production) {
                             //first.clear();
                             //return first;
                             //throw error not LL1
@@ -40,9 +38,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unorder
                         }
                     } else {
                         this->hasEpsilonProduction = true;
-                        this->addTransition(
-                          epsilon,
-                          std::make_shared<Production>(production));
+                        this->addTransition(epsilon, production);
                     }
                     break;
                 } else if (symbol->getType() ==
@@ -63,15 +59,14 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFirst(std::unorder
                             if (terminal->getName().compare("") != 0) {
                                 first.insert(terminal);
                                 if (transitions.find(terminal) == transitions.end()) {
-                                  addTransition(terminal,
-                                                std::make_shared<Production>(production));
-                                } else if(*transitions[terminal] != production){
+                                  addTransition(terminal, production);
+                                } else if(transitions[terminal] != production){
                                     //first.clear();
                                     //return first;
                                     //throw error not LL1
                                     throw NULL;
                                 }
-                            } else if (symIte + 1 == production.end()) {
+                            } else if (symIte + 1 == production->end()) {
                                 first.insert(terminal);
                             }
                         }
@@ -106,13 +101,13 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
         for (pairIter = usingProductions.begin();
         pairIter != usingProductions.end(); pairIter++) {
             NonTerminalSymbol::ptr parent = (*pairIter).first;
-            GrammarSymbol::Production production = (*pairIter).second;
+            GrammarSymbol::ProductionPtr production = (*pairIter).second;
             GrammarSymbol::Production::iterator prodIter;
-            for(prodIter = production.begin(); prodIter != production.end(); prodIter++) {
+            for(prodIter = production->begin(); prodIter != production->end(); prodIter++) {
                 if((*prodIter)->getName().compare(this->getName()) == 0) {
                     GrammarSymbol::Production::iterator prodIter2 = prodIter;
                     prodIter2++;
-                    while (prodIter2 != production.end()) {
+                    while (prodIter2 != production->end()) {
                         GrammarSymbol::ptr nextSymbol = *prodIter2;
                         if (nextSymbol->getType() ==
                         GrammarSymbol::Type::Terminal) {
@@ -137,20 +132,16 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
                                 } else {
                                     nonTerminal->hasEpsilonProduction = true;
                                     for (const auto& p : nonTerminal->productions) {
-                                      GrammarSymbol::ptr firstSymbol = *p.begin();
+                                      GrammarSymbol::ptr firstSymbol = *p->begin();
                                       if (firstSymbol == *secFollowIter) {
-                                        nonTerminal->addTransition(
-                                          epsilon,
-                                          std::make_shared<Production>(p));
+                                        nonTerminal->addTransition(epsilon, p);
                                         break;
                                       } else if (firstSymbol->getType() == NonTerminal) {
                                         NonTerminalSymbol::ptr fSymNT =
                                           std::dynamic_pointer_cast<NonTerminalSymbol>(firstSymbol);
                                         auto fSymFirstSet = nonTerminal->getFirst(emptySet);
                                         if (fSymFirstSet.find(*secFollowIter) != fSymFirstSet.end()) {
-                                        nonTerminal->addTransition(
-                                          epsilon,
-                                          std::make_shared<Production>(p));
+                                        nonTerminal->addTransition(epsilon, p);
                                           break;
                                         }
                                       }
@@ -169,7 +160,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
                     for(callerIter = caller.begin(); callerIter != caller.end(); callerIter++){
                         noRecursion = noRecursion && parent->getName().compare(*callerIter) != 0;
                     }
-                    if ((prodIter2) == production.end() && noRecursion) {
+                    if ((prodIter2) == production->end() && noRecursion) {
                         std::unordered_set<TerminalSymbol::ptr> secFollow = parent->getFollow(caller);
                         std::unordered_set<TerminalSymbol::ptr>::iterator secFollowIter;
                         for (secFollowIter = secFollow.begin(); secFollowIter != secFollow.end(); secFollowIter++) {
@@ -182,19 +173,19 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
 
         TerminalSymbol::ptr epsTerminal = epsilon;
         TerminalSymbol::ptr synTerminal = std::make_shared<TerminalSymbol>("$");
-        GrammarSymbol::Production epsProduction;
-        epsProduction.push_back(epsTerminal);
-        GrammarSymbol::Production synProduction;
-        synProduction.push_back(synTerminal);
+        GrammarSymbol::ProductionPtr epsProduction =
+          std::make_shared<Production>();
+        epsProduction->push_back(epsTerminal);
+        GrammarSymbol::ProductionPtr synProduction =
+          std::make_shared<Production>();
+        synProduction->push_back(synTerminal);
         std::unordered_set<TerminalSymbol::ptr>::iterator followIter;
         for (followIter = follow.begin(); followIter != follow.end(); followIter++) {
             if(transitions.find(*followIter) == transitions.end()){
                 if(hasEpsilonProduction){
-                  addTransition(epsilon,
-                                std::make_shared<Production>(epsProduction));
+                  addTransition(epsilon, epsProduction);
                 } else {
-                  addTransition(*followIter,
-                                std::make_shared<Production>(synProduction));
+                  addTransition(*followIter, synProduction);
                 }
             } else if(hasEpsilonProduction){
                     GrammarSymbol::Production production =
@@ -238,7 +229,7 @@ std::unordered_set<TerminalSymbol::ptr> NonTerminalSymbol::getFollow(std::unorde
 }
 
 void NonTerminalSymbol::addTransition(TerminalSymbol::ptr input,
-        std::shared_ptr<GrammarSymbol::Production> newProduction) {
+        ProductionPtr newProduction) {
 
 /* Update hasEpsilonProduction if epsilon */
 
@@ -254,11 +245,11 @@ void NonTerminalSymbol::addTransition(TerminalSymbol::ptr input,
     transitions[input] = newProduction;// Add production to map
 }
 
-void NonTerminalSymbol::addProduction(GrammarSymbol::Production production) {
+void NonTerminalSymbol::addProduction(ProductionPtr production) {
     productions.push_back(production);
 }
 
-void NonTerminalSymbol::addUsingProduction(NonTerminalSymbol::ptr nonTerm, GrammarSymbol::Production production) {
+void NonTerminalSymbol::addUsingProduction(NonTerminalSymbol::ptr nonTerm, ProductionPtr production) {
     NonTerminalSymbol::usingPair pair(nonTerm,production);
     usingProductions.push_back(pair);
 }

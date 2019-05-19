@@ -10,6 +10,7 @@ class GrammarSymbol {
 public:
     typedef std::shared_ptr<GrammarSymbol> ptr;
     typedef std::deque<GrammarSymbol::ptr> Production;
+    typedef std::shared_ptr<Production> ProductionPtr;
     enum Type {NonTerminal, Terminal, SemanticAction};
 
     explicit GrammarSymbol(std::string name);

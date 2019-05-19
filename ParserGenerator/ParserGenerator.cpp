@@ -15,7 +15,7 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
     NonTerminalSymbol::ptr startingSymbol;
     std::unordered_map<std::string, TerminalSymbol::ptr> terminals;
     std::unordered_map<std::string, NonTerminalSymbol::ptr> nonTerminals;
-    std::unordered_map<std::shared_ptr<Parser::Sentence>, int> prodIds;
+    std::unordered_map<GrammarSymbol::ProductionPtr, int> prodIds;
     int productionId = 0;
 
     // Parse initial code block
@@ -60,33 +60,29 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
 
         // Extract RHS
         std::vector<std::string> codeFrags;
-        GrammarSymbol::Production prod =
+        GrammarSymbol::ProductionPtr prod =
                 getProduction(rulesIstream, terminals,
                               nonTerminals, codeFrags);
-        if (prod.empty()) {
+        if (prod->empty()) {
             throw std::runtime_error(
                     std::string("expected at least one production in rule: ") + lhs);
         }
         symbol->addProduction(prod);
-        std::shared_ptr<Parser::Sentence> prodPtr =
-          std::make_shared<Parser::Sentence>(prod);
-        prodIds[prodPtr] = productionId;
+        prodIds[prod] = productionId;
         semanticAnalyzerGenerator.generateSemanticAnalyzer(
             productionId++, *symbol,
-            prodPtr, codeFrags);
+            prod, codeFrags);
         while (skip(rulesIstream, "|")) {
             prod = getProduction(rulesIstream, terminals,
                                  nonTerminals, codeFrags);
-            if (prod.empty()) {
+            if (prod->empty()) {
                 throw std::runtime_error("expected production after '|'");
             }
             symbol->addProduction(prod);
-            std::shared_ptr<Parser::Sentence> prodPtr =
-              std::make_shared<Parser::Sentence>(prod);
-            prodIds[prodPtr] = productionId;
+            prodIds[prod] = productionId;
             semanticAnalyzerGenerator.generateSemanticAnalyzer(
                 productionId++, *symbol,
-                prodPtr, codeFrags);
+                prod, codeFrags);
         }
     }
 
@@ -97,7 +93,7 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
 
     for (const auto& nonTerminal : parser.nonTerminals) {
         for (const auto& prod : nonTerminal.second->productions) {
-            for (const auto& term : prod) {
+            for (const auto& term : *prod) {
                 if (term->getType() == GrammarSymbol::NonTerminal) {
                     NonTerminalSymbol::ptr termPtr =
                             std::dynamic_pointer_cast<NonTerminalSymbol>(term);
@@ -182,13 +178,14 @@ std::string ParserGenerator::getProductionTerm(std::istream& is) {
   return term;
 }
 
-GrammarSymbol::Production ParserGenerator::getProduction(
+GrammarSymbol::ProductionPtr ParserGenerator::getProduction(
     std::istream& is,
     std::unordered_map<std::string, TerminalSymbol::ptr>& terminals,
     std::unordered_map<std::string, NonTerminalSymbol::ptr>& nonTerminals,
     std::vector<std::string>& codeFrags) {
   codeFrags.clear();
-  GrammarSymbol::Production prod;
+  GrammarSymbol::ProductionPtr prod =
+    std::make_shared<GrammarSymbol::Production>();
   std::string rhsTerm = getProductionTerm(is);
   while (!rhsTerm.empty()) {
     if (isValidSymbolName(rhsTerm)) {
@@ -197,7 +194,7 @@ GrammarSymbol::Production ParserGenerator::getProduction(
         ? nonTerminals[rhsTerm]
         : nonTerminals[rhsTerm] =
             std::make_shared<NonTerminalSymbol>(rhsTerm);
-      prod.push_back(nonTermSymbol);
+      prod->push_back(nonTermSymbol);
     } else if (rhsTerm.front() == '\'' && rhsTerm.back() == '\'') {
       rhsTerm = rhsTerm.substr(1, rhsTerm.length() - 2);
       rhsTerm = rhsTerm == "\\L" ? "" : rhsTerm;
@@ -205,12 +202,12 @@ GrammarSymbol::Production ParserGenerator::getProduction(
         contains(terminals, rhsTerm)
         ? terminals[rhsTerm]
         : terminals[rhsTerm] = std::make_shared<TerminalSymbol>(rhsTerm);
-      prod.push_back(terminalSymbol);
+      prod->push_back(terminalSymbol);
     } else if (rhsTerm.front() == '{' && rhsTerm.back() == '}') {
       rhsTerm = rhsTerm.substr(1, rhsTerm.length() - 2);
       codeFrags.push_back(rhsTerm);
       std::shared_ptr<SemanticAction> sa = std::make_shared<SemanticAction>();
-      prod.push_back(sa);
+      prod->push_back(sa);
     } else {
       throw std::runtime_error(
           std::string("invalid symbol name in RHS: ") + rhsTerm);
@@ -238,13 +235,13 @@ inline bool ParserGenerator::contains(const std::unordered_map<K, V> &map,
 void ParserGenerator::removeLeftRecursion(Parser &parser) {
     std::unordered_map<std::string, std::shared_ptr<NonTerminalSymbol>> nonTerminals = parser.nonTerminals;
     for (auto &nonTerminal : nonTerminals) {
-        std::vector<GrammarSymbol::Production> production = nonTerminal.second->productions;
-        std::vector<GrammarSymbol::Production> a_vector, a_dash_vector;
+        std::vector<GrammarSymbol::ProductionPtr> production = nonTerminal.second->productions;
+        std::vector<GrammarSymbol::ProductionPtr> a_vector, a_dash_vector;
 
         for (auto &i : production) {
-            if ((*(i.begin()))->getType() == GrammarSymbol::Type::NonTerminal
-                && (*(i.begin()))->getName() == nonTerminal.first) {
-                i.pop_front();
+            if ((*(i->begin()))->getType() == GrammarSymbol::Type::NonTerminal
+                && (*(i->begin()))->getName() == nonTerminal.first) {
+                i->pop_front();
                 a_dash_vector.push_back(i);
             } else {
                 a_vector.push_back(i);
@@ -254,14 +251,15 @@ void ParserGenerator::removeLeftRecursion(Parser &parser) {
             std::shared_ptr<NonTerminalSymbol> a_dash(new NonTerminalSymbol(nonTerminal.first + "'"));
 
             for (auto &i : a_dash_vector) {
-                i.push_back(a_dash);
+                i->push_back(a_dash);
             }
             GrammarSymbol::ptr epsilon = parser.terminals[""];
-            std::deque<std::shared_ptr<GrammarSymbol>> epsilonProduction;
-            epsilonProduction.push_back(epsilon);
+            GrammarSymbol::ProductionPtr epsilonProduction =
+              std::make_shared<GrammarSymbol::Production>();
+            epsilonProduction->push_back(epsilon);
             a_dash_vector.push_back(epsilonProduction);
             for (auto &i : a_vector) {
-                i.push_back(a_dash);
+                i->push_back(a_dash);
             }
             a_dash->productions = a_dash_vector;
             nonTerminal.second->productions = a_vector;
@@ -278,17 +276,18 @@ void ParserGenerator::leftFactoring(Parser &parser) {
     do {
         stillFactoring = false;
         for (auto &nonTerminal : parser.nonTerminals) {
-            std::vector<GrammarSymbol::Production> production = nonTerminal.second->productions;
-            std::vector<GrammarSymbol::Production> betas;
+            std::vector<GrammarSymbol::ProductionPtr> production = nonTerminal.second->productions;
+            std::vector<GrammarSymbol::ProductionPtr> betas;
             for (int i = 0; i < production.size(); i++) {
                 betas.clear();
                 for (int j = i + 1; j < production.size(); j++) {
-                    if ((*production[i].begin())->getName() == (*production[j].begin())->getName()) {
-                        production[j].pop_front();
-                        if (production[j].empty()) {
+                    if ((*production[i]->begin())->getName() == (*production[j]->begin())->getName()) {
+                        production[j]->pop_front();
+                        if (production[j]->empty()) {
                             GrammarSymbol::ptr epsilon = parser.terminals[""];
-                            std::deque<std::shared_ptr<GrammarSymbol>> epsilonProduction;
-                            epsilonProduction.push_back(epsilon);
+                            GrammarSymbol::ProductionPtr epsilonProduction =
+                              std::make_shared<GrammarSymbol::Production>();
+                            epsilonProduction->push_back(epsilon);
                             betas.push_back(epsilonProduction);
                         } else {
                             betas.push_back(production[j]);
@@ -298,23 +297,25 @@ void ParserGenerator::leftFactoring(Parser &parser) {
                 }
                 if (!betas.empty()) {
                     stillFactoring = true;
-                    GrammarSymbol::Production temp = production[i];
-                    temp.pop_front();
-                    if (temp.empty()) {
+                    GrammarSymbol::ProductionPtr temp =
+                      std::make_shared<GrammarSymbol::Production>(*production[i]);
+                    temp->pop_front();
+                    if (temp->empty()) {
                         GrammarSymbol::ptr epsilon = parser.terminals[""];
-                        std::deque<std::shared_ptr<GrammarSymbol>> epsilonProduction;
-                        epsilonProduction.push_back(epsilon);
+                        GrammarSymbol::ProductionPtr epsilonProduction =
+                          std::make_shared<GrammarSymbol::Production>();
+                        epsilonProduction->push_back(epsilon);
                         betas.push_back(epsilonProduction);
                     } else {
                         betas.push_back(temp);
                     }
-                    while (production[i].size() > 1) {
-                        production[i].pop_back();
+                    while (production[i]->size() > 1) {
+                        production[i]->pop_back();
                     }
                     std::shared_ptr<NonTerminalSymbol> a_dash(new NonTerminalSymbol(nonTerminal.first + "'"));
                     a_dash->productions = betas;
                     parser.nonTerminals[a_dash->getName()] = a_dash;
-                    production[i].push_back(a_dash);
+                    production[i]->push_back(a_dash);
 
                 }
 

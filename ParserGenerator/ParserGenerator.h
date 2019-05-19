@@ -26,7 +26,7 @@ private:
     static bool skip(std::istream&, const std::string& = "");
     static std::string getUntil(std::istream&, const std::string&);
     static std::string getProductionTerm(std::istream&);
-    static GrammarSymbol::Production getProduction(
+    static GrammarSymbol::ProductionPtr getProduction(
         std::istream&,
         std::unordered_map<std::string, TerminalSymbol::ptr>&,
         std::unordered_map<std::string, NonTerminalSymbol::ptr>&,
