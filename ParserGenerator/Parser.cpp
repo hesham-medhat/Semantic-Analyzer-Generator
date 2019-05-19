@@ -190,7 +190,7 @@ void Parser::parseFullProgram(std::istream &) {
                     } else if((*(production->begin()))->getName().empty()) {
                         note = nonTerminal->getName() + " -> ";
 
-                    } else {
+                    } else {// Non-terminal
                         std::shared_ptr<SemanticAnalyzer> derivationAnalyzer =
                                 semanticAnalyzerFactory->getSemanticAnalyzer
                                 (productionIds[production], (sap.second? sap
@@ -246,14 +246,19 @@ void Parser::parseFullProgram(std::istream &) {
         GrammarSymbol::ptr symbol = (*sentence.begin()).first;
         sentence.pop_front();
         if (symbol->getType() == GrammarSymbol::Type::NonTerminal) {
-            NonTerminalSymbol::ptr nonTerminal = std::dynamic_pointer_cast<NonTerminalSymbol>(symbol);
-            if(nonTerminal->hasEpsilonProduction){
+            NonTerminalSymbol::ptr nonTerminal = std::dynamic_pointer_cast<NonTerminalSymbol>(
+                    symbol);
+            if (nonTerminal->hasEpsilonProduction) {
                 note = nonTerminal->getName() + " -> ";
             } else {
                 output += "$ ";
                 note = "error in " + nonTerminal->getName();
             }
-        } else {
+        } else if (symbol->getType() == GrammarSymbol::Type::SemanticAction) {
+            std::shared_ptr<SemanticAction> action =
+                    std::dynamic_pointer_cast<SemanticAction>(symbol);
+            action->execute(currentToken.getLexeme());
+        } else {// Non-terminal
             output += symbol->getName() + " ";
             note = "error insert unmatched symbol " + symbol->getName();
         }
