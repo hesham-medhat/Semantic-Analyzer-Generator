@@ -288,13 +288,11 @@ void NonTerminalSymbol::saveProductions(std::ostream &out,
             std::shared_ptr<Production> production = transitions[terminal];
             if (production->size() == 1 &&
             (*production->begin())->getName().empty()) {// Epsilon production
-                hasEpsilonProduction = true;
                 out << static_cast<std::string>("$$");
             } else if (production->size() == 2 &&
                        (*production->begin())->getName().empty()) {
                 // Epsilon production with a Semantic Action
                 productionId = productionIds[production];
-                hasEpsilonProduction = true;
                 out << static_cast<std::string>("$$$$$");
             } else {
                 productionId = productionIds[production];
