@@ -56,9 +56,8 @@ void SemanticAnalyzerGenerator::generateSemanticAnalyzer(
     }
   }
   outStream << "public:\t" << className << " (void* parent) : ";
-  outStream << producingSymbol.getName()
-            << "(*(struct " << producingSymbol.getName()
-            << " *)parent) {\n\t\t\t";
+  outStream << producingSymbol.getName() << "(*(struct "
+            << producingSymbol.getName() << " *)parent) {\n\t\t\t";
   for (std::string x : nonTerminals) {
     outStream << "\t\tstructs.push_back(&" << x << ");\n";
   }

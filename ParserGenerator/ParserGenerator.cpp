@@ -21,7 +21,7 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
   // Parse initial code block
   std::string initialCodeBlock;
   if (skip(rulesIstream, "$")) {
-    initialCodeBlock = getUntil(rulesIstream, "$");
+    initialCodeBlock = getUntil(rulesIstream, "$", true);
     skip(rulesIstream, "$");
   }
 
@@ -38,7 +38,7 @@ Parser ParserGenerator::generateParser(std::istream &rulesIstream,
     }
 
     // Extract LHS
-    std::string lhs = getUntil(rulesIstream, whitespaces + "=");
+    std::string lhs = getUntil(rulesIstream, whitespaces + "=", false);
     if (!isValidSymbolName(lhs)) {
       throw std::runtime_error(std::string("invalid symbol name in LHS: ") +
                                lhs);
@@ -137,12 +137,13 @@ bool ParserGenerator::skip(std::istream &is, const std::string &str) {
 }
 
 std::string ParserGenerator::getUntil(std::istream &is,
-                                      const std::string &delim) {
+                                      const std::string &delim,
+                                      const bool &&codeBlock) {
   std::string input;
   skip(is);
   char next = is.peek();
   while (next != eof && !contains(delim, next)) {
-    if (delim != "}" && next == '\\') {
+    if (!codeBlock && next == '\\') {
       is.get();
       next = is.peek();
       if (!contains(reserved, next)) {
@@ -162,16 +163,16 @@ std::string ParserGenerator::getProductionTerm(std::istream &is) {
   std::string term;
   if (skip(is, lambdaTerm)) {
     term = lambdaTerm;
-  } else if (skip(is, "{")) {
-    term = "{";
-    term += getUntil(is, "}");
+  } else if (skip(is, "$")) {
+    term = "$";
+    term += getUntil(is, "$", true);
     if (!is) {
-      throw std::runtime_error("premature end of file, expected '}'");
+      throw std::runtime_error("premature end of file, expected '$'");
     }
-    skip(is, "}");
-    term += "}";
+    skip(is, "$");
+    term += "$";
   } else {
-    term = getUntil(is, whitespaces + rhsTermDelim);
+    term = getUntil(is, whitespaces + rhsTermDelim, false);
   }
   return term;
 }
@@ -201,7 +202,7 @@ GrammarSymbol::ProductionPtr ParserGenerator::getProduction(
               ? terminals[rhsTerm]
               : terminals[rhsTerm] = std::make_shared<TerminalSymbol>(rhsTerm);
       prod->push_back(terminalSymbol);
-    } else if (rhsTerm.front() == '{' && rhsTerm.back() == '}') {
+    } else if (rhsTerm.front() == '$' && rhsTerm.back() == '$') {
       rhsTerm = rhsTerm.substr(1, rhsTerm.length() - 2);
       codeFrags.push_back(rhsTerm);
       std::shared_ptr<SemanticAction> sa = std::make_shared<SemanticAction>();

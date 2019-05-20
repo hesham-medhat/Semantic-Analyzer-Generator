@@ -29,15 +29,15 @@ Character classes have the highest precedence, followed by positive and Kleene c
 
 Regular definitions that are to be used in subsequent rules take the following form:
 ```
-{LHS} = {RHS}
+<LHS> = <RHS>
 ```
 
 Token rules take the following form:
 ```
-{LHS}: {RHS}
+<LHS>: <RHS>
 ```
 
-Keywords are enclosed by curly braces on separate lines and have the highest priority regardless of their location.
+Keywords are enclosed by dollar signs on separate lines and have the highest priority regardless of their location.
 Punctuation characters are enclosed by square brackets on separate lines as well.
 
 ### Example:
@@ -70,7 +70,7 @@ $
 
 Rules start with hash signs (`#`) and take the following form (whitespaces are omitted):
 ```
-# {LHS} = {RHS}
+# <LHS> = <RHS>
 ```
 
 The left-hand side is the name of a non-terminal symbol, and the right-hand side is a list of production bodies separated by `|`'s. Terminal symbols are enclosed in single quotes and must match the names of the corresponding tokens in the lexical rules file. The names of all grammar symbols must be valid C/C++ identifiers. `'\L'` is a special symbol for the empty string.
@@ -103,7 +103,7 @@ The code block at the top of the parsing rules file is taken as is and placed in
 
 Any semantic attributes of non-terminal symbols _must_ be defined in the initial code block as members of `struct`'s with exactly the same names as the associated non-terminal symbols.
 
-Code fragments are given in production bodies and enclosed between curly braces. The head of a production is referred to in code fragments by its name, while occurrences of non-terminal and terminal symbols are referred to by numbers, denoting their orders of occurrence in the production body with respect to other symbols of the same type, concatenated to their names. (e.g.: `num1` for the first occurrence of `num`). Terminal symbols are empty `std::string`'s; to capture the value of a terminal symbol, you _have to_ set the corresponding `std::string` to `_input` in a code fragment right after the occurrence of the symbol. Non-terminal symbols are `struct`'s with the same names.
+Code fragments are given in production bodies and enclosed between dollar signs. The head of a production is referred to in code fragments by its name, while occurrences of non-terminal and terminal symbols are referred to by numbers, denoting their orders of occurrence in the production body with respect to other symbols of the same type, concatenated to their names. (e.g.: `num1` for the first occurrence of `num`). Terminal symbols are empty `std::string`'s; to capture the value of a terminal symbol, you _have to_ set the corresponding `std::string` to `_input` in a code fragment right after the occurrence of the symbol. Non-terminal symbols are `struct`'s with the same names.
 
 #### Example:
 
@@ -121,15 +121,15 @@ struct ADDITION {
 };
 $
 # SIMPLE_EXPR = 'num'
-                { num1 = _input;
-                  ADDITION1.prevNum = std::stoi(num1); }
+                $ num1 = _input;
+                  ADDITION1.prevNum = std::stoi(num1); $
                 ADDITION
-                { SIMPLE_EXPR.value = ADDITION1.value;
-                  std::cout << "Result: " << SIMPLE_EXPR.value << std::endl; }
+                $ SIMPLE_EXPR.value = ADDITION1.value;
+                  std::cout << "Result: " << SIMPLE_EXPR.value << std::endl; $
 # ADDITION = 'addop' 'num'
-             { num1 = _input;
-               ADDITION1.prevNum = ADDITION.prevNum + std::stoi(num1); }
+             $ num1 = _input;
+               ADDITION1.prevNum = ADDITION.prevNum + std::stoi(num1); $
              ADDITION
-             { ADDITION.value = ADDITION1.value; } |
-             '\L' { ADDITION.value = ADDITION.prevNum; }
+             $ ADDITION.value = ADDITION1.value; $ |
+             '\L' $ ADDITION.value = ADDITION.prevNum; $
 ```

@@ -23,7 +23,8 @@ private:
   static const std::string reserved;
   static const std::string whitespaces;
   static bool skip(std::istream &, const std::string & = "");
-  static std::string getUntil(std::istream &, const std::string &);
+  static std::string getUntil(std::istream &, const std::string &,
+                              const bool &&);
   static std::string getProductionTerm(std::istream &);
   static GrammarSymbol::ProductionPtr
   getProduction(std::istream &,
