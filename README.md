@@ -37,7 +37,7 @@ Token rules take the following form:
 <LHS>: <RHS>
 ```
 
-Keywords are enclosed by dollar signs on separate lines and have the highest priority regardless of their location.
+Keywords are enclosed by curly braces on separate lines and have the highest priority regardless of their location.
 Punctuation characters are enclosed by square brackets on separate lines as well.
 
 ### Example:
